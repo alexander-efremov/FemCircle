@@ -100,18 +100,15 @@ static double get_phi(int ii, int jj, double *prev_density, double time_value) {
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
 
-            double ideal_x;
-            double ideal_y;
-            double real_x;
-            double real_y;
+            double ideal_x = i * x_step + x_step / 2.;
+            double ideal_y = j * y_step + y_step / 2.;
+            double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
+                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
+            double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
+                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
 
             if (ii > 0 && ii < OX_LEN && jj > 0 && jj < OY_LEN) {
-                ideal_x = i * x_step + x_step / 2.;
-                ideal_y = j * y_step + y_step / 2.;
-                real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
-                         + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
-                real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
-                         + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+
             }
             else if (ii == 0 && jj == 0) { // point (0,0)
 
