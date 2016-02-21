@@ -64,7 +64,7 @@ TEST_F(FemFixture, test1) {
         HY = (D - C) / OY_LEN;
         TIME_STEP_CNT = (int) d;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
-        printf("OX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
+        printf("OX_LEN = %d iprs = %d\n", OX_LEN, OY_LEN);
         double *density = solve(tme);
         double *err = calc_error(HX, HY, density);
         print_surface_as_v("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, density);

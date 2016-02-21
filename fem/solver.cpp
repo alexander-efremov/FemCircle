@@ -167,9 +167,6 @@ double *solve(double &tme) {
                 }
             }
             ++ic;
-            // print_matrix(density, OX_LEN_1, OY_LEN_1, 4);
-            // printf("%s\n", "\n");
-            // print_matrix(prev_density, OX_LEN_1, OY_LEN_1, 4);
             maxErr = FLT_MIN;
             for (int i = 1; i < OX_LEN; ++i) {
                 for (int j = 1; j < OY_LEN; ++j) {
@@ -182,19 +179,6 @@ double *solve(double &tme) {
             }
             memcpy(prev_density, density, XY_LEN * sizeof(double));
         }
-
-        // if (tl == 1) {
-        // 	printf("EPS: %le max jak = %d\n", EPS, JAK_ITER_CNT);
-        // 	printf("Iterations: %d max err.: %le\n", ic, maxErr);
-        // 	if (ic >= JAK_ITER_CNT)
-        // 	{
-        // 		printf("%s\n", "Break on max Jakoby iteration exceed");
-        // 	}
-        // 	else if (maxErr < EPS)
-        // 	{
-        // 		printf("%s\n", "Break on l_inf exceed");
-        // 	}
-        // }
     }
 
     delete[] prev_density;
