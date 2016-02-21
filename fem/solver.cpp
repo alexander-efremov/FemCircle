@@ -126,13 +126,29 @@ double *solve(double &tme) {
     double *prev_density = new double[XY_LEN];
     double *density = new double[XY_LEN];
 
-    for (int i = 0; i < OX_LEN_1; i++)
-        for (int j = 0; j < OY_LEN_1; j++)
-            prev_density[i * OY_LEN_1 + j] = analytical_solution_circle(HX * i, HY * j);
+    for (int i = 0; i < OX_LEN_1; ++i)
+        for (int j = 0; j < OY_LEN_1; ++j)
+            prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
 
     memcpy(density, prev_density, XY_LEN * sizeof(double));
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
+        // point 0, 0
+
+        // point 1, 0
+
+        // point 0, 1
+
+        // point 1, 1
+
+        // G1 left boundary
+
+        // G2 bottom boundary
+
+        // G3 right boundary
+
+        // G4 top boundary
+
         // with usage of prev_density we calculate phi function values
         for (int i = 1; i < OX_LEN; ++i)
             for (int j = 1; j < OY_LEN; ++j)
@@ -141,11 +157,16 @@ double *solve(double &tme) {
 //        if (tl == TIME_STEP_CNT)
 //            print_surface_as_v("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, phi);
 
-        // fill inner matrix of prev_density by zero
-        // because we will use it in Jakoby method
-        for (int i = 1; i < OX_LEN; ++i)
-            for (int j = 1; j < OY_LEN; ++j)
-                prev_density[i * OY_LEN_1 + j] = 0.;
+        if (tl == 1) {
+            // fill inner matrix of prev_density by zero
+            // because we will use it in Jakoby method
+            for (int i = 0; i < OX_LEN_1; ++i)
+                for (int j = 0; j < OY_LEN_1; ++j)
+                    prev_density[i * OY_LEN_1 + j] = 0.;
+        }
+        else {
+            // none
+        }
 
         int ic = 0;
         double maxErr = FLT_MAX;
@@ -193,9 +214,9 @@ double *solve(double &tme) {
 
             // G2 bottom boundary
             for (int i = 1; i < OX_LEN; ++i) {
-                density[OY_LEN_1 * 0 + i] = -3. * prev_density[OY_LEN_1 * 1 + i] -
-                                            1.5 *
-                                            (prev_density[OY_LEN_1 * 0 + i + 1] + prev_density[OY_LEN_1 * 0 + i - 1])
+                density[OY_LEN_1 * 0 + i] = -3. * prev_density[OY_LEN_1 * 1 + i]
+                                            - 1.5 *
+                                              (prev_density[OY_LEN_1 * 0 + i + 1] + prev_density[OY_LEN_1 * 0 + i - 1])
                                             - 0.5 *
                                               (prev_density[OY_LEN_1 * 1 + i + 1] + prev_density[OY_LEN_1 * 1 + i - 1])
                                             + bdCoef * phi[OY_LEN_1 * 0 + i];
