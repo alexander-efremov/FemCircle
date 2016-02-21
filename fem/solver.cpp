@@ -149,9 +149,34 @@ double *solve(double &tme) {
         int ic = 0;
         double maxErr = FLT_MAX;
         while (maxErr > EPS && ic < JAK_ITER_CNT) {
+            double rpCoef = 64. / (9. * HX * HY);
+
+            // point 0,0
+            density[OY_LEN_1 * 0 + 0] = -1. / 3. * (prev_density[OY_LEN_1 * 0 + 1] + prev_density[OY_LEN_1 * 1 + 0]) -
+                                        1. / 9. * prev_density[OY_LEN_1 * 1 + 1]
+                                        + rpCoef * phi[OY_LEN_1 * 0 + 0];
+
+            // point 1,0 (i = OX_LEN, j = 0)
+            density[OY_LEN_1 * 0 + OX_LEN] = -1. / 3. * (prev_density[OY_LEN_1 * 0 + (OX_LEN - 1)]
+                                                         + prev_density[OY_LEN_1 * 1 + OX_LEN])
+                                             - 1. / 9. * prev_density[OY_LEN_1 * 1 + (OX_LEN - 1)]
+                                             + rpCoef * phi[OY_LEN_1 * 0 + OX_LEN];
+
+            // point 1,1
+            density[OY_LEN_1 * OX_LEN + OX_LEN] = -1. / 3. * (prev_density[OY_LEN_1 * (OX_LEN - 1) + OX_LEN]
+                                                              + prev_density[OY_LEN_1 * OX_LEN + OX_LEN - 1])
+                                                  - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + (OX_LEN - 1)]
+                                                  + rpCoef * phi[OY_LEN_1 * OX_LEN + OX_LEN];
+
+            // point 0,1 i = 0, j = OY_LEN
+            density[OY_LEN_1 * OX_LEN + 0] = -1. / 3. * (prev_density[OY_LEN_1 * OX_LEN + 1]
+                                                              + prev_density[OY_LEN_1 * (OX_LEN - 1) + 0])
+                                                  - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + 1]
+                                                  + rpCoef * phi[OY_LEN_1 * OX_LEN + 0];
+
             for (int i = 1; i < OX_LEN; ++i) {
                 for (int j = 1; j < OY_LEN; ++j) {
-                    density[i * OY_LEN_1 + j] = -1. / 9. * (
+                    density[OY_LEN_1 * i + j] = -1. / 9. * (
                             1.5 * (
                                     prev_density[OY_LEN_1 * i + j - 1] + // left
                                     prev_density[OY_LEN_1 * (i - 1) + j] + // upper
