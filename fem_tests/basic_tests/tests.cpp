@@ -1,10 +1,23 @@
-#include <stdio.h>
+#include "gtest/gtest.h"
+#include "solver.h"
+#include "consts.h"
 #include "utils.h"
 #include "tecplot.h"
-#include "consts.h"
-#include "solver.h"
 
-int main() {
+class FemFixture : public ::testing::Test {
+protected:
+    virtual void TearDown() {
+    }
+
+    virtual void SetUp() {
+    }
+
+public:
+    FemFixture() : Test() {
+    }
+};
+
+TEST_F(FemFixture, test1) {
     double tme = 0.;
 
     double d = 0;
@@ -28,6 +41,8 @@ int main() {
                 break;
             case 5:
                 d = 1600.;
+                break;
+            default:
                 break;
         }
 
@@ -61,6 +76,12 @@ int main() {
         delete[] density;
         delete[] err;
     }
+}
 
-    return 0;
+TEST_F(FemFixture, test2) {
+
+}
+
+TEST_F(FemFixture, test3) {
+
 }

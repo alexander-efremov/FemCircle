@@ -1,6 +1,8 @@
 #ifndef FEM_CIRCLE_UTILS_H
 #define FEM_CIRCLE_UTILS_H
 
+#include <float.h>
+
 inline void print_matrix_to_file(int n, int m, double* data, const char* filename) {
     FILE* f = fopen(filename, "w");
     for (int i = 0; i < n; ++i) {

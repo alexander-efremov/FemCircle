@@ -12,6 +12,6 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
     tecplot.cpp
-    )
+        consts.h solver.h solver.cpp)
 
 add_library(fem STATIC ${SOURCE_FILES} ${HEADER_FILES})
