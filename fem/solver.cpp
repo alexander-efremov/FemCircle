@@ -125,7 +125,6 @@ double *solve(double &tme) {
     double *prev_density = new double[XY_LEN];
     double *density = new double[XY_LEN];
 
-
     for (int i = 0; i < OX_LEN_1; i++)
         for (int j = 0; j < OY_LEN_1; j++)
             prev_density[i * OY_LEN_1 + j] = analytical_solution_circle(HX * i, HY * j);
