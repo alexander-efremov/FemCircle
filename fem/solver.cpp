@@ -15,6 +15,7 @@ struct timeval timerStart;
 
 #include "timer.h"
 
+
 double A = 0.;
 double B = 0.;
 double C = 0.;
@@ -137,8 +138,8 @@ double *solve(double &tme) {
             for (int j = 1; j < OY_LEN; ++j)
                 phi[i * OY_LEN_1 + j] = get_phi(i, j, prev_density, TAU * tl);
 
-        if (tl == TIME_STEP_CNT)
-            print_surface_as_v("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, phi);
+//        if (tl == TIME_STEP_CNT)
+//            print_surface_as_v("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, phi);
 
         // fill inner matrix of prev_density by zero
         // because we will use it in Jakoby method
@@ -170,9 +171,56 @@ double *solve(double &tme) {
 
             // point 0,1 i = 0, j = OY_LEN
             density[OY_LEN_1 * OX_LEN + 0] = -1. / 3. * (prev_density[OY_LEN_1 * OX_LEN + 1]
-                                                              + prev_density[OY_LEN_1 * (OX_LEN - 1) + 0])
-                                                  - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + 1]
-                                                  + rpCoef * phi[OY_LEN_1 * OX_LEN + 0];
+                                                         + prev_density[OY_LEN_1 * (OX_LEN - 1) + 0])
+                                             - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + 1]
+                                             + rpCoef * phi[OY_LEN_1 * OX_LEN + 0];
+
+            // print_matrix_to_file(OX_LEN_1, OY_LEN_1, prev_density, "prev_density_test.dat");
+
+            double bdCoef = 32. / (9. * HX * HY);
+            // G1 left boundary
+            for (int j = 1; j < OY_LEN; ++j) {
+                density[OY_LEN_1 * j + 0] = -3. * prev_density[OY_LEN_1 * j + 1]
+                                            - 1.5
+                                              * (prev_density[OY_LEN_1 * (j + 1) + 0]
+                                                 + prev_density[OY_LEN_1 * (j - 1) + 0]
+                                              )
+                                            - 0.5 * (prev_density[OY_LEN_1 * (j + 1) +
+                                                                  1] +
+                                                     prev_density[OY_LEN_1 * (j - 1) +
+                                                                  1]) + bdCoef * phi[OY_LEN_1 * j + 0];
+            }
+
+            // G2 bottom boundary
+            for (int i = 1; i < OX_LEN; ++i) {
+                density[OY_LEN_1 * 0 + i] = -3. * prev_density[OY_LEN_1 * 1 + i] -
+                                            1.5 *
+                                            (prev_density[OY_LEN_1 * 0 + i + 1] + prev_density[OY_LEN_1 * 0 + i - 1])
+                                            - 0.5 *
+                                              (prev_density[OY_LEN_1 * 1 + i + 1] + prev_density[OY_LEN_1 * 1 + i - 1])
+                                            + bdCoef * phi[OY_LEN_1 * 0 + i];
+            }
+
+            // G3 right boundary
+            for (int j = 1; j < OY_LEN; ++j) {
+                density[OY_LEN_1 * j + OX_LEN] = -3. * prev_density[OY_LEN_1 * j + OX_LEN - 1]
+                                                 - 1.5 * (prev_density[OY_LEN_1 * (j + 1) + OX_LEN] +
+                                                          prev_density[OY_LEN_1 * (j - 1) + OX_LEN])
+                                                 - 0.5 * (prev_density[OY_LEN_1 * (j + 1) + OX_LEN - 1] +
+                                                          prev_density[OY_LEN_1 * (j - 1) + OX_LEN - 1])
+                                                 + bdCoef * phi[OY_LEN_1 * j + OX_LEN];
+            }
+
+            // G4 top boundary
+            for (int i = 1; i < OX_LEN; ++i) {
+                density[OY_LEN_1 * OX_LEN + i] = -3. * prev_density[OY_LEN_1 * (OX_LEN - 1) + i]
+                                                 - 1.5 * (prev_density[OY_LEN_1 * OX_LEN + i - 1] +
+                                                          prev_density[OY_LEN_1 * OX_LEN + i + 1])
+                                                 - 0.5 * (prev_density[OY_LEN_1 * (OX_LEN - 1) + i - 1] +
+                                                          prev_density[OY_LEN_1 * (OX_LEN - 1) + i + 1])
+                                                 + bdCoef * phi[OY_LEN_1 * OX_LEN + i];
+            }
+
 
             for (int i = 1; i < OX_LEN; ++i) {
                 for (int j = 1; j < OY_LEN; ++j) {
@@ -193,13 +241,20 @@ double *solve(double &tme) {
             ++ic;
 
             maxErr = FLT_MIN;
-            for (int i = 1; i < OX_LEN; ++i)
+            for (int i = 1; i < OX_LEN; ++i) {
                 for (int j = 1; j < OY_LEN; ++j) {
                     double val = fabs(density[i * OY_LEN_1 + j] - prev_density[i * OY_LEN_1 + j]);
                     if (val > maxErr) { maxErr = val; }
                 }
+            }
+
+            if (tl == 1 && ic == 1) {
+                print_surface_as_v("prev_density", OX_LEN, OY_LEN, HX, HY, tl, A, C, prev_density);
+                print_surface_as_v("density", OX_LEN, OY_LEN, HX, HY, tl, A, C, density);
+            }
 
             memcpy(prev_density, density, XY_LEN * sizeof(double));
+
         }
     }
 

@@ -2,6 +2,7 @@
 #define FEM_CIRCLE_UTILS_H
 
 #include <float.h>
+#include <stdio.h>
 
 inline void print_matrix_to_file(int n, int m, double* data, const char* filename) {
     FILE* f = fopen(filename, "w");
@@ -121,7 +122,7 @@ inline void print_matrix(double* a, int n, int m, const char* text, int precisio
     }
 }
 
-inline static void print_vector(double* a, int n, int precision = 8) {
+inline void print_vector(double* a, int n, int precision = 8) {
     for (int k = 0; k < n; ++k)
     {
         switch (precision)
@@ -154,7 +155,7 @@ inline static void print_vector(double* a, int n, int precision = 8) {
     }
 }
 
-double get_l1_norm(double hx, double hy, int x_len, int y_len, double* data)
+inline double get_l1_norm(double hx, double hy, int x_len, int y_len, double* data)
 {
     double r = 0.;
     for (int i = 0; i < x_len; ++i)
@@ -167,7 +168,7 @@ double get_l1_norm(double hx, double hy, int x_len, int y_len, double* data)
     return r * hx * hy;
 }
 
-double get_l_inf_norm(int x_len, int y_len, double* data)
+inline double get_l_inf_norm(int x_len, int y_len, double* data)
 {
     double max = FLT_MIN;
     for (int i = 0; i < x_len; ++i)
