@@ -78,18 +78,65 @@ static double get_phi(int ii, int jj, double *prev_density, double time_value) {
     double x_step = 1. / nx;
     double y_step = 1. / ny;
 
+    // point 0, 0
+
+    // point 1, 0
+
+    // point 0, 1
+
+    // point 1, 1
+
+    // G1 left boundary
+
+    // G2 bottom boundary
+
+    // G3 right boundary
+
+    // G4 top boundary
+
     // get right part for jakoby
     double phi = 0.;
     double mes = x_step * y_step;
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
-            double ideal_x = i * x_step + x_step / 2.;
-            double ideal_y = j * y_step + y_step / 2.;
 
-            double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
-                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
-            double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
-                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+            double ideal_x;
+            double ideal_y;
+            double real_x;
+            double real_y;
+
+            if (ii > 0 && ii < OX_LEN && jj > 0 && jj < OY_LEN) {
+                ideal_x = i * x_step + x_step / 2.;
+                ideal_y = j * y_step + y_step / 2.;
+                real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
+                         + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
+                real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
+                         + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+            }
+            else if (ii == 0 && jj == 0) { // point (0,0)
+
+            }
+            else if (ii == 0 && jj == OY_LEN) { // point (0,1)
+
+            }
+            else if (ii == OX_LEN && jj == 0) { // point (1,0)
+
+            }
+            else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)
+
+            }
+            else if (ii == 0 && jj > 0 && jj < OY_LEN) {  // G1 left boundary
+
+            }
+            else if (jj == 0 && ii > 0 && ii < OX_LEN) { // G2 bottom boundary
+
+            }
+            else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G3 right boundary
+
+            }
+            else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G4 top boundary
+
+            }
 
             // find out in which square real point was placed
             int sq_i = (int) ((real_x - A) / HX);
@@ -133,25 +180,10 @@ double *solve(double &tme) {
     memcpy(density, prev_density, XY_LEN * sizeof(double));
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
-        // point 0, 0
-
-        // point 1, 0
-
-        // point 0, 1
-
-        // point 1, 1
-
-        // G1 left boundary
-
-        // G2 bottom boundary
-
-        // G3 right boundary
-
-        // G4 top boundary
 
         // with usage of prev_density we calculate phi function values
-        for (int i = 1; i < OX_LEN; ++i)
-            for (int j = 1; j < OY_LEN; ++j)
+        for (int i = 0; i < OX_LEN_1; ++i)
+            for (int j = 0; j < OY_LEN_1; ++j)
                 phi[i * OY_LEN_1 + j] = get_phi(i, j, prev_density, TAU * tl);
 
 //        if (tl == TIME_STEP_CNT)
