@@ -166,16 +166,14 @@ double *solve(double &tme) {
                 }
             }
             ++ic;
+
             maxErr = FLT_MIN;
-            for (int i = 1; i < OX_LEN; ++i) {
+            for (int i = 1; i < OX_LEN; ++i)
                 for (int j = 1; j < OY_LEN; ++j) {
                     double val = fabs(density[i * OY_LEN_1 + j] - prev_density[i * OY_LEN_1 + j]);
-                    if (val > maxErr) {
-                        maxErr = val;
-                        //printf("%le\n", val);
-                    }
+                    if (val > maxErr) { maxErr = val; }
                 }
-            }
+
             memcpy(prev_density, density, XY_LEN * sizeof(double));
         }
     }
