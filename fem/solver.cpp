@@ -57,6 +57,8 @@ static double get_phi(int ii, int jj, double *prev_density, double time_value) {
     double x4 = 0.;
     double y4 = 0.;
 
+    // 1) какой порядок обхода точек? Сейчас обход с нижней левой против часовой
+    // 2) Получается что формулу 4 менять не надо?
     if (ii > 0 && ii < OX_LEN && jj > 0 && jj < OY_LEN) {
         x1 = A + ii * HX - HX / 2.;
         y1 = C + jj * HY - HY / 2.;
@@ -273,6 +275,7 @@ double *solve(double &tme) {
             if (ic == 0 && tl == 1)
                 print_matrix_to_file(OX_LEN_1, OY_LEN_1, prev_density, "prev_density_test.dat");
 
+// на 15 итерации на гр Г1 появляются странные числа. Откуда они вылазят?
             double bdCoef = 32. / (9. * HX * HY);
             // G1 left boundary
 //            for (int j = 1; j < OY_LEN; ++j) {
@@ -290,8 +293,8 @@ double *solve(double &tme) {
 //                    printf("t %le ic = %d\n", density[OY_LEN_1 * j + 0], ic);
 //                }
 //            }
-            if (ic == 0 && tl == 1)
-                print_matrix_to_file(OX_LEN_1, OY_LEN_1, density, "density_test.dat");
+//            if (ic == 0 && tl == 1)
+//                print_matrix_to_file(OX_LEN_1, OY_LEN_1, density, "density_test.dat");
 //
 //            // G2 bottom boundary
 //            for (int i = 1; i < OX_LEN; ++i) {
