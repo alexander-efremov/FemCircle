@@ -67,8 +67,8 @@ TEST_F(FemFixture, test1) {
         printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve(tme);
         double *err = calc_error(HX, HY, density);
-//        print_surface_as_v("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, density);
-//        print_surface_as_v("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, err);
+        print_surface_as_v("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, density);
+        print_surface_as_v("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, err);
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
         double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
         printf("l1 %le \n", l1);

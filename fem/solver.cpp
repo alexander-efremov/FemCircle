@@ -232,8 +232,6 @@ double *solve(double &tme) {
         for (int i = 0; i < OX_LEN_1; ++i)
             for (int j = 0; j < OY_LEN_1; ++j)
                 phi[OY_LEN_1 * i + j] = get_phi(i, j, prev_density, TAU * tl);
-        if (tl == 1)
-            print_matrix_to_file(OX_LEN_1, OY_LEN_1, phi, "phi_1.dat");
 
 //        if (tl == TIME_STEP_CNT)
 //            print_surface_as_v("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, phi);
@@ -271,10 +269,6 @@ double *solve(double &tme) {
                                                          + prev_density[OY_LEN_1 * (OX_LEN - 1) + 0])
                                              - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + 1]
                                              + rpCoef * phi[OY_LEN_1 * OX_LEN + 0];
-
-            if (ic == 0 && tl == 1)
-                print_matrix_to_file(OX_LEN_1, OY_LEN_1, prev_density, "prev_density_test.dat");
-
 
             double bdCoef = 32. / (9. * HX * HY);
             // G1 left boundary
@@ -346,11 +340,6 @@ double *solve(double &tme) {
                     double val = fabs(density[i * OY_LEN_1 + j] - prev_density[i * OY_LEN_1 + j]);
                     if (val > maxErr) { maxErr = val; }
                 }
-            }
-
-            if (tl == 1 && ic == 1) {
-                print_surface_as_v("prev_density", OX_LEN, OY_LEN, HX, HY, tl, A, C, prev_density);
-                print_surface_as_v("density", OX_LEN, OY_LEN, HX, HY, tl, A, C, density);
             }
 
             memcpy(prev_density, density, XY_LEN * sizeof(double));
