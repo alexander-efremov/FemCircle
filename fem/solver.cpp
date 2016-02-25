@@ -222,7 +222,7 @@ double *solve(double &tme) {
 
     for (int i = 0; i < OX_LEN_1; ++i)
         for (int j = 0; j < OY_LEN_1; ++j)
-            prev_density[OY_LEN_1 * i + j] = 1.;
+            prev_density[OY_LEN_1 * i + j] = 0.;
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
 
