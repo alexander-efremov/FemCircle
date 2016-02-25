@@ -62,7 +62,7 @@ TEST_F(FemFixture, test1) {
         OY_LEN_1 = OY_LEN + 1;
         HX = (B - A) / OX_LEN;
         HY = (D - C) / OY_LEN;
-        TIME_STEP_CNT = (int) 1;
+        TIME_STEP_CNT = (int) d;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
         printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve(tme);
