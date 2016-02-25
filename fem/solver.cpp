@@ -371,4 +371,3 @@ double *calc_error(double hx, double hy, double *solution) {
                                          - analytical_solution_circle(A + hx * i, C + hy * j));
     return res;
 }
-

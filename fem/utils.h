@@ -160,12 +160,8 @@ inline double get_l1_norm(double hx, double hy, int x_len, int y_len, double* da
 {
     double r = 0.;
     for (int i = 0; i < x_len; ++i)
-    {
         for (int j = 0; j < y_len; ++j)
-        {
             r += fabs(data[x_len * i + j]);
-        }
-    }
     return r * hx * hy;
 }
 
@@ -173,13 +169,9 @@ inline double get_l_inf_norm(int x_len, int y_len, double* data)
 {
     double max = FLT_MIN;
     for (int i = 0; i < x_len; ++i)
-    {
         for (int j = 0; j < y_len; ++j)
-        {
             if (fabs(data[x_len * i + j]) > max)
                 max = fabs(data[x_len * i + j]);
-        }
-    }
     return max;
 }
 
