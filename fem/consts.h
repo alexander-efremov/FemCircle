@@ -20,6 +20,6 @@ extern double R_SQ; // radius of circle in second power
 extern double INN_DENSITY; // density inside circle
 extern double OUT_DENSITY; // density out of circle boundary
 
-#define EPS 10e-7
+#define EPS 10e-8
 
 #endif //FEM_CIRCLE_CONSTS_H

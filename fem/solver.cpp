@@ -4,7 +4,6 @@
 #include <float.h>
 #include "consts.h"
 #include "solver.h"
-#include "tecplot.h"
 #include <algorithm>
 
 #ifdef WIN32
@@ -14,7 +13,6 @@ struct timeval timerStart;
 #endif
 
 #include "timer.h"
-#include "utils.h"
 
 
 double A = 0.;
@@ -47,7 +45,7 @@ inline static double func_u(double time_value, double x, double y) { return 0; }
 
 inline static double func_v(double time_value, double x, double y) { return 0; }
 
-static double get_phi(int ii, int jj, double *prev_density, double time_value) {
+static double get_phi(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;
     double y1 = 0.;
     double x2 = 0.;
@@ -58,7 +56,6 @@ static double get_phi(int ii, int jj, double *prev_density, double time_value) {
     double y4 = 0.;
 
     // 1) какой порядок обхода точек? Сейчас обход с нижней левой против часовой
-    // 2) Получается что формулу 4 менять не надо?
     if (ii > 0 && ii < OX_LEN && jj > 0 && jj < OY_LEN) {
         x1 = A + ii * HX - HX / 2.;
         y1 = C + jj * HY - HY / 2.;
@@ -192,10 +189,10 @@ static double get_phi(int ii, int jj, double *prev_density, double time_value) {
             double y = C + sq_j * HY;
 
             // formula 4
-            double dens = prev_density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
-                          + prev_density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
-                          + prev_density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
-                          + prev_density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
+            double dens = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
+                          + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
 
             double a11 = (x2 - x1) + (x1 + x3 - x2 - x4) * ideal_y;
             double a12 = (x4 - x1) + (x1 + x3 - x2 - x4) * ideal_x;
@@ -207,7 +204,6 @@ static double get_phi(int ii, int jj, double *prev_density, double time_value) {
         }
     }
 
-    phi *= 16. / 9.;
     return phi;
 }
 
@@ -222,25 +218,21 @@ double *solve(double &tme) {
 
     for (int i = 0; i < OX_LEN_1; ++i)
         for (int j = 0; j < OY_LEN_1; ++j)
-            prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
+            density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
 
-    memcpy(density, prev_density, XY_LEN * sizeof(double));
+    for (int i = 0; i < OX_LEN_1; ++i)
+        for (int j = 0; j < OY_LEN_1; ++j)
+            prev_density[OY_LEN_1 * i + j] = 1.;
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
 
         // with usage of prev_density we calculate phi function values
         for (int i = 0; i < OX_LEN_1; ++i)
             for (int j = 0; j < OY_LEN_1; ++j)
-                phi[OY_LEN_1 * i + j] = get_phi(i, j, prev_density, TAU * tl);
+                phi[OY_LEN_1 * i + j] = get_phi(i, j, density, TAU * tl);
 
 //        if (tl == TIME_STEP_CNT)
 //            print_surface_as_v("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, phi);
-
-        // fill inner matrix of prev_density by zero
-        // because we will use it in Jakoby method
-        for (int i = 0; i < OX_LEN_1; ++i)
-            for (int j = 0; j < OY_LEN_1; ++j)
-                prev_density[OY_LEN_1 * i + j] = 0.;
 
         int ic = 0;
         double maxErr = FLT_MAX;
@@ -301,7 +293,7 @@ double *solve(double &tme) {
                                                  - 1. / 6. * (prev_density[OY_LEN_1 * (j + 1) + OX_LEN] +
                                                               prev_density[OY_LEN_1 * (j - 1) + OX_LEN])
                                                  - 1. / 18. * (prev_density[OY_LEN_1 * (j + 1) + OX_LEN - 1] +
-                                                              prev_density[OY_LEN_1 * (j - 1) + OX_LEN - 1])
+                                                               prev_density[OY_LEN_1 * (j - 1) + OX_LEN - 1])
                                                  + bdCoef * phi[OY_LEN_1 * j + OX_LEN];
             }
 
@@ -311,34 +303,32 @@ double *solve(double &tme) {
                                                  - 1. / 6. * (prev_density[OY_LEN_1 * OX_LEN + i - 1] +
                                                               prev_density[OY_LEN_1 * OX_LEN + i + 1])
                                                  - 1. / 18. * (prev_density[OY_LEN_1 * (OX_LEN - 1) + i - 1] +
-                                                              prev_density[OY_LEN_1 * (OX_LEN - 1) + i + 1])
+                                                               prev_density[OY_LEN_1 * (OX_LEN - 1) + i + 1])
                                                  + bdCoef * phi[OY_LEN_1 * OX_LEN + i];
             }
 
-
             for (int i = 1; i < OX_LEN; ++i) {
                 for (int j = 1; j < OY_LEN; ++j) {
-                    density[OY_LEN_1 * i + j] = -1. / 9. * (
-                            1.5 * (
-                                    prev_density[OY_LEN_1 * i + j - 1] + // left
-                                    prev_density[OY_LEN_1 * (i - 1) + j] + // upper
-                                    prev_density[OY_LEN_1 * i + j + 1] + // right
-                                    prev_density[OY_LEN_1 * (i + 1) + j] // bottom
-                            ) + 0.25 * (
-                                    prev_density[OY_LEN_1 * (i + 1) + j + 1] + // bottom right
-                                    prev_density[OY_LEN_1 * (i + 1) + j - 1] + // bottom left
-                                    prev_density[OY_LEN_1 * (i - 1) + j - 1] + // upper right
-                                    prev_density[OY_LEN_1 * (i - 1) + j + 1] // upper left
-                            )) + phi[OY_LEN_1 * i + j] / (HX * HY);
+                    density[OY_LEN_1 * i + j] = -1. / 6. * (
+                            prev_density[OY_LEN_1 * i + j - 1] + // left
+                            prev_density[OY_LEN_1 * (i - 1) + j] + // upper
+                            prev_density[OY_LEN_1 * i + j + 1] + // right
+                            prev_density[OY_LEN_1 * (i + 1) + j] // bottom
+                    ) - 1. / 36. * (
+                            prev_density[OY_LEN_1 * (i + 1) + j + 1] + // bottom right
+                            prev_density[OY_LEN_1 * (i + 1) + j - 1] + // bottom left
+                            prev_density[OY_LEN_1 * (i - 1) + j - 1] + // upper right
+                            prev_density[OY_LEN_1 * (i - 1) + j + 1] // upper left
+                    ) + (16. * phi[OY_LEN_1 * i + j]) / (9. * HX * HY);
                 }
             }
             ++ic;
 
             maxErr = FLT_MIN;
-            for (int i = 1; i < OX_LEN; ++i) {
-                for (int j = 1; j < OY_LEN; ++j) {
+            for (int i = 0; i < OX_LEN_1; ++i) {
+                for (int j = 0; j < OY_LEN_1; ++j) {
                     double val = fabs(density[i * OY_LEN_1 + j] - prev_density[i * OY_LEN_1 + j]);
-                    if (val > maxErr) { maxErr = val; }
+                    if (val > maxErr) maxErr = val;
                 }
             }
 

@@ -22,7 +22,7 @@ TEST_F(FemFixture, test1) {
 
     double d = 0;
 
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 2; ++i) {
         switch (i) {
             case 0:
                 d = 50.;
