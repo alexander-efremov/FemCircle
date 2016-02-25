@@ -275,7 +275,7 @@ double *solve(double &tme) {
             if (ic == 0 && tl == 1)
                 print_matrix_to_file(OX_LEN_1, OY_LEN_1, prev_density, "prev_density_test.dat");
 
-// на 15 итерации на гр Г1 появляются странные числа. Откуда они вылазят?
+
             double bdCoef = 32. / (9. * HX * HY);
             // G1 left boundary
             for (int j = 1; j < OY_LEN; ++j) {
@@ -289,13 +289,8 @@ double *solve(double &tme) {
                                                           prev_density[OY_LEN_1 * (j - 1) +
                                                                        1])
                                             + bdCoef * phi[OY_LEN_1 * j + 0];
-//                if (j == 1 && density[OY_LEN_1 * j + 0] != 0.) {
-//                    printf("G1 %le ic = %d\n", density[OY_LEN_1 * j + 0], ic);
-//                }
             }
-//            if (ic == 0 && tl == 1)
-//                print_matrix_to_file(OX_LEN_1, OY_LEN_1, density, "density_test.dat");
-//
+
             // G2 bottom boundary
             for (int i = 1; i < OX_LEN; ++i) {
                 density[OY_LEN_1 * 0 + i] = -2. / 9. * prev_density[OY_LEN_1 * 1 + i]
@@ -359,7 +354,6 @@ double *solve(double &tme) {
             }
 
             memcpy(prev_density, density, XY_LEN * sizeof(double));
-
         }
     }
 
