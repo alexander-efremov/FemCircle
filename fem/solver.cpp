@@ -279,52 +279,52 @@ double *solve(double &tme) {
             double bdCoef = 32. / (9. * HX * HY);
             // G1 left boundary
             for (int j = 1; j < OY_LEN; ++j) {
-                density[OY_LEN_1 * j + 0] = -3. * prev_density[OY_LEN_1 * j + 1]
-                                            - 1.5
+                density[OY_LEN_1 * j + 0] = -2. / 9. * prev_density[OY_LEN_1 * j + 1]
+                                            - 1. / 6.
                                               * (prev_density[OY_LEN_1 * (j + 1) + 0]
                                                  + prev_density[OY_LEN_1 * (j - 1) + 0]
                                               )
-                                            - 0.5 * (prev_density[OY_LEN_1 * (j + 1) +
-                                                                  1] +
-                                                     prev_density[OY_LEN_1 * (j - 1) +
-                                                                  1])
+                                            - 1. / 18. * (prev_density[OY_LEN_1 * (j + 1) +
+                                                                       1] +
+                                                          prev_density[OY_LEN_1 * (j - 1) +
+                                                                       1])
                                             + bdCoef * phi[OY_LEN_1 * j + 0];
-                if (j == 1 && density[OY_LEN_1 * j + 0] != 0.) {
-                    printf("G1 %le ic = %d\n", density[OY_LEN_1 * j + 0], ic);
-                }
+//                if (j == 1 && density[OY_LEN_1 * j + 0] != 0.) {
+//                    printf("G1 %le ic = %d\n", density[OY_LEN_1 * j + 0], ic);
+//                }
             }
 //            if (ic == 0 && tl == 1)
 //                print_matrix_to_file(OX_LEN_1, OY_LEN_1, density, "density_test.dat");
 //
-//            // G2 bottom boundary
-//            for (int i = 1; i < OX_LEN; ++i) {
-//                density[OY_LEN_1 * 0 + i] = -3. * prev_density[OY_LEN_1 * 1 + i]
-//                                            - 1.5 *
-//                                              (prev_density[OY_LEN_1 * 0 + i + 1] + prev_density[OY_LEN_1 * 0 + i - 1])
-//                                            - 0.5 *
-//                                              (prev_density[OY_LEN_1 * 1 + i + 1] + prev_density[OY_LEN_1 * 1 + i - 1])
-//                                            + bdCoef * phi[OY_LEN_1 * 0 + i];
-//            }
-//
-//            // G3 right boundary
-//            for (int j = 1; j < OY_LEN; ++j) {
-//                density[OY_LEN_1 * j + OX_LEN] = -3. * prev_density[OY_LEN_1 * j + OX_LEN - 1]
-//                                                 - 1.5 * (prev_density[OY_LEN_1 * (j + 1) + OX_LEN] +
-//                                                          prev_density[OY_LEN_1 * (j - 1) + OX_LEN])
-//                                                 - 0.5 * (prev_density[OY_LEN_1 * (j + 1) + OX_LEN - 1] +
-//                                                          prev_density[OY_LEN_1 * (j - 1) + OX_LEN - 1])
-//                                                 + bdCoef * phi[OY_LEN_1 * j + OX_LEN];
-//            }
-//
-//            // G4 top boundary
-//            for (int i = 1; i < OX_LEN; ++i) {
-//                density[OY_LEN_1 * OX_LEN + i] = -3. * prev_density[OY_LEN_1 * (OX_LEN - 1) + i]
-//                                                 - 1.5 * (prev_density[OY_LEN_1 * OX_LEN + i - 1] +
-//                                                          prev_density[OY_LEN_1 * OX_LEN + i + 1])
-//                                                 - 0.5 * (prev_density[OY_LEN_1 * (OX_LEN - 1) + i - 1] +
-//                                                          prev_density[OY_LEN_1 * (OX_LEN - 1) + i + 1])
-//                                                 + bdCoef * phi[OY_LEN_1 * OX_LEN + i];
-//            }
+            // G2 bottom boundary
+            for (int i = 1; i < OX_LEN; ++i) {
+                density[OY_LEN_1 * 0 + i] = -2. / 9. * prev_density[OY_LEN_1 * 1 + i]
+                                            - 1. / 6. *
+                                              (prev_density[OY_LEN_1 * 0 + i + 1] + prev_density[OY_LEN_1 * 0 + i - 1])
+                                            - 1. / 18. *
+                                              (prev_density[OY_LEN_1 * 1 + i + 1] + prev_density[OY_LEN_1 * 1 + i - 1])
+                                            + bdCoef * phi[OY_LEN_1 * 0 + i];
+            }
+
+            // G3 right boundary
+            for (int j = 1; j < OY_LEN; ++j) {
+                density[OY_LEN_1 * j + OX_LEN] = -2. / 9. * prev_density[OY_LEN_1 * j + OX_LEN - 1]
+                                                 - 1. / 6. * (prev_density[OY_LEN_1 * (j + 1) + OX_LEN] +
+                                                              prev_density[OY_LEN_1 * (j - 1) + OX_LEN])
+                                                 - 1. / 18. * (prev_density[OY_LEN_1 * (j + 1) + OX_LEN - 1] +
+                                                              prev_density[OY_LEN_1 * (j - 1) + OX_LEN - 1])
+                                                 + bdCoef * phi[OY_LEN_1 * j + OX_LEN];
+            }
+
+            // G4 top boundary
+            for (int i = 1; i < OX_LEN; ++i) {
+                density[OY_LEN_1 * OX_LEN + i] = -2. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + i]
+                                                 - 1. / 6. * (prev_density[OY_LEN_1 * OX_LEN + i - 1] +
+                                                              prev_density[OY_LEN_1 * OX_LEN + i + 1])
+                                                 - 1. / 18. * (prev_density[OY_LEN_1 * (OX_LEN - 1) + i - 1] +
+                                                              prev_density[OY_LEN_1 * (OX_LEN - 1) + i + 1])
+                                                 + bdCoef * phi[OY_LEN_1 * OX_LEN + i];
+            }
 
 
             for (int i = 1; i < OX_LEN; ++i) {
