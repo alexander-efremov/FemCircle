@@ -278,21 +278,21 @@ double *solve(double &tme) {
 // на 15 итерации на гр Г1 появляются странные числа. Откуда они вылазят?
             double bdCoef = 32. / (9. * HX * HY);
             // G1 left boundary
-//            for (int j = 1; j < OY_LEN; ++j) {
-//                density[OY_LEN_1 * j + 0] = -3. * prev_density[OY_LEN_1 * j + 1]
-//                                            - 1.5
-//                                              * (prev_density[OY_LEN_1 * (j + 1) + 0]
-//                                                 + prev_density[OY_LEN_1 * (j - 1) + 0]
-//                                              )
-//                                            - 0.5 * (prev_density[OY_LEN_1 * (j + 1) +
-//                                                                  1] +
-//                                                     prev_density[OY_LEN_1 * (j - 1) +
-//                                                                  1])
-//                                            + bdCoef * phi[OY_LEN_1 * j + 0];
-//                if (j == 1 && density[OY_LEN_1 * j + 0] != 0.) {
-//                    printf("t %le ic = %d\n", density[OY_LEN_1 * j + 0], ic);
-//                }
-//            }
+            for (int j = 1; j < OY_LEN; ++j) {
+                density[OY_LEN_1 * j + 0] = -3. * prev_density[OY_LEN_1 * j + 1]
+                                            - 1.5
+                                              * (prev_density[OY_LEN_1 * (j + 1) + 0]
+                                                 + prev_density[OY_LEN_1 * (j - 1) + 0]
+                                              )
+                                            - 0.5 * (prev_density[OY_LEN_1 * (j + 1) +
+                                                                  1] +
+                                                     prev_density[OY_LEN_1 * (j - 1) +
+                                                                  1])
+                                            + bdCoef * phi[OY_LEN_1 * j + 0];
+                if (j == 1 && density[OY_LEN_1 * j + 0] != 0.) {
+                    printf("G1 %le ic = %d\n", density[OY_LEN_1 * j + 0], ic);
+                }
+            }
 //            if (ic == 0 && tl == 1)
 //                print_matrix_to_file(OX_LEN_1, OY_LEN_1, density, "density_test.dat");
 //
