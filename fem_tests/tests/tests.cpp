@@ -118,7 +118,6 @@ TEST_F(FemFixture, test2) {
         OUT_DENSITY = 0.;
         JAK_ITER_CNT = 3000;
 
-
         OX_LEN = (int) d;
         OY_LEN = (int) d;
         OX_LEN_1 = OX_LEN + 1;
@@ -133,7 +132,7 @@ TEST_F(FemFixture, test2) {
 
         TIME_STEP_CNT = (int) d;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
-        printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
+        printf("OX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve_2(tme);
         double *err = calc_error_2(HX, HY, density);
         print_surface_as_v("test2_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, density);
