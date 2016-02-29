@@ -87,7 +87,7 @@ TEST_F(FemFixture, test2) {
 
     double d = 0;
 
-    for (int i = 1; i < 2; ++i) {
+    for (int i = 3; i < 4; ++i) {
         switch (i) {
             case 0:
                 d = 50.;
@@ -118,7 +118,7 @@ TEST_F(FemFixture, test2) {
         R_SQ = 0.1 * 0.1;
         INN_DENSITY = 1.;
         OUT_DENSITY = 0.;
-        JAK_ITER_CNT = 3000;
+        JAK_ITER_CNT = 1000;
 
         OX_LEN = (int) d;
         OY_LEN = (int) d;
@@ -129,13 +129,16 @@ TEST_F(FemFixture, test2) {
 
         // (u, v) = (a, a)
         double a = 1;
-        TAU = std::min(HX/(2.*a), HY/(2.*a));
-        printf("\nTAU = %le\n", TAU);
+        U_VELOCITY = a;
+        V_VELOCITY = a;
+        TAU = std::min(HX/(3.*a), HY/(3.*a));
+        printf("\nHX = %le\n", HX);
+        printf("HY = %le\n", HY);
+        printf("TAU = %le\n", TAU);
 
-        TIME_STEP_CNT = (int) d;
+        TIME_STEP_CNT = (int) 1;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
-        U_VELOCITY = 0.05;
-        V_VELOCITY = 0.05;
+
         printf("OX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve_2(tme);
         double *err = calc_error_2(HX, HY, density);
