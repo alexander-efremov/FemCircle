@@ -21,7 +21,9 @@ inline static double analytical_solution_circle(double x, double y) {
 inline static double func_u(double time_value, double x, double y) { return U_VELOCITY; }
 
 inline static double func_v(double time_value, double x, double y) { return V_VELOCITY; }
-static  int f = 0;
+
+static int f = 0;
+
 static double get_phi(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;
     double y1 = 0.;
@@ -90,8 +92,10 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
     x4 = x4 - TAU * u;
     y4 = y4 - TAU * v;
 
-    int nx = OX_LEN/2.;
-    int ny = OY_LEN/2.;
+    int nx = 64;
+    int ny = 64;
+    int nx_1 = nx + 1;
+    int ny_1 = ny + 1;
 
     double x_step = 1. / nx;
     double y_step = 1. / ny;
@@ -99,8 +103,8 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
     // get right part for jakoby
     double phi = 0.;
     double mes = x_step * y_step;
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
+    for (int i = 0; i < nx_1; ++i) {
+        for (int j = 0; j < ny_1; ++j) {
 
             double ideal_x = i * x_step + x_step / 2.;
             double ideal_y = j * y_step + y_step / 2.;
