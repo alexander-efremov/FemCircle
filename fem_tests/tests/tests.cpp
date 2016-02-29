@@ -73,8 +73,10 @@ TEST_F(FemFixture, test1) {
         double *err = calc_error_1(HX, HY, density);
         double x0 = get_center_x_1();
         double y0 = get_center_y_1();
-        print_surface_as_v("test1_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, density);
-        print_surface_as_v("test1_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, err);
+        print_surface_as_v("test1_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                           V_VELOCITY, density);
+        print_surface_as_v("test1_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                           V_VELOCITY, err);
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
         double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
         printf("l1 %le \n", l1);
@@ -133,7 +135,7 @@ TEST_F(FemFixture, test2) {
         double a = 1;
         U_VELOCITY = a;
         V_VELOCITY = a;
-        TAU = std::min(HX/(3.*a), HY/(3.*a));
+        TAU = std::min(HX / (3. * a), HY / (3. * a));
         printf("\nHX = %le\n", HX);
         printf("HY = %le\n", HY);
         printf("TAU = %le\n", TAU);
@@ -146,8 +148,10 @@ TEST_F(FemFixture, test2) {
         double *err = calc_error_2(HX, HY, density);
         double x0 = get_center_x_2();
         double y0 = get_center_y_2();
-        print_surface_as_v("test2_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, density);
-        print_surface_as_v("test2_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, err);
+        print_surface_as_v("test2_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                           V_VELOCITY, density);
+        print_surface_as_v("test2_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                           V_VELOCITY, err);
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
         double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
         printf("l1 %le \n", l1);
@@ -211,8 +215,10 @@ TEST_F(FemFixture, test3) {
         double *err = calc_error_3(HX, HY, density);
         double x0 = get_center_x_3();
         double y0 = get_center_y_3();
-        print_surface_as_v("test3_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, density);
-        print_surface_as_v("test3_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, err);
+        print_surface_as_v("test3_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                           V_VELOCITY, density);
+        print_surface_as_v("test3_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                           V_VELOCITY, err);
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
         double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
         printf("l1 %le \n", l1);
