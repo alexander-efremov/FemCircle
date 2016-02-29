@@ -28,7 +28,6 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
     double x4 = 0.;
     double y4 = 0.;
 
-    // 1) какой порядок обхода точек? Сейчас обход с нижней левой против часовой
     if (ii > 0 && ii < OX_LEN && jj > 0 && jj < OY_LEN) {
         x1 = A + ii * HX - HX / 2.;
         y1 = C + jj * HY - HY / 2.;
@@ -39,26 +38,6 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         x4 = A + ii * HX - HX / 2.;
         y4 = C + jj * HY + HY / 2.;
     }
-    else if (ii == 0 && jj == 0) { // point (0,0) omega_{i,j}
-        x1 = A;
-        y1 = C;
-        x2 = A + HX / 2.;
-        y2 = C;
-        x3 = A + HX / 2.;
-        y3 = C + HY / 2.;
-        x4 = A;
-        y4 = C + HY / 2.;
-    }
-    else if (ii == OX_LEN && jj == 0) { // point (1,0) omega_{i-1,j}
-        x1 = B - HX / 2.;
-        y1 = C;
-        x2 = B;
-        y2 = C;
-        x3 = B;
-        y3 = C + HY / 2.;
-        x4 = B - HX / 2.;
-        y4 = C + HY / 2.;
-    }
     else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
         x1 = A;
         y1 = D - HY / 2.;
@@ -68,36 +47,6 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         y3 = D;
         x4 = A;
         y4 = D;
-    }
-    else if (ii == 0 && jj == OY_LEN) { // point (0,1)  omega_{i,j-1}
-        x1 = B - HX / 2.;
-        y1 = D - HY / 2.;
-        x2 = B;
-        y2 = D - HY / 2.;
-        x3 = B;
-        y3 = D;
-        x4 = B - HX / 2.;
-        y4 = D;
-    }
-    else if (ii == 0 && jj > 0 && jj < OY_LEN) {  // G1 left boundary
-        x1 = A;
-        y1 = C + jj * HY - HY / 2.;
-        x2 = A + HX / 2.;
-        y2 = C + jj * HY - HY / 2.;
-        x3 = A + HX / 2.;
-        y3 = C + jj * HY + HY / 2.;
-        x4 = A;
-        y4 = C + jj * HY + HY / 2.;
-    }
-    else if (jj == 0 && ii > 0 && ii < OX_LEN) { // G2 bottom boundary
-        x1 = A + ii * HX - HX / 2.;
-        y1 = C;
-        x2 = A + ii * HX + HX / 2.;
-        y2 = C;
-        x3 = A + ii * HX + HX / 2.;
-        y3 = C + HY / 2.;
-        x4 = A + ii * HX - HX / 2.;
-        y4 = C + HY / 2.;
     }
     else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G3 right boundary
         x1 = B - HX / 2.;
@@ -199,17 +148,13 @@ double *solve_2(double &tme) {
     // fill G_in (G1 union G2) by 0
     for (int i = 0; i < OX_LEN_1; ++i) {
         for (int j = 0; j < OY_LEN_1; ++j) {
-            if (i == 0 && j >= 0 && j < OY_LEN_1) {
-                // G1 left boundary
-                density[OY_LEN_1 * i + j] = 0.;
-            }
-            else if (j == 0 && i >= 0 && i < OX_LEN_1) {
-                // G2 bottom boundary
-                density[OY_LEN_1 * i + j] = 0.;
-            }
-            else {
+            if (i == 0 && j >= 0 && j < OY_LEN_1)
+                density[OY_LEN_1 * i + j] = 0.; // G1 left boundary
+            else if (j == 0 && i >= 0 && i < OX_LEN_1)
+
+                density[OY_LEN_1 * i + j] = 0.; // G2 bottom boundary
+            else
                 density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
-            }
         }
     }
 
@@ -218,17 +163,12 @@ double *solve_2(double &tme) {
         // with usage of prev_density we calculate phi function values
         for (int i = 0; i < OX_LEN_1; ++i) {
             for (int j = 0; j < OY_LEN_1; ++j) {
-                if (i == 0 && j >= 0 && j < OY_LEN_1) {
-                    // G1 left boundary
+                if (i == 0 && j >= 0 && j < OY_LEN_1)
+                    phi[OY_LEN_1 * i + j] = 0.; // G1 left boundary
+                else if (j == 0 && i >= 0 && i < OX_LEN_1) // G2 bottom boundary
                     phi[OY_LEN_1 * i + j] = 0.;
-                }
-                else if (j == 0 && i >= 0 && i < OX_LEN_1) {
-                    // G2 bottom boundary
-                    phi[OY_LEN_1 * i + j] = 0.;
-                }
-                else {
+                else
                     phi[OY_LEN_1 * i + j] = get_phi(i, j, density, TAU * tl);
-                }
             }
         }
 
