@@ -21,7 +21,7 @@ inline static double analytical_solution_circle(double x, double y) {
 inline static double func_u(double time_value, double x, double y) { return U_VELOCITY; }
 
 inline static double func_v(double time_value, double x, double y) { return V_VELOCITY; }
-
+static  int f = 0;
 static double get_phi(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;
     double y1 = 0.;
@@ -90,8 +90,9 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
     x4 = x4 - TAU * u;
     y4 = y4 - TAU * v;
 
-    int nx = 10;
-    int ny = 10;
+    int nx = OX_LEN/2.;
+    int ny = OY_LEN/2.;
+
     double x_step = 1. / nx;
     double y_step = 1. / ny;
 
