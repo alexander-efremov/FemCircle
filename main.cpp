@@ -50,8 +50,8 @@ int main() {
         TIME_STEP_CNT = (int) d;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
         printf("OX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
-        double *density = solve(tme);
-        double *err = calc_error(HX, HY, density);
+        double *density = solve_1(tme);
+        double *err = calc_error_1(HX, HY, density);
         print_surface_as_v("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, density);
         print_surface_as_v("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, err);
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
