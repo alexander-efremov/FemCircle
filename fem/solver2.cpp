@@ -14,9 +14,9 @@ inline static double analytical_solution_circle(double x, double y) {
     return OUT_DENSITY;
 }
 
-inline static double func_u(double time_value, double x, double y) { return 0; }
+inline static double func_u(double time_value, double x, double y) { return U_VELOCITY; }
 
-inline static double func_v(double time_value, double x, double y) { return 0; }
+inline static double func_v(double time_value, double x, double y) { return V_VELOCITY; }
 
 static double get_phi(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;

@@ -19,6 +19,8 @@ extern double HY;
 extern double R_SQ; // radius of circle in second power
 extern double INN_DENSITY; // density inside circle
 extern double OUT_DENSITY; // density out of circle boundary
+extern double U_VELOCITY; // u velocity
+extern double V_VELOCITY; // v velocity
 
 #define EPS 10e-8
 

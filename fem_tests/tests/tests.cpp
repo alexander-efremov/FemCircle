@@ -66,6 +66,8 @@ TEST_F(FemFixture, test1) {
         HY = (D - C) / OY_LEN;
         TIME_STEP_CNT = (int) d;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
+        U_VELOCITY = 0.;
+        V_VELOCITY = 0.;
         printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve_1(tme);
         double *err = calc_error_1(HX, HY, density);
@@ -132,6 +134,8 @@ TEST_F(FemFixture, test2) {
 
         TIME_STEP_CNT = (int) d;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
+        U_VELOCITY = 0.05;
+        V_VELOCITY = 0.05;
         printf("OX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve_2(tme);
         double *err = calc_error_2(HX, HY, density);
@@ -193,6 +197,8 @@ TEST_F(FemFixture, test3) {
         HY = (D - C) / OY_LEN;
         TIME_STEP_CNT = (int) d;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
+        U_VELOCITY = 0.0;
+        V_VELOCITY = 0.0;
         printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve_3(tme);
         double *err = calc_error_3(HX, HY, density);

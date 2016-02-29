@@ -24,3 +24,5 @@ double HY = 0.;
 double R_SQ = 0.;
 double INN_DENSITY = 0.;
 double OUT_DENSITY = 0.;
+double U_VELOCITY = 0.;
+double V_VELOCITY = 0.;
