@@ -71,8 +71,10 @@ TEST_F(FemFixture, test1) {
         printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve_1(tme);
         double *err = calc_error_1(HX, HY, density);
-        print_surface_as_v("test1_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, density);
-        print_surface_as_v("test1_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, err);
+        double x0 = get_center_x_1();
+        double y0 = get_center_y_1();
+        print_surface_as_v("test1_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, density);
+        print_surface_as_v("test1_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, err);
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
         double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
         printf("l1 %le \n", l1);
@@ -87,7 +89,7 @@ TEST_F(FemFixture, test2) {
 
     double d = 0;
 
-    for (int i = 3; i < 4; ++i) {
+    for (int i = 2; i < 3; ++i) {
         switch (i) {
             case 0:
                 d = 50.;
@@ -142,8 +144,10 @@ TEST_F(FemFixture, test2) {
         printf("OX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve_2(tme);
         double *err = calc_error_2(HX, HY, density);
-        print_surface_as_v("test2_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, density);
-        print_surface_as_v("test2_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, err);
+        double x0 = get_center_x_2();
+        double y0 = get_center_y_2();
+        print_surface_as_v("test2_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, density);
+        print_surface_as_v("test2_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, err);
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
         double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
         printf("l1 %le \n", l1);
@@ -205,8 +209,10 @@ TEST_F(FemFixture, test3) {
         printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve_3(tme);
         double *err = calc_error_3(HX, HY, density);
-        print_surface_as_v("test3_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, density);
-        print_surface_as_v("test3_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, err);
+        double x0 = get_center_x_3();
+        double y0 = get_center_y_3();
+        print_surface_as_v("test3_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, density);
+        print_surface_as_v("test3_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, err);
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
         double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
         printf("l1 %le \n", l1);

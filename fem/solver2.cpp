@@ -6,9 +6,13 @@
 #include "solver2.h"
 #include "timer.h"
 
+double get_center_x_2() { return A + 0.3; }
+
+double get_center_y_2() { return C + 0.3; }
+
 inline static double analytical_solution_circle(double x, double y) {
-    double x0 = 0.3;
-    double y0 = 0.3;
+    double x0 = get_center_x_2();
+    double y0 = get_center_y_2();
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
     if (value <= R_SQ) return INN_DENSITY;
     return OUT_DENSITY;

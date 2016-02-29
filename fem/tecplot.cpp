@@ -16,10 +16,8 @@ void print_surface_as_v1(const char *filename, int ox_len, int oy_len,
 }
 
 bool print_surface_as_v(const char *filename, int ox_len, int oy_len,
-                        double hx, double hy, int t, double a, double c, double *data) {
+                        double hx, double hy, int t, double a, double c, double x0, double y0, double *data) {
     char name[80];
-    double x0 = a + ox_len * hx / 2.;
-    double y0 = c + oy_len * hy / 2.;
     sprintf(name, "%s_nx=%d_ny=%d_hx=%f_hy=%f_t=%d_x0=%f_y0=%f.dat",
             filename, ox_len + 1, oy_len + 1, hx, hy, t, x0, y0);
     print_surface_as_v1(name, ox_len, oy_len, hx, hy, data);
