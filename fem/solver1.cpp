@@ -3,7 +3,7 @@
 #include <string.h>
 #include <float.h>
 #include "consts.h"
-#include "solver.h"
+#include "solver1.h"
 #include <algorithm>
 
 #ifdef WIN32
@@ -207,7 +207,7 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
     return phi;
 }
 
-double *solve(double &tme) {
+double *solve_1(double &tme) {
     StartTimer();
 
     fflush(stdout);
@@ -342,7 +342,7 @@ double *solve(double &tme) {
     return density;
 }
 
-double *calc_error(double hx, double hy, double *solution) {
+double *calc_error_1(double hx, double hy, double *solution) {
     double *res = new double[XY_LEN];
     for (int i = 0; i < OX_LEN_1; i++)
         for (int j = 0; j < OY_LEN_1; j++)

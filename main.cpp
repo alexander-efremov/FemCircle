@@ -2,7 +2,7 @@
 #include "utils.h"
 #include "tecplot.h"
 #include "consts.h"
-#include "solver.h"
+#include "solver1.h"
 
 int main() {
     double tme = 0.;
