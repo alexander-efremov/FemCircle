@@ -226,12 +226,11 @@ double *solve_2(double &tme) {
             ++ic;
 
             maxErr = FLT_MIN;
-            for (int i = 0; i < OX_LEN_1; ++i) {
+            for (int i = 0; i < OX_LEN_1; ++i)
                 for (int j = 0; j < OY_LEN_1; ++j) {
                     double val = fabs(density[i * OY_LEN_1 + j] - prev_density[i * OY_LEN_1 + j]);
                     if (val > maxErr) maxErr = val;
                 }
-            }
 
             memcpy(prev_density, density, XY_LEN * sizeof(double));
         }
