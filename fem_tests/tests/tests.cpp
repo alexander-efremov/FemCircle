@@ -85,7 +85,7 @@ TEST_F(FemFixture, test2) {
 
     double d = 0;
 
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 1; i < 2; ++i) {
         switch (i) {
             case 0:
                 d = 50.;
@@ -113,18 +113,24 @@ TEST_F(FemFixture, test2) {
         B = 1.;
         C = 0.;
         D = 1.;
-        R_SQ = 0.25 * 0.25;
+        R_SQ = 0.1 * 0.1;
         INN_DENSITY = 1.;
         OUT_DENSITY = 0.;
         JAK_ITER_CNT = 3000;
 
-        TAU = 1. / d;
+
         OX_LEN = (int) d;
         OY_LEN = (int) d;
         OX_LEN_1 = OX_LEN + 1;
         OY_LEN_1 = OY_LEN + 1;
         HX = (B - A) / OX_LEN;
         HY = (D - C) / OY_LEN;
+
+        // (u, v) = (a, a)
+        double a = 1;
+        TAU = std::min(HX/(2.*a), HY/(2.*a));
+        printf("\nTAU = %le\n", TAU);
+
         TIME_STEP_CNT = (int) d;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
         printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
