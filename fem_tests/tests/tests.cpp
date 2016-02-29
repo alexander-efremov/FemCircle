@@ -91,7 +91,7 @@ TEST_F(FemFixture, test2) {
 
     double d = 0;
 
-    for (int i = 2; i < 3; ++i) {
+    for (int i = 2; i < 4; ++i) {
         switch (i) {
             case 0:
                 d = 50.;
@@ -122,7 +122,6 @@ TEST_F(FemFixture, test2) {
         R_SQ = 0.1 * 0.1;
         INN_DENSITY = 1.;
         OUT_DENSITY = 0.;
-        JAK_ITER_CNT = 1000;
 
         OX_LEN = (int) d;
         OY_LEN = (int) d;

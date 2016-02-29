@@ -181,7 +181,7 @@ double *solve_2(double &tme) {
 
         int ic = 0;
         double maxErr = FLT_MAX;
-        while (maxErr > EPS && ic < JAK_ITER_CNT) {
+        while (maxErr > EPS) {
             double rpCoef = 64. / (9. * HX * HY);
 
             // point 1,1
@@ -238,6 +238,7 @@ double *solve_2(double &tme) {
 
             memcpy(prev_density, density, XY_LEN * sizeof(double));
         }
+        printf("Iteration count = %d\n", ic);
     }
 
     delete[] prev_density;
