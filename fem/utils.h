@@ -168,7 +168,6 @@ inline bool is_empty_file(FILE *f) {
     long savedOffset = ftell(f);
     fseek(f, 0, SEEK_END);
     if (ftell(f) == 0) {
-        fclose(f);
         return true;
     }
     fseek(f, savedOffset, SEEK_SET);
@@ -177,17 +176,17 @@ inline bool is_empty_file(FILE *f) {
 
 inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1) {
     FILE *file;
-    const char* filename = "statistics.dat";
+    const char* filename = "/home/jane/ClionProjects/fem_circle/statistics.dat";
     file = fopen(filename, "a");
     if (file == NULL) {
         perror("Error opening file.");
         return;
     }
     if (is_empty_file(file)) {
-        fprintf(file, "%s\t%s\t%s\t%s\t%s", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR");
+        fprintf(file, "%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR");
     }
 
-    fprintf(file, "%d\t%d\t%le\t%d\t%le\t", ox_len, oy_len, tau, iterCount, err_l1);
+    fprintf(file, "%d\t%d\t%le\t%d\t%le\n", ox_len, oy_len, tau, iterCount, err_l1);
 
     fclose(file);
 }

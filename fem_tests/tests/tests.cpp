@@ -20,6 +20,19 @@ public:
     }
 };
 
+class FemFixture1 : public ::testing::Test {
+protected:
+    virtual void TearDown() {
+    }
+
+    virtual void SetUp() {
+    }
+
+public:
+    FemFixture1() : Test() {
+    }
+};
+
 TEST_F(FemFixture, test1) {
     double tme = 0.;
 
@@ -161,7 +174,7 @@ TEST_F(FemFixture, test2) {
     }
 }
 
-TEST_F(FemFixture, test2_1) {
+TEST_F(FemFixture1, test2_1) {
     double tme = 0.;
     A = 0.;
     B = 1.;
@@ -208,7 +221,7 @@ TEST_F(FemFixture, test2_1) {
     delete[] err;
 }
 
-TEST_F(FemFixture, test2_2) {
+TEST_F(FemFixture1, test2_2) {
     double tme = 0.;
 
     double d = 0;
