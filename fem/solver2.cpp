@@ -168,7 +168,8 @@ double *solve_2(double &tme) {
     }
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
-
+        printf("Current tl = %d\n", tl);
+        fflush(stdout);
         // with usage of prev_density we calculate phi function values
         for (int i = 0; i < OX_LEN_1; ++i) {
             for (int j = 0; j < OY_LEN_1; ++j) {
