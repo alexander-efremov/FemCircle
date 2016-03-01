@@ -5,6 +5,7 @@
 #include "consts.h"
 #include "solver2.h"
 #include "timer.h"
+#include "utils.h"
 
 double get_center_x_2() { return A + 0.3; }
 
@@ -143,6 +144,7 @@ double *solve_2(double &tme) {
 
     fflush(stdout);
 
+    int ic = 0;
     double *phi = new double[XY_LEN];
     double *prev_density = new double[XY_LEN];
     double *density = new double[XY_LEN];
@@ -160,7 +162,6 @@ double *solve_2(double &tme) {
             if (i == 0 && j >= 0 && j < OY_LEN_1)
                 density[OY_LEN_1 * i + j] = 0.; // G1 left boundary
             else if (j == 0 && i >= 0 && i < OX_LEN_1)
-
                 density[OY_LEN_1 * i + j] = 0.; // G2 bottom boundary
             else
                 density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
@@ -168,8 +169,6 @@ double *solve_2(double &tme) {
     }
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
-        printf("Current tl = %d\n", tl);
-        fflush(stdout);
         // with usage of prev_density we calculate phi function values
         for (int i = 0; i < OX_LEN_1; ++i) {
             for (int j = 0; j < OY_LEN_1; ++j) {
@@ -185,7 +184,7 @@ double *solve_2(double &tme) {
 //        if (tl == TIME_STEP_CNT)
 //            print_surface_as_v("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, phi);
 
-        int ic = 0;
+        ic = 0;
         double maxErr = FLT_MAX;
         while (maxErr > EPS) {
             double rpCoef = 64. / (9. * HX * HY);
@@ -244,11 +243,15 @@ double *solve_2(double &tme) {
 
             memcpy(prev_density, density, XY_LEN * sizeof(double));
         }
-        printf("Iteration count = %d\n", ic);
+        printf("Current tl = %d Iteration count = %d\n", tl, ic);
+        fflush(stdout);
     }
-
+    double *err = calc_error_2(HX, HY, density);
+    double l1_err = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
+    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err);
     delete[] prev_density;
     delete[] phi;
+    delete[] err;
     tme = GetTimer() / 1000;
     return density;
 }
