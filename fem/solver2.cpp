@@ -46,13 +46,13 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         y4 = C + jj * HY + HY / 2.;
     }
     else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
-        x1 = A;
+        x1 = B - HX / 2.;
         y1 = D - HY / 2.;
-        x2 = A + HX / 2.;
+        x2 = B;
         y2 = D - HY / 2.;
-        x3 = A + HX / 2.;
+        x3 = B;
         y3 = D;
-        x4 = A;
+        x4 = B - HX / 2.;
         y4 = D;
     }
     else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G3 right boundary
