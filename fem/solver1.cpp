@@ -32,96 +32,124 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
     double x4 = 0.;
     double y4 = 0.;
 
-    // 1) какой порядок обхода точек? Сейчас обход с нижней левой против часовой
+    //  обход с нижней левой против часовой
     if (ii > 0 && ii < OX_LEN && jj > 0 && jj < OY_LEN) {
-        x1 = A + ii * HX - HX / 2.;
+        // p1
+        x1 = A + ii * HX + HX / 2.;
         y1 = C + jj * HY - HY / 2.;
+        // p2
         x2 = A + ii * HX + HX / 2.;
-        y2 = C + jj * HY - HY / 2.;
-        x3 = A + ii * HX + HX / 2.;
+        y2 = C + jj * HY + HY / 2.;
+        // p3
+        x3 = A + ii * HX - HX / 2.;
         y3 = C + jj * HY + HY / 2.;
+        // p4
         x4 = A + ii * HX - HX / 2.;
         y4 = C + jj * HY + HY / 2.;
     }
-    else if (ii == 0 && jj == 0) { // point (0,0) omega_{i,j}
-        x1 = A;
+    else if (ii == OX_LEN && jj == 0) { // point (0,0) omega_{i,j}
+        // p1
+        x1 = B;
         y1 = C;
+        // p2
+        x2 = B;
+        y2 = C + HY / 2.;
+        // p3
+        x3 = B - HX / 2.;
+        y3 = C + HY / 2.;
+        // p4
+        x4 = B - HX / 2.;
+        y4 = C;
+    }
+    else if (ii == OX_LEN && jj == OY_LEN) { // point (1,0) omega_{i-1,j}
+        x1 = B;
+        y1 = C - HY / 2.;
+        x2 = B;
+        y2 = D;
+        x3 = B - HX / 2.;
+        y3 = D;
+        x4 = B - HX / 2.;
+        y4 = C - HY / 2.;
+    }
+    else if (ii == 0 && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
+        // p1
+        x1 = A + HX / 2.;
+        y1 = D - HY / 2.;
+        // p2
         x2 = A + HX / 2.;
-        y2 = C;
-        x3 = A + HX / 2.;
-        y3 = C + HY / 2.;
+        y2 = D;
+        // p3
+        x3 = A;
+        y3 = D;
+        // p4
         x4 = A;
-        y4 = C + HY / 2.;
-    }
-    else if (ii == OX_LEN && jj == 0) { // point (1,0) omega_{i-1,j}
-        x1 = B - HX / 2.;
-        y1 = C;
-        x2 = B;
-        y2 = C;
-        x3 = B;
-        y3 = C + HY / 2.;
-        x4 = B - HX / 2.;
-        y4 = C + HY / 2.;
-    }
-    else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
-        x1 = B - HX / 2.;
-        y1 = C + jj * HY - HY / 2.;
-        x2 = B;
-        y2 = C + jj * HY - HY / 2.;
-        x3 = B;
-        y3 = C + jj * HY + HY / 2.;
-        x4 = B - HX / 2.;
-        y4 = C + jj * HY + HY / 2.;
+        y4 = D - HY / 2.;
     }
     else if (ii == 0 && jj == OY_LEN) { // point (0,1)  omega_{i,j-1}
-        x1 = B - HX / 2.;
-        y1 = D - HY / 2.;
-        x2 = B;
-        y2 = D - HY / 2.;
-        x3 = B;
-        y3 = D;
-        x4 = B - HX / 2.;
-        y4 = D;
-    }
-    else if (ii == 0 && jj > 0 && jj < OY_LEN) {  // G1 left boundary
-        x1 = A;
-        y1 = C + jj * HY - HY / 2.;
-        x2 = A + HX / 2.;
-        y2 = C + jj * HY - HY / 2.;
-        x3 = A + HX / 2.;
-        y3 = C + jj * HY + HY / 2.;
-        x4 = A;
-        y4 = C + jj * HY + HY / 2.;
-    }
-    else if (jj == 0 && ii > 0 && ii < OX_LEN) { // G2 bottom boundary
-        x1 = A + ii * HX - HX / 2.;
+        // p1
+        x1 = A + HX / 2.;
         y1 = C;
-        x2 = A + ii * HX + HX / 2.;
-        y2 = C;
-        x3 = A + ii * HX + HX / 2.;
+        // p2
+        x2 = B + HX / 2.;
+        y2 = C + HY / 2.;
+        // p3
+        x3 = A;
         y3 = C + HY / 2.;
-        x4 = A + ii * HX - HX / 2.;
-        y4 = C + HY / 2.;
+        // p4
+        x4 = A;
+        y4 = C;
     }
-    else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G3 right boundary
-        x1 = B - HX / 2.;
+    else if (jj == 0 && ii > 0 && ii < OX_LEN) {  // G1 left boundary
+        // p1
+        x1 = A + ii * HX + HX / 2.;
+        y1 = C;
+        // p2
+        x2 = A + ii * HX + HX / 2.;
+        y2 = C + HY / 2.;
+        // p3
+        x3 = A + ii * HX - HX / 2.;
+        y3 = C + HY / 2.;
+        // p4
+        x4 = A + ii * HX - HX / 2.;
+        y4 = C;
+    }
+    else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G2 bottom boundary
+        x1 = B;
         y1 = C + jj * HY - HY / 2.;
         x2 = B;
-        y2 = C + jj * HY - HY / 2.;
-        x3 = B;
+        y2 = C + jj * HY + HY / 2.;
+        x3 = B - HX / 2.;
         y3 = C + jj * HY + HY / 2.;
         x4 = B - HX / 2.;
-        y4 = C + jj * HY + HY / 2.;
+        y4 = C + jj * HY - HY / 2.;
     }
-    else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G4 top boundary
-        x1 = A + ii * HX - HX / 2.;
+    else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G3 right boundary
+        // p1
+        x1 = B + ii * HX + HX / 2.;
         y1 = D - HY / 2.;
+        // p2
         x2 = A + ii * HX + HX / 2.;
-        y2 = D - HY / 2.;
-        x3 = A + ii * HX + HX / 2.;
+        y2 = D;
+        //p3
+        x3 = A + ii * HX - HX / 2.;
         y3 = D;
+        //p4
         x4 = A + ii * HX - HX / 2.;
-        y4 = D;
+        y4 = D - HY / 2.;
+    }
+    else if (ii == 0 && jj > 0 && jj < OY_LEN) { // G4 top boundary
+        // p1
+        x1 = A + HX / 2.;
+        y1 = C + jj * HY - HY / 2.;
+        // p2
+        x2 = A + HX / 2.;
+        y2 = C + jj * HY + HY / 2.;
+        // p3
+        x3 = A;
+        y3 = C + jj * HY + HY / 2.;
+        // p4
+        x4 = A;
+        y4 = C + jj * HY - HY / 2.;
     }
 
     double u = func_u(time_value, x1, y1);
@@ -208,14 +236,11 @@ double *solve_1(double &tme) {
             for (int j = 0; j < OY_LEN_1; ++j)
                 phi[OY_LEN_1 * i + j] = get_phi(i, j, density, TAU * tl);
 
-//        if (tl == TIME_STEP_CNT)
-//            print_surface_as_v("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, phi);
-
         int ic = 0;
         double maxErr = FLT_MAX;
         while (maxErr > EPS && ic < JAK_ITER_CNT) {
             double rpCoef = 64. / (9. * HX * HY);
-
+            // ДОПИСАТЬ НА НОВЫЕ ИНДЕКСЫ!!!!!
             // point 0,0
             density[OY_LEN_1 * 0 + 0] = -1. / 3. * (prev_density[OY_LEN_1 * 0 + 1] + prev_density[OY_LEN_1 * 1 + 0]) -
                                         1. / 9. * prev_density[OY_LEN_1 * 1 + 1]
@@ -243,22 +268,24 @@ double *solve_1(double &tme) {
             // G1 left boundary
             for (int i = 1; i < OX_LEN; ++i) {
                 density[OY_LEN_1 * i] = -2. / 9. * prev_density[OY_LEN_1 * i + 1]
-                                            - 1. / 6.
-                                              * (prev_density[OY_LEN_1 * (i + 1)]
-                                                 + prev_density[OY_LEN_1 * (i - 1)])
-                                            - 1. / 18. * (prev_density[OY_LEN_1 * (i + 1) + 1] +
-                                                          prev_density[OY_LEN_1 * (i - 1) + 1])
-                                            + bdCoef * phi[OY_LEN_1 * i];
+                                        - 1. / 6.
+                                          * (prev_density[OY_LEN_1 * (i + 1)]
+                                             + prev_density[OY_LEN_1 * (i - 1)])
+                                        - 1. / 18. * (prev_density[OY_LEN_1 * (i + 1) + 1] +
+                                                      prev_density[OY_LEN_1 * (i - 1) + 1])
+                                        + bdCoef * phi[OY_LEN_1 * i];
             }
 
             // G2 bottom boundary
             for (int j = 1; j < OY_LEN; ++j) {
-                density[OY_LEN_1 * OX_LEN + j] = -2. / 9. * prev_density[OY_LEN_1 * (OX_LEN-1) + j]
-                                            - 1. / 6. *
-                                              (prev_density[OY_LEN_1 * OX_LEN + j + 1] + prev_density[OY_LEN_1 * OX_LEN + j - 1])
-                                            - 1. / 18. *
-                                              (prev_density[OY_LEN_1 * (OX_LEN-1) + j + 1] + prev_density[OY_LEN_1 * (OX_LEN-1) + j - 1])
-                                            + bdCoef * phi[OY_LEN_1 * OX_LEN + j];
+                density[OY_LEN_1 * OX_LEN + j] = -2. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + j]
+                                                 - 1. / 6. *
+                                                   (prev_density[OY_LEN_1 * OX_LEN + j + 1] +
+                                                    prev_density[OY_LEN_1 * OX_LEN + j - 1])
+                                                 - 1. / 18. *
+                                                   (prev_density[OY_LEN_1 * (OX_LEN - 1) + j + 1] +
+                                                    prev_density[OY_LEN_1 * (OX_LEN - 1) + j - 1])
+                                                 + bdCoef * phi[OY_LEN_1 * OX_LEN + j];
             }
 
             // G3 right boundary
@@ -274,11 +301,11 @@ double *solve_1(double &tme) {
             // G4 top boundary
             for (int j = 1; j < OY_LEN; ++j) {
                 density[j] = -2. / 9. * prev_density[OY_LEN_1 + j]
-                                                 - 1. / 6. * (prev_density[j - 1] +
-                                                              prev_density[j + 1])
-                                                 - 1. / 18. * (prev_density[OY_LEN_1 + j - 1] +
-                                                               prev_density[OY_LEN_1 + j + 1])
-                                                 + bdCoef * phi[j];
+                             - 1. / 6. * (prev_density[j - 1] +
+                                          prev_density[j + 1])
+                             - 1. / 18. * (prev_density[OY_LEN_1 + j - 1] +
+                                           prev_density[OY_LEN_1 + j + 1])
+                             + bdCoef * phi[j];
             }
 
             for (int i = 1; i < OX_LEN; ++i) {

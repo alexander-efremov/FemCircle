@@ -77,7 +77,7 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         x4 = A + ii * HX - HX / 2.;
         y4 = D - HY / 2.;
     }
-    else if (jj == 0 && ii > 0 && ii < OX_LEN) { // G4 top boundary
+    else if (ii == 0 && jj > 0 && jj < OY_LEN) { // G4 top boundary
         // p1
         x1 = A + HX / 2.;
         y1 = C + jj * HY - HY / 2.;
