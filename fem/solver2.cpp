@@ -160,11 +160,11 @@ double *solve_2(double &tme) {
     for (int i = 0; i < OX_LEN_1; ++i) {
         for (int j = 0; j < OY_LEN_1; ++j) {
             if (i == 0 && j >= 0 && j < OY_LEN_1)
-                density[OY_LEN_1 * i + j] = 0.; // G1 left boundary
+                prev_density[OY_LEN_1 * i + j] = 0.; // G1 left boundary
             else if (j == 0 && i >= 0 && i < OX_LEN_1)
-                density[OY_LEN_1 * i + j] = 0.; // G2 bottom boundary
+                prev_density[OY_LEN_1 * i + j] = 0.; // G2 bottom boundary
             else
-                density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
+                prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
         }
     }
 
@@ -177,7 +177,7 @@ double *solve_2(double &tme) {
                 else if (j == 0 && i >= 0 && i < OX_LEN_1) // G2 bottom boundary
                     phi[OY_LEN_1 * i + j] = 0.;
                 else
-                    phi[OY_LEN_1 * i + j] = get_phi(i, j, density, TAU * tl);
+                    phi[OY_LEN_1 * i + j] = get_phi(i, j, prev_density, TAU * tl);
             }
         }
 
