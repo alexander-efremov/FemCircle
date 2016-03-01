@@ -163,7 +163,6 @@ TEST_F(FemFixture, test2) {
 
 TEST_F(FemFixture, test2_1) {
     double tme = 0.;
-    double d = 200.;
     A = 0.;
     B = 1.;
     C = 0.;
@@ -172,8 +171,8 @@ TEST_F(FemFixture, test2_1) {
     INN_DENSITY = 1.;
     OUT_DENSITY = 0.;
 
-    OX_LEN = (int) d;
-    OY_LEN = (int) d;
+    OX_LEN = (int) 200;
+    OY_LEN = (int) 200;
     OX_LEN_1 = OX_LEN + 1;
     OY_LEN_1 = OY_LEN + 1;
     HX = (B - A) / OX_LEN;
@@ -181,8 +180,8 @@ TEST_F(FemFixture, test2_1) {
 
     U_VELOCITY = 1.;
     V_VELOCITY = 1.;
-    TAU = 2 * 10e-3;
-    TIME_STEP_CNT = (int) (1 - get_center_x_2() - get_center_y_2());
+    TAU = 2 * 1e-3;
+    TIME_STEP_CNT = (int) ((1 - get_center_x_2() - get_center_y_2()) / TAU);
     XY_LEN = OX_LEN_1 * OY_LEN_1;
 
     printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
@@ -213,7 +212,6 @@ TEST_F(FemFixture, test2_2) {
     double tme = 0.;
 
     double d = 0;
-
     for (int i = 0; i < 4; ++i) {
         switch (i) {
             case 0:
@@ -249,8 +247,8 @@ TEST_F(FemFixture, test2_2) {
 
         U_VELOCITY = 1.;
         V_VELOCITY = 1.;
-        TAU = 8. / (i + 1);
-        TAU *= 10e-3;
+        TAU = 16. / pow(2., (i + 1));
+        TAU *= 1e-3;
         TIME_STEP_CNT = (int) pow(2., i);
         XY_LEN = OX_LEN_1 * OY_LEN_1;
 
