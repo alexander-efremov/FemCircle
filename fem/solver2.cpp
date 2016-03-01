@@ -156,30 +156,23 @@ double *solve_2(double &tme) {
         }
     }
 
+    for (int i = 0; i < OX_LEN_1; ++i)
+        prev_density[OY_LEN_1 * i] = 0.;
+
+    for (int j = 0; j < OY_LEN_1; ++j)
+        prev_density[j] = 0.;
+
     // fill G_in (G1 union G2) by 0
-    for (int i = 0; i < OX_LEN_1; ++i) {
-        for (int j = 0; j < OY_LEN_1; ++j) {
-            if (i == 0 && j >= 0 && j < OY_LEN_1)
-                prev_density[OY_LEN_1 * i + j] = 0.; // G1 left boundary
-            else if (j == 0 && i >= 0 && i < OX_LEN_1)
-                prev_density[OY_LEN_1 * i + j] = 0.; // G2 bottom boundary
-            else
-                prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
-        }
-    }
+    for (int i = 1; i < OX_LEN; ++i)
+        for (int j = 1; j < OY_LEN; ++j)
+            prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
+
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
         // with usage of prev_density we calculate phi function values
-        for (int i = 0; i < OX_LEN_1; ++i) {
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (i == 0 && j >= 0 && j < OY_LEN_1)
-                    phi[OY_LEN_1 * i + j] = 0.; // G1 left boundary
-                else if (j == 0 && i >= 0 && i < OX_LEN_1) // G2 bottom boundary
-                    phi[OY_LEN_1 * i + j] = 0.;
-                else
-                    phi[OY_LEN_1 * i + j] = get_phi(i, j, prev_density, TAU * tl);
-            }
-        }
+        for (int i = 1; i < OX_LEN_1; ++i)
+            for (int j = 1; j < OY_LEN_1; ++j)
+                phi[OY_LEN_1 * i + j] = get_phi(i, j, prev_density, TAU * tl);
 
 //        if (tl == TIME_STEP_CNT)
 //            print_surface_as_v("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, phi);

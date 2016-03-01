@@ -64,14 +64,14 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         y4 = C + HY / 2.;
     }
     else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
-        x1 = A;
-        y1 = D - HY / 2.;
-        x2 = A + HX / 2.;
-        y2 = D - HY / 2.;
-        x3 = A + HX / 2.;
-        y3 = D;
-        x4 = A;
-        y4 = D;
+        x1 = B - HX / 2.;
+        y1 = C + jj * HY - HY / 2.;
+        x2 = B;
+        y2 = C + jj * HY - HY / 2.;
+        x3 = B;
+        y3 = C + jj * HY + HY / 2.;
+        x4 = B - HX / 2.;
+        y4 = C + jj * HY + HY / 2.;
     }
     else if (ii == 0 && jj == OY_LEN) { // point (0,1)  omega_{i,j-1}
         x1 = B - HX / 2.;
