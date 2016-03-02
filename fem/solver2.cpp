@@ -182,14 +182,14 @@ double *solve_2(double &tme) {
 
     // G3
     for (int i = 1; i < OX_LEN; ++i)
-        prev_density[OY_LEN_1 * i + OY_LEN] = 0.;
+        prev_density[OY_LEN_1 * i + OY_LEN] = analytical_solution_circle(HX * i, HY * OY_LEN);
 
     // G4
     for (int j = 1; j < OY_LEN; ++j)
-        prev_density[j] = 0.;
+        prev_density[j] = analytical_solution_circle(0., HY * j);
 
     // (1,1)
-    prev_density[OY_LEN] = 0.;
+    prev_density[OY_LEN] = analytical_solution_circle(0., HY * OY_LEN);
 
     // inner points
     for (int i = 1; i < OX_LEN; ++i)
@@ -202,14 +202,15 @@ double *solve_2(double &tme) {
 
         // G3
         for (int i = 1; i < OX_LEN; ++i)
-            prev_density[OY_LEN_1 * i + OY_LEN] = get_phi(i, OY_LEN, prev_density, TAU * tl);
+            phi[OY_LEN_1 * i + OY_LEN] = get_phi(i, OY_LEN, prev_density, TAU * tl);
 
         // G4
         for (int j = 1; j < OY_LEN; ++j)
-            prev_density[j] = get_phi(0, j, prev_density, TAU * tl);
+            phi[j] = get_phi(0, j, prev_density, TAU * tl);
 
         // point (1,1)
-        prev_density[OY_LEN] = get_phi(0, OY_LEN, prev_density, TAU * tl);;
+        phi[OY_LEN] = get_phi(0, OY_LEN, prev_density, TAU * tl);
+
         // inner points
         for (int i = 1; i < OX_LEN; ++i)
             for (int j = 1; j < OY_LEN; ++j)
@@ -226,8 +227,6 @@ double *solve_2(double &tme) {
                               - 1. / 9. * prev_density[OY_LEN_1 + OY_LEN - 1]
                               + rpCoef * phi[OY_LEN];
 
-            double bdCoef = 32. / (9. * HX * HY);
-
             // G3 right boundary
             for (int i = 1; i < OX_LEN; ++i) {
                 density[OY_LEN_1 * i + OY_LEN] = -2. / 9. * prev_density[OY_LEN_1 * i + OY_LEN - 1]
@@ -235,7 +234,7 @@ double *solve_2(double &tme) {
                                                               prev_density[OY_LEN_1 * (i - 1) + OY_LEN])
                                                  - 1. / 18. * (prev_density[OY_LEN_1 * (i + 1) + OY_LEN - 1] +
                                                                prev_density[OY_LEN_1 * (i - 1) + OY_LEN - 1])
-                                                 + bdCoef * phi[OY_LEN_1 * i + OY_LEN];
+                                                 + (32. / (9. * HX * HY)) * phi[OY_LEN_1 * i + OY_LEN];
             }
 
             // G4 top boundary
@@ -245,7 +244,7 @@ double *solve_2(double &tme) {
                                           prev_density[j + 1])
                              - 1. / 18. * (prev_density[OY_LEN_1 + j - 1] +
                                            prev_density[OY_LEN_1 + j + 1])
-                             + bdCoef * phi[j];
+                             + (32. / (9. * HX * HY)) * phi[j];
             }
 
             for (int i = 1; i < OX_LEN; ++i) {
