@@ -179,7 +179,7 @@ TEST_F(FemFixture1, test2_1) {
     B = 1.;
     C = 0.;
     D = 1.;
-    R_SQ = 0.1 * 0.1;
+    R_SQ = 0.099 * 0.099;
     INN_DENSITY = 1.;
     OUT_DENSITY = 0.;
 
@@ -193,8 +193,8 @@ TEST_F(FemFixture1, test2_1) {
     U_VELOCITY = 1.;
     V_VELOCITY = 1.;
     TAU = 2 * 10e-3;
-    //TIME_STEP_CNT = (int) ((1 - get_center_x_2() - get_center_y_2()) / TAU);
-    TIME_STEP_CNT = 4;
+    TIME_STEP_CNT = (int) ((1 - get_center_x_2() - get_center_y_2()) / TAU);
+    //TIME_STEP_CNT = 4;
     XY_LEN = OX_LEN_1 * OY_LEN_1;
 
     printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
