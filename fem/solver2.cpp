@@ -224,7 +224,7 @@ double *solve_2(double &tme) {
             density[OY_LEN] = -1. / 3. * (prev_density[OY_LEN - 1]
                                           + prev_density[OY_LEN_1 + OY_LEN])
                               - 1. / 9. * prev_density[OY_LEN_1 + OY_LEN - 1]
-                              + rpCoef * phi[OX_LEN];
+                              + rpCoef * phi[OY_LEN];
 
             double bdCoef = 32. / (9. * HX * HY);
 

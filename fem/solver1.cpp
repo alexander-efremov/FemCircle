@@ -242,27 +242,27 @@ double *solve_1(double &tme) {
             double rpCoef = 64. / (9. * HX * HY);
             // ДОПИСАТЬ НА НОВЫЕ ИНДЕКСЫ!!!!!
             // point 0,0
-            density[OY_LEN_1 * 0 + 0] = -1. / 3. * (prev_density[OY_LEN_1 * 0 + 1] + prev_density[OY_LEN_1 * 1 + 0]) -
-                                        1. / 9. * prev_density[OY_LEN_1 * 1 + 1]
-                                        + rpCoef * phi[OY_LEN_1 * 0 + 0];
+            density[OY_LEN_1 * OX_LEN] =
+                    -1. / 3. * (prev_density[OY_LEN_1 * (OX_LEN - 1)] + prev_density[OY_LEN_1 * OX_LEN + 1]) -
+                    1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + 1]
+                    + rpCoef * phi[OY_LEN_1 * OX_LEN];
 
-            // point 1,0 (i = OX_LEN, j = 0)
-            density[OY_LEN_1 * 0 + OX_LEN] = -1. / 3. * (prev_density[OY_LEN_1 * 0 + (OX_LEN - 1)]
-                                                         + prev_density[OY_LEN_1 * 1 + OX_LEN])
-                                             - 1. / 9. * prev_density[OY_LEN_1 * 1 + (OX_LEN - 1)]
-                                             + rpCoef * phi[OY_LEN_1 * 0 + OX_LEN];
+            // point 1,0
+            density[0] = -1. / 3. * (prev_density[1] + prev_density[OY_LEN_1])
+                         - 1. / 9. * prev_density[OY_LEN_1 + 1]
+                         + rpCoef * phi[0];
 
             // point 1,1
-            density[OY_LEN_1 * OX_LEN + OY_LEN] = -1. / 3. * (prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN]
-                                                              + prev_density[OY_LEN_1 * OX_LEN + OY_LEN - 1])
-                                                  - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + (OY_LEN - 1)]
-                                                  + rpCoef * phi[OY_LEN_1 * OX_LEN + OY_LEN];
+            density[OY_LEN] = -1. / 3. * (prev_density[OY_LEN - 1]
+                                          + prev_density[OY_LEN_1 + OY_LEN])
+                              - 1. / 9. * prev_density[OY_LEN_1 + OY_LEN - 1]
+                              + rpCoef * phi[OY_LEN];
 
-            // point 0,1 i = 0, j = OY_LEN
-            density[OY_LEN_1 * OX_LEN + 0] = -1. / 3. * (prev_density[OY_LEN_1 * OX_LEN + 1]
-                                                         + prev_density[OY_LEN_1 * (OX_LEN - 1) + 0])
-                                             - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + 1]
-                                             + rpCoef * phi[OY_LEN_1 * OX_LEN + 0];
+            // point 0,1
+            density[OY_LEN_1 * OX_LEN + OY_LEN] = -1. / 3. * (prev_density[OY_LEN_1 * OX_LEN + OY_LEN - 1]
+                                                              + prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN])
+                                                  - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN - 1]
+                                                  + rpCoef * phi[OY_LEN_1 * OX_LEN + OY_LEN];
 
             double bdCoef = 32. / (9. * HX * HY);
             // G1 left boundary
@@ -290,7 +290,7 @@ double *solve_1(double &tme) {
 
             // G3 right boundary
             for (int i = 1; i < OX_LEN; ++i) {
-                density[OY_LEN_1 * i + OX_LEN] = -2. / 9. * prev_density[OY_LEN_1 * i + OY_LEN - 1]
+                density[OY_LEN_1 * i + OY_LEN] = -2. / 9. * prev_density[OY_LEN_1 * i + OY_LEN - 1]
                                                  - 1. / 6. * (prev_density[OY_LEN_1 * (i + 1) + OY_LEN] +
                                                               prev_density[OY_LEN_1 * (i - 1) + OY_LEN])
                                                  - 1. / 18. * (prev_density[OY_LEN_1 * (i + 1) + OY_LEN - 1] +
