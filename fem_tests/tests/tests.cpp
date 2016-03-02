@@ -193,8 +193,8 @@ TEST_F(FemFixture1, test2_1) {
     U_VELOCITY = 1.;
     V_VELOCITY = 1.;
     TAU = 2 * 10e-3;
-    //TIME_STEP_CNT = (int) ((1 - get_center_x_2() - get_center_y_2()) / TAU);
-    TIME_STEP_CNT = 4;
+    TIME_STEP_CNT = (int) ((1 - get_center_x_2() - get_center_y_2()) / TAU);
+    //TIME_STEP_CNT = 4;
     XY_LEN = OX_LEN_1 * OY_LEN_1;
 
     printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
