@@ -19,7 +19,8 @@ inline static double analytical_solution_circle(double t, double x, double y) {
     double x0 = get_center_x_2() + t * func_u(t, x, y);
     double y0 = get_center_y_2() + t * func_v(t, x, y);
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
-    if (value <= R_SQ) return INN_DENSITY;
+    //if (value <= R_SQ) return INN_DENSITY;
+    if (value < R_SQ) return INN_DENSITY;
     return OUT_DENSITY;
 }
 
