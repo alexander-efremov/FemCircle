@@ -11,19 +11,17 @@ double get_center_x_2() { return A + 0.3; }
 
 double get_center_y_2() { return C + 0.3; }
 
-inline static double analytical_solution_circle(double x, double y) {
-    double x0 = get_center_x_2();
-    double y0 = get_center_y_2();
+inline static double func_u(double t, double x, double y) { return U_VELOCITY; }
+
+inline static double func_v(double t, double x, double y) { return V_VELOCITY; }
+
+inline static double analytical_solution_circle(double t, double x, double y) {
+    double x0 = get_center_x_2() + t * func_u(t, x, y);
+    double y0 = get_center_y_2() + t * func_v(t, x, y);
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
     if (value <= R_SQ) return INN_DENSITY;
     return OUT_DENSITY;
 }
-
-inline static double func_u(double time_value, double x, double y) { return U_VELOCITY; }
-
-inline static double func_v(double time_value, double x, double y) { return V_VELOCITY; }
-
-static int f = 0;
 
 static double get_phi(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;
@@ -182,20 +180,19 @@ double *solve_2(double &tme) {
 
     // G3
     for (int i = 1; i < OX_LEN; ++i)
-        prev_density[OY_LEN_1 * i + OY_LEN] = analytical_solution_circle(HX * i, HY * OY_LEN);
+        prev_density[OY_LEN_1 * i + OY_LEN] = analytical_solution_circle(0., HX * i, HY * OY_LEN);
 
     // G4
     for (int j = 1; j < OY_LEN; ++j)
-        prev_density[j] = analytical_solution_circle(0., HY * j);
+        prev_density[j] = analytical_solution_circle(0., 0., HY * j);
 
     // (1,1)
-    prev_density[OY_LEN] = analytical_solution_circle(0., HY * OY_LEN);
+    prev_density[OY_LEN] = analytical_solution_circle(0., 0., HY * OY_LEN);
 
     // inner points
     for (int i = 1; i < OX_LEN; ++i)
         for (int j = 1; j < OY_LEN; ++j)
-            prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(HX * i, HY * j);
-
+            prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(0., HX * i, HY * j);
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
         // with usage of prev_density we calculate phi function values
@@ -210,6 +207,11 @@ double *solve_2(double &tme) {
 
         // point (1,1)
         phi[OY_LEN] = get_phi(0, OY_LEN, prev_density, TAU * tl);
+
+        // inner points
+        for (int i = 1; i < OX_LEN; ++i)
+            for (int j = 1; j < OY_LEN; ++j)
+                phi[OY_LEN_1 * i + j] = get_phi(i, j, prev_density, TAU * tl);
 
         // inner points
         for (int i = 1; i < OX_LEN; ++i)
@@ -291,6 +293,6 @@ double *calc_error_2(double hx, double hy, double *solution) {
     for (int i = 0; i < OX_LEN_1; i++)
         for (int j = 0; j < OY_LEN_1; j++)
             res[i * OY_LEN_1 + j] = fabs(solution[i * OY_LEN_1 + j]
-                                         - analytical_solution_circle(A + hx * i, C + hy * j));
+                                         - analytical_solution_circle(TAU * TIME_STEP_CNT, A + hx * i, C + hy * j));
     return res;
 }
