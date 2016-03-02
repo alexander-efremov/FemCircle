@@ -318,8 +318,8 @@ double *solve_1(double &tme) {
                     ) - 1. / 36. * (
                             prev_density[OY_LEN_1 * (i + 1) + j + 1] + // bottom right
                             prev_density[OY_LEN_1 * (i + 1) + j - 1] + // bottom left
-                            prev_density[OY_LEN_1 * (i - 1) + j - 1] + // upper right
-                            prev_density[OY_LEN_1 * (i - 1) + j + 1] // upper left
+                            prev_density[OY_LEN_1 * (i - 1) + j + 1] + // upper right
+                            prev_density[OY_LEN_1 * (i - 1) + j - 1]  // upper left
                     ) + (16. * phi[OY_LEN_1 * i + j]) / (9. * HX * HY);
                 }
             }
