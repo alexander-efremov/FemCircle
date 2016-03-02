@@ -174,7 +174,7 @@ inline bool is_empty_file(FILE *f) {
     return false;
 }
 
-inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1) {
+inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1, int time_steps) {
     FILE *file;
     const char* filename = "/home/jane/ClionProjects/fem_circle/statistics.dat";
     file = fopen(filename, "a");
@@ -183,10 +183,10 @@ inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount,
         return;
     }
     if (is_empty_file(file)) {
-        fprintf(file, "%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR");
+        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR", "TIMESTP");
     }
 
-    fprintf(file, "%d\t%d\t%le\t%d\t%le\n", ox_len, oy_len, tau, iterCount, err_l1);
+    fprintf(file, "%d\t%d\t%le\t%d\t%le\t%d\n", ox_len, oy_len, tau, iterCount, err_l1, time_steps);
 
     fclose(file);
 }

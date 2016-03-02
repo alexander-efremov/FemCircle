@@ -35,58 +35,58 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
 
     if (ii > 0 && ii < OX_LEN && jj > 0 && jj < OY_LEN) {
         // p1
-        x1 = A + ii * HX + HX / 2.;
+        x1 = A + ii * HX - HX / 2.;
         y1 = C + jj * HY - HY / 2.;
         // p2
-        x2 = A + ii * HX + HX / 2.;
+        x2 = A + ii * HX - HX / 2.;
         y2 = C + jj * HY + HY / 2.;
         // p3
-        x3 = A + ii * HX - HX / 2.;
+        x3 = A + ii * HX + HX / 2.;
         y3 = C + jj * HY + HY / 2.;
         // p4
-        x4 = A + ii * HX - HX / 2.;
+        x4 = A + ii * HX + HX / 2.;
         y4 = C + jj * HY - HY / 2.;
     }
-    else if (ii == 0 && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
+    else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
         // p1
-        x1 = A + HX / 2.;
+        x1 = B - HX / 2.;
         y1 = D - HY / 2.;
         // p2
-        x2 = A + HX / 2.;
+        x2 = A - HX / 2.;
         y2 = D;
         // p3
-        x3 = A;
+        x3 = B;
         y3 = D;
         // p4
-        x4 = A;
+        x4 = B;
         y4 = D - HY / 2.;
     }
     else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G3 right boundary
         // p1
-        x1 = B + ii * HX + HX / 2.;
+        x1 = A + ii * HX - HX / 2.;
         y1 = D - HY / 2.;
         // p2
-        x2 = A + ii * HX + HX / 2.;
+        x2 = A + ii * HX - HX / 2.;
         y2 = D;
-        //p3
-        x3 = A + ii * HX - HX / 2.;
+        // p3
+        x3 = A + ii * HX + HX / 2.;
         y3 = D;
-        //p4
+        // p4
         x4 = A + ii * HX - HX / 2.;
         y4 = D - HY / 2.;
     }
     else if (ii == 0 && jj > 0 && jj < OY_LEN) { // G4 top boundary
         // p1
-        x1 = A + HX / 2.;
+        x1 = B - HX / 2.;
         y1 = C + jj * HY - HY / 2.;
         // p2
-        x2 = A + HX / 2.;
+        x2 = B - HX / 2.;
         y2 = C + jj * HY + HY / 2.;
         // p3
-        x3 = A;
+        x3 = B;
         y3 = C + jj * HY + HY / 2.;
         // p4
-        x4 = A;
+        x4 = B;
         y4 = C + jj * HY - HY / 2.;
     }
 
@@ -176,23 +176,23 @@ double *solve_2(double &tme) {
 
     // G2
     for (int j = 0; j < OY_LEN_1; ++j)
-        prev_density[OY_LEN_1 * OX_LEN + j] = 0.;
+        prev_density[j] = 0.;
 
     // G3
     for (int i = 1; i < OX_LEN; ++i)
-        prev_density[OY_LEN_1 * i + OY_LEN] = analytical_solution_circle(0., HX * i, HY * OY_LEN);
+        prev_density[OY_LEN_1 * i + OY_LEN] = analytical_solution_circle(0., A + HX * i, C + HY * OY_LEN);
 
     // G4
     for (int j = 1; j < OY_LEN; ++j)
-        prev_density[j] = analytical_solution_circle(0., 0., HY * j);
+        prev_density[OY_LEN_1 * OX_LEN + j] = analytical_solution_circle(0., HX * OX_LEN, HY * j);
 
     // (1,1)
-    prev_density[OY_LEN] = analytical_solution_circle(0., 0., HY * OY_LEN);
+    prev_density[OY_LEN_1 * OY_LEN + OX_LEN] = analytical_solution_circle(0., HX * OX_LEN, HY * OY_LEN);
 
     // inner points
     for (int i = 1; i < OX_LEN; ++i)
         for (int j = 1; j < OY_LEN; ++j)
-            prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(0., HX * i, HY * j);
+            prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(0., A + HX * i, C + HY * j);
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
         // with usage of prev_density we calculate phi function values
@@ -203,10 +203,10 @@ double *solve_2(double &tme) {
 
         // G4
         for (int j = 1; j < OY_LEN; ++j)
-            phi[j] = get_phi(0, j, prev_density, TAU * tl);
+            phi[j] = get_phi(OX_LEN, j, prev_density, TAU * tl);
 
         // point (1,1)
-        phi[OY_LEN] = get_phi(0, OY_LEN, prev_density, TAU * tl);
+        phi[OY_LEN_1 * OX_LEN + OY_LEN] = get_phi(OX_LEN, OY_LEN, prev_density, TAU * tl);
 
         // inner points
         for (int i = 1; i < OX_LEN; ++i)
@@ -219,10 +219,10 @@ double *solve_2(double &tme) {
             double rpCoef = 64. / (9. * HX * HY);
 
             // point 1,1
-            density[OY_LEN] = -1. / 3. * (prev_density[OY_LEN - 1]
-                                          + prev_density[OY_LEN_1 + OY_LEN])
-                              - 1. / 9. * prev_density[OY_LEN_1 + OY_LEN - 1]
-                              + rpCoef * phi[OY_LEN];
+            density[OY_LEN_1 * OX_LEN + OY_LEN] = -1. / 3. * (prev_density[OY_LEN_1 * OX_LEN + OY_LEN - 1]
+                                                              + prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN])
+                                                  - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN - 1]
+                                                  + rpCoef * phi[OY_LEN_1 * OX_LEN + OY_LEN];
 
             // G3 right boundary
             for (int i = 1; i < OX_LEN; ++i) {
@@ -236,12 +236,12 @@ double *solve_2(double &tme) {
 
             // G4 top boundary
             for (int j = 1; j < OY_LEN; ++j) {
-                density[j] = -2. / 9. * prev_density[OY_LEN_1 + j]
-                             - 1. / 6. * (prev_density[j - 1] +
-                                          prev_density[j + 1])
-                             - 1. / 18. * (prev_density[OY_LEN_1 + j - 1] +
-                                           prev_density[OY_LEN_1 + j + 1])
-                             + (32. / (9. * HX * HY)) * phi[j];
+                density[OY_LEN_1 * OX_LEN + j] = -2. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + j]
+                                                 - 1. / 6. * (prev_density[OY_LEN_1 * OX_LEN + j - 1] +
+                                                              prev_density[OY_LEN_1 * OX_LEN + j + 1])
+                                                 - 1. / 18. * (prev_density[OY_LEN_1 * (OX_LEN - 1) - 1] +
+                                                               prev_density[OY_LEN_1 * (OX_LEN - 1) + 1])
+                                                 + (32. / (9. * HX * HY)) * phi[OY_LEN_1 * OX_LEN + j];
             }
 
             for (int i = 1; i < OX_LEN; ++i) {
@@ -275,7 +275,7 @@ double *solve_2(double &tme) {
     }
     double *err = calc_error_2(HX, HY, density);
     double l1_err = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err);
+    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err, TIME_STEP_CNT);
     delete[] prev_density;
     delete[] phi;
     delete[] err;
@@ -289,5 +289,14 @@ double *calc_error_2(double hx, double hy, double *solution) {
         for (int j = 0; j < OY_LEN_1; j++)
             res[i * OY_LEN_1 + j] = fabs(solution[i * OY_LEN_1 + j]
                                          - analytical_solution_circle(TAU * TIME_STEP_CNT, A + hx * i, C + hy * j));
+    return res;
+}
+
+double* get_exact_solution_2(double hx, double hy, double t)
+{
+    double *res = new double[XY_LEN];
+    for (int i = 0; i < OX_LEN_1; i++)
+        for (int j = 0; j < OY_LEN_1; j++)
+            res[i * OY_LEN_1 + j] = fabs(analytical_solution_circle(t, A + hx * i, C + hy * j));
     return res;
 }
