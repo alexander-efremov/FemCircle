@@ -213,11 +213,6 @@ double *solve_2(double &tme) {
             for (int j = 1; j < OY_LEN; ++j)
                 phi[OY_LEN_1 * i + j] = get_phi(i, j, prev_density, TAU * tl);
 
-        // inner points
-        for (int i = 1; i < OX_LEN; ++i)
-            for (int j = 1; j < OY_LEN; ++j)
-                phi[OY_LEN_1 * i + j] = get_phi(i, j, prev_density, TAU * tl);
-
         ic = 0;
         double maxErr = FLT_MAX;
         while (maxErr > EPS) {
