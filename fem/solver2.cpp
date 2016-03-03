@@ -299,6 +299,6 @@ double *get_exact_solution_2(double hx, double hy, double t) {
     double *res = new double[XY_LEN];
     for (int i = 0; i < OX_LEN_1; i++)
         for (int j = 0; j < OY_LEN_1; j++)
-            res[i * OY_LEN_1 + j] = fabs(analytical_solution_circle(TAU * TIME_STEP_CNT, A + hx * i, C + hy * j));
+            res[i * OY_LEN_1 + j] = fabs(analytical_solution_circle(t, A + hx * i, C + hy * j));
     return res;
 }

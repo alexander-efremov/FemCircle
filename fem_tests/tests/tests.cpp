@@ -256,7 +256,7 @@ TEST_F(FemFixture1, test2_2) {
         B = 1.;
         C = 0.;
         D = 1.;
-        R_SQ = 0.1 * 0.1;
+        R_SQ = 0.099 * 0.099;
         INN_DENSITY = 1.;
         OUT_DENSITY = 0.;
 
