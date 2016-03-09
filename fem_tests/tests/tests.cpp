@@ -209,7 +209,7 @@ TEST_F(FemFixture1, test2_1) {
     double *density = solve_2(tme);
     double *err = calc_error_2(HX, HY, density);
     double *exact0 = get_exact_solution_2(HX, HY, 0);
-    double *exactT = get_exact_solution_2(HX, HY, TAU*TIME_STEP_CNT);
+    double *exactT = get_exact_solution_2(HX, HY, TAU * TIME_STEP_CNT);
 
     double y0 = get_center_y_2();
     double x0 = get_center_x_2();
@@ -340,9 +340,8 @@ TEST_F(FemFixture, test3) {
 
         U_VELOCITY = 1.;
         V_VELOCITY = 1.;
-        TAU = 16. / pow(2., (i + 1));
-        TAU *= 10e-3;
-        TIME_STEP_CNT = (int) pow(2., i);
+        TAU = (HX / (-HY + 1)) - HX;
+        TIME_STEP_CNT = 1;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
 
         printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
