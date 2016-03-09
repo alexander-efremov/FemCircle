@@ -14,14 +14,16 @@
       <sourceFolder url="file://$MODULE_DIR$/fem/consts.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/consts.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/fem/solver2.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/solver1.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/solver2.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/timer.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/fem/solver1.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/utils.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/fem/tecplot.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/fem/solver1.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/solver3.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/tecplot.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/solver1.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/tecplot.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/solver3.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/solver2.h" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
