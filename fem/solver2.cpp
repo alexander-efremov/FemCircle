@@ -141,24 +141,9 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
             double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
                             + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
 
-            //double real_x = x1 + (x2 - x1) * ideal_x + (x3 - x1) * ideal_y
-            //                + (x1 + x4 - x2 - x3) * ideal_x * ideal_y;
-            //double real_y = y1 + (y2 - y1) * ideal_x + (y3 - y1) * ideal_y
-            //                + (y1 + y4 - y2 - y3) * ideal_x * ideal_y;
-            if (real_x < A || real_y < C || real_x > B || real_y > D) {
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
-                       time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
-                printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
-                       x1, y1, x2, y2, x3, y3, x4, y4);
-            }
-
             // find out in which square real point was placed
             int sq_i = (int) ((real_x - A) / HX);
             int sq_j = (int) ((real_y - C) / HY);
-            if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1)
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
-                       ii, jj, sq_i, sq_j);
-
             double x = A + sq_i * HX;
             double y = C + sq_j * HY;
 
