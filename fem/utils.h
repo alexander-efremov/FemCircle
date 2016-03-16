@@ -151,7 +151,7 @@ inline double get_l1_norm(double hx, double hy, int x_len, int y_len, double *da
     double r = 0.;
     for (int i = 0; i < x_len; ++i)
         for (int j = 0; j < y_len; ++j)
-            r += fabs(data[x_len * i + j]);
+            r += fabs(data[y_len * i + j]);
     return r * hx * hy;
 }
 
@@ -159,8 +159,8 @@ inline double get_l_inf_norm(int x_len, int y_len, double *data) {
     double max = FLT_MIN;
     for (int i = 0; i < x_len; ++i)
         for (int j = 0; j < y_len; ++j)
-            if (fabs(data[x_len * i + j]) > max)
-                max = fabs(data[x_len * i + j]);
+            if (fabs(data[y_len * i + j]) > max)
+                max = fabs(data[y_len * i + j]);
     return max;
 }
 
@@ -174,21 +174,36 @@ inline bool is_empty_file(FILE *f) {
     return false;
 }
 
-inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1, int time_steps) {
+inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1, double res_inf, int time_steps) {
     FILE *file;
-    const char* filename = "/home/jane/ClionProjects/fem_circle/statistics.dat";
+    const char* filename = "/home/jane/ClionProjects/fem_cirle_ed/statistics.dat";
     file = fopen(filename, "a");
     if (file == NULL) {
         perror("Error opening file.");
         return;
     }
     if (is_empty_file(file)) {
-        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR", "TIMESTP");
+        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR", "MAXRESIDUAL", "TIMESTP");
     }
 
-    fprintf(file, "%d\t%d\t%le\t%d\t%le\t%d\n", ox_len, oy_len, tau, iterCount, err_l1, time_steps);
+    fprintf(file, "%d\t%d\t%le\t%d\t%le\t%le\t%d\n", ox_len, oy_len, tau, iterCount, err_l1, res_inf, time_steps);
 
     fclose(file);
+}
+
+inline double calc_array_sum(double *a, int ox_len, int oy_len, bool isAbs) {
+    double res = 0;
+    for (int i = 0; i < ox_len; i++)
+    {
+        for (int j = 0; j < oy_len; j++)
+        {
+            if (isAbs)
+                res += fabs(a[i * oy_len + j]);
+            else
+                res += a[i * oy_len + j];
+        }
+    }
+    return res;
 }
 
 #endif //FEM_CIRCLE_UTILS_H

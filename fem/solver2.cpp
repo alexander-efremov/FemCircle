@@ -6,6 +6,7 @@
 #include "solver2.h"
 #include "timer.h"
 #include "utils.h"
+#include "tecplot.h"
 
 double get_center_x_2() { return A + 0.3; }
 
@@ -46,6 +47,10 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         // p4 (x_{i-1/2}, y_{j+1/2})
         x4 = A + ii * HX - HX / 2.;
         y4 = C + jj * HY + HY / 2.;
+        if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
+            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
     else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
         // p1 (x_{OX_LEN-1/2}, y_{OY_LEN-1/2})
@@ -60,6 +65,10 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         // p4 (x_{OX_LEN-1/2}, D)
         x4 = B - HX / 2.;
         y4 = D;
+        if (x1 <= A || x1 > B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 > B
+            || y1 <= C || y1 > D || y2 <= C || y2 > D || y3 <= C || y3 > D || y4 <= C || y4 > D)
+            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
     else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G3 -- top boundary
         // p1 (x_{i-1/2}, y_{OY_LEN-1/2})
@@ -74,6 +83,10 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         //p4 (x_{i-1/2}, D)
         x4 = A + ii * HX - HX / 2.;
         y4 = D;
+        if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
+            || y1 <= C || y1 > D || y2 <= C || y2 > D || y3 <= C || y3 > D || y4 <= C || y4 > D)
+            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
     else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G2 -- right boundary
         // p1 (x_{OX_LEN-1/2}, y_{j-1/2})
@@ -88,7 +101,12 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         // p4 (x_{OX_LEN-1/2}, y_{j+1/2})
         x4 = B - HX / 2.;
         y4 = C + jj * HY + HY / 2.;
+        if (x1 <= A || x1 > B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 > B
+            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
+    else printf("ERROR! INDEX i=%d j=%d ", ii, jj);
 
     double u = func_u(time_value, x1, y1);
     double v = func_v(time_value, x1, y1);
@@ -106,39 +124,57 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
     v = func_v(time_value, x4, y4);
     x4 = x4 - TAU * u;
     y4 = y4 - TAU * v;
+    if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
+        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        printf("Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                       "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
 
-    int nx = 64;
-    int ny = 64;
+//    printf("i=%d j=%d:   1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
+//           ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+
+    int nx = 128;
+    int ny = 128;
     int nx_1 = nx + 1;
     int ny_1 = ny + 1;
 
     double x_step = 1. / nx;
     double y_step = 1. / ny;
+    //double* jak = new double[nx_1*ny_1];
 
     // get right part for jakoby
     double phi = 0.;
     double mes = x_step * y_step;
-    for (int i = 0; i < nx_1; ++i) {
-        for (int j = 0; j < ny_1; ++j) {
+    for (int i = 0; i < nx; ++i) { // было nx_1
+        for (int j = 0; j < ny; ++j) { // было ny_1
 
             double ideal_x = i * x_step + x_step / 2.;
             double ideal_y = j * y_step + y_step / 2.;
+// Ne nado dlya vychisleniya yakobiana!
             double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
                             + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
             double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
                             + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
 
+            //double real_x = x1 + (x2 - x1) * ideal_x + (x3 - x1) * ideal_y
+            //                + (x1 + x4 - x2 - x3) * ideal_x * ideal_y;
+            //double real_y = y1 + (y2 - y1) * ideal_x + (y3 - y1) * ideal_y
+            //                + (y1 + y4 - y2 - y3) * ideal_x * ideal_y;
+            if (real_x < A || real_y < C || real_x > B || real_y > D) {
+                printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
+                       time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
+                printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
+                       x1, y1, x2, y2, x3, y3, x4, y4);
+            }
+
             // find out in which square real point was placed
             int sq_i = (int) ((real_x - A) / HX);
             int sq_j = (int) ((real_y - C) / HY);
+            if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1)
+                printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
+                       ii, jj, sq_i, sq_j);
+
             double x = A + sq_i * HX;
             double y = C + sq_j * HY;
-
-            // formula 4
-            double dens = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
-                          + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
-                          + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
-                          + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
 
             double a11 = (x2 - x1) + (x1 + x3 - x2 - x4) * ideal_y;
             double a12 = (x4 - x1) + (x1 + x3 - x2 - x4) * ideal_x;
@@ -146,10 +182,147 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
             double a22 = (y4 - y1) + (y1 + y3 - y2 - y4) * ideal_x;
             double jakob = a11 * a22 - a21 * a12;
 
-            phi += mes * dens * jakob;
-        }
-    }
+            // formula 4
+            double dens = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
+                          + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
 
+
+            phi += mes * dens * jakob; // вот тут же ничего не вынесено хотя можно вынести
+            /*       // point (x_i,y_j)
+                   ideal_x = i * x_step;
+                   ideal_y = j * y_step;
+                   double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
+                                   + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
+                   double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
+                                   + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+                   if (real_x < A || real_y < C || real_x > B || real_y > D) {
+                       printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
+                              time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
+                       printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
+                              x1, y1, x2, y2, x3, y3, x4, y4);
+                   }
+
+                   // find out in which square real point was placed
+                   int sq_i = (int) ((real_x - A) / HX);
+                   int sq_j = (int) ((real_y - C) / HY);
+                   if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1)
+                       printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
+                              ii, jj, sq_i, sq_j);
+                   double x = A + sq_i * HX;
+                   double y = C + sq_j * HY;
+
+                   // formula 4
+                   double dens_1 = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
+                                 + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
+                                 + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
+                                 + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
+
+
+                   // point (x_{i+1},y_j)
+                   ideal_x = (i+1) * x_step;
+                   ideal_y = j * y_step;
+                   real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
+                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
+                   real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
+                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+                   if (real_x < A || real_y < C || real_x > B || real_y > D) {
+                       printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
+                              time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
+                       printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
+                              x1, y1, x2, y2, x3, y3, x4, y4);
+                   }
+
+                   // find out in which square real point was placed
+                   sq_i = (int) ((real_x - A) / HX);
+                   sq_j = (int) ((real_y - C) / HY);
+                   if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1)
+                       printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
+                              ii, jj, sq_i, sq_j);
+                   x = A + sq_i * HX;
+                   y = C + sq_j * HY;
+
+                   // formula 4
+                   double dens_2 = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
+                                   + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
+                                   + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
+                                   + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
+
+
+                   // point (x_{i+1},y_{j+1})
+                   ideal_x = (i+1) * x_step;
+                   ideal_y = (j+1) * y_step;
+                   real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
+                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
+                   real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
+                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+                   if (real_x < A || real_y < C || real_x > B || real_y > D) {
+                       printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
+                              time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
+                       printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
+                              x1, y1, x2, y2, x3, y3, x4, y4);
+                   }
+
+                   // find out in which square real point was placed
+                   sq_i = (int) ((real_x - A) / HX);
+                   sq_j = (int) ((real_y - C) / HY);
+                   if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1)
+                       printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
+                              ii, jj, sq_i, sq_j);
+                   x = A + sq_i * HX;
+                   y = C + sq_j * HY;
+
+                   // formula 4
+                   double dens_3 = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
+                                   + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
+                                   + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
+                                   + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
+
+
+                   // point (x_i,y_{j+1})
+                   ideal_x = i * x_step;
+                   ideal_y = (j+1) * y_step;
+                   real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
+                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
+                   real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
+                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+                   if (real_x < A || real_y < C || real_x > B || real_y > D) {
+                       printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
+                              time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
+                       printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
+                              x1, y1, x2, y2, x3, y3, x4, y4);
+                   }
+
+                   // find out in which square real point was placed
+                   sq_i = (int) ((real_x - A) / HX);
+                   sq_j = (int) ((real_y - C) / HY);
+                   if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1)
+                       printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
+                              ii, jj, sq_i, sq_j);
+                   x = A + sq_i * HX;
+                   y = C + sq_j * HY;
+
+                   // formula 4
+                   double dens_4 = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
+                                   + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
+                                   + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
+                                   + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
+
+
+                   phi += (dens_1 + dens_2 + dens_3 + dens_4) * jakob;
+                   //    jak[i*ny_1 + j] = jakob;
+                   */
+        }
+
+    }
+    //phi = 0.25 * phi * mes;
+    if (fabs(phi) < fabs(1.e-16)) phi = 0;
+
+//    print_surface("test2_1_jakoby", nx, ny, x_step, y_step, (int)(time_value/TAU), A, C, get_center_x_2(), get_center_y_2(),
+//                       TAU, ii, jj, jak);
+
+//    delete jak;
     return phi;
 }
 
@@ -162,38 +335,66 @@ double *solve_2(double &tme) {
     double *phi = new double[XY_LEN];
     double *prev_density = new double[XY_LEN];
     double *density = new double[XY_LEN];
+    double *residual = new double[XY_LEN];
 
     for (int i = 0; i < OX_LEN_1; ++i) {
         for (int j = 0; j < OY_LEN_1; ++j) {
             density[OY_LEN_1 * i + j] = 0.;
             prev_density[OY_LEN_1 * i + j] = 0.;
+            residual[OY_LEN_1 * i + j] = 0.;
         }
     }
 
     // G1 -- (x_i, 0=C) -- bottom boundary
-    for (int i = 0; i < OX_LEN_1; ++i)
-        prev_density[OY_LEN_1 * i] = 0.;
+    for (int i = 0; i < OX_LEN_1; ++i) {
+        prev_density[OY_LEN_1 * i] = analytical_solution_circle(0., A + HX * i, C);
+        if (fabs(prev_density[OY_LEN_1 * i]) < fabs(1.e-16)) prev_density[OY_LEN_1 * i] = 0;
+    }
 
     // G2 -- (OX_LEN=B, y_j) -- right boundary
-    for (int j = 0; j < OY_LEN_1; ++j)
-        prev_density[OY_LEN_1 * OX_LEN + j] = 0.;
+    for (int j = 1; j < OY_LEN; ++j) {
+        prev_density[OY_LEN_1 * OX_LEN + j] = analytical_solution_circle(0., A + HX * OX_LEN, C + HY * j);
+        if (fabs(prev_density[OY_LEN_1 * OX_LEN + j]) < fabs(1.e-16)) prev_density[OY_LEN_1 * OX_LEN + j] = 0;
+    }
 
     // G3 -- (x_i, OY_LEN=D) -- top boundary
-    for (int i = 1; i < OX_LEN; ++i)
+    for (int i = 0; i < OX_LEN_1; ++i) {
         prev_density[OY_LEN_1 * i + OY_LEN] = analytical_solution_circle(0., A + HX * i, C + HY * OY_LEN);
+        if (fabs(prev_density[OY_LEN_1 * i + OY_LEN]) < fabs(1.e-16)) prev_density[OY_LEN_1 * i + OY_LEN] = 0;
+    }
 
     // G4 -- (0=A, y_j) -- left boundary
-    for (int j = 1; j < OY_LEN; ++j)
-        prev_density[j] = analytical_solution_circle(0., 0., HY * j);
-
+    for (int j = 1; j < OY_LEN; ++j) {
+        prev_density[j] = analytical_solution_circle(0., A, C + HY * j);
+        if (fabs(prev_density[j]) < fabs(1.e-16)) prev_density[j] = 0;
+    }
+/*
+    // (0,0)
+    prev_density[0] = analytical_solution_circle(0., A, C);
+    // (1,0)
+    prev_density[OY_LEN_1 * OX_LEN] = analytical_solution_circle(0., A + HX * OX_LEN, C);
     // (1,1)
-    prev_density[OY_LEN_1 * OX_LEN + OY_LEN] = analytical_solution_circle(0., 0., C + HY * OY_LEN);
+    prev_density[OY_LEN_1 * OX_LEN + OY_LEN] = analytical_solution_circle(0., A + HX * OX_LEN, C + HY * OY_LEN);
+    // (0,1)
+    prev_density[OY_LEN] = analytical_solution_circle(0., A, C + HY * OY_LEN);
+*/
+    memcpy(density, prev_density, XY_LEN * sizeof(double));
 
     // inner points
     for (int i = 1; i < OX_LEN; ++i)
-        for (int j = 1; j < OY_LEN; ++j)
+        for (int j = 1; j < OY_LEN; ++j) {
             prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(0., A + HX * i, C + HY * j);
+            if (fabs(prev_density[OY_LEN_1 * i + j]) < fabs(1.e-16)) prev_density[OY_LEN_1 * i + j] = 0;
+        }
 
+    double sum_rho = calc_array_sum(prev_density, OX_LEN_1, OY_LEN_1, 0);
+    double sum_abs_rho = calc_array_sum(prev_density, OX_LEN_1, OY_LEN_1, 1);
+    printf("SUM RHO INIT = %le\n", sum_rho);
+    printf("SUM ABS RHO INIT= %le\n", sum_abs_rho);
+    fflush(stdout);
+
+    // TIME STEP START
+    double maxRes = FLT_MAX;
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
         // with usage of prev_density we calculate phi function values
 
@@ -203,7 +404,7 @@ double *solve_2(double &tme) {
 
         // G2 -- (OX_LEN=B, y_j) -- right boundary
         for (int j = 1; j < OY_LEN; ++j)
-            phi[OY_LEN_1 * OX_LEN + j] = get_phi(OY_LEN_1 * OX_LEN, j, prev_density, TAU * tl);
+            phi[OY_LEN_1 * OX_LEN + j] = get_phi(OX_LEN, j, prev_density, TAU * tl);
 
         // point (1,1)
         phi[OY_LEN_1 * OX_LEN + OY_LEN] = get_phi(OX_LEN, OY_LEN, prev_density, TAU * tl);
@@ -213,9 +414,10 @@ double *solve_2(double &tme) {
             for (int j = 1; j < OY_LEN; ++j)
                 phi[OY_LEN_1 * i + j] = get_phi(i, j, prev_density, TAU * tl);
 
+
         ic = 0;
         double maxErr = FLT_MAX;
-        while (maxErr > EPS) {
+        while (((maxErr > EPS) || (maxRes > 1.e-14)) && (ic < OX_LEN_1)) {
 
             // point 1,1
             double rpCoef = 64. / (9. * HX * HY);
@@ -223,27 +425,30 @@ double *solve_2(double &tme) {
                                                               + prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN])
                                                   - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN - 1]
                                                   + rpCoef * phi[OY_LEN_1 * OX_LEN + OY_LEN];
+            if (fabs(density[OY_LEN_1 * OX_LEN + OY_LEN]) < fabs(1.e-16)) density[OY_LEN_1 * OX_LEN + OY_LEN] = 0;
 
             // G3 -- (x_i, OY_LEN=D) -- top boundary
             rpCoef = 32. / (9. * HX * HY);
             for (int i = 1; i < OX_LEN; ++i) {
-                density[OY_LEN_1 * i + OY_LEN] = -2. / 9. * prev_density[OY_LEN_1 * i + OY_LEN - 1]
+                density[OY_LEN_1 * i + OY_LEN] = -1. / 3. * prev_density[OY_LEN_1 * i + OY_LEN - 1]
                                                  - 1. / 6. * (prev_density[OY_LEN_1 * (i + 1) + OY_LEN] +
                                                               prev_density[OY_LEN_1 * (i - 1) + OY_LEN])
                                                  - 1. / 18. * (prev_density[OY_LEN_1 * (i + 1) + OY_LEN - 1] +
                                                                prev_density[OY_LEN_1 * (i - 1) + OY_LEN - 1])
                                                  + rpCoef * phi[OY_LEN_1 * i + OY_LEN];
+                if (fabs(density[OY_LEN_1 * i + OY_LEN]) < fabs(1.e-16)) density[OY_LEN_1 * i + OY_LEN] = 0;
             }
 
             // G2 -- (OX_LEN=B, y_j) -- right boundary
             rpCoef = 32. / (9. * HX * HY);
             for (int j = 1; j < OY_LEN; ++j) {
-                density[OY_LEN_1 * OX_LEN + j] = -2. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + j]
+                density[OY_LEN_1 * OX_LEN + j] = -1. / 3. * prev_density[OY_LEN_1 * (OX_LEN - 1) + j]
                                                  - 1. / 6. * (prev_density[OY_LEN_1 * OX_LEN + j - 1] +
                                                               prev_density[OY_LEN_1 * OX_LEN + j + 1])
                                                  - 1. / 18. * (prev_density[OY_LEN_1 * (OX_LEN - 1) + j - 1] +
                                                                prev_density[OY_LEN_1 * (OX_LEN - 1) + j + 1])
                                                  + rpCoef * phi[OY_LEN_1 * OX_LEN + j];
+                if (fabs(density[OY_LEN_1 * OX_LEN + j]) < fabs(1.e-16)) density[OY_LEN_1 * OX_LEN + j] = 0;
             }
 
             rpCoef = 16. / (9. * HX * HY);
@@ -260,6 +465,7 @@ double *solve_2(double &tme) {
                             prev_density[OY_LEN_1 * (i - 1) + j + 1] + // upper right
                             prev_density[OY_LEN_1 * (i - 1) + j - 1]  // upper left
                     ) + rpCoef * phi[OY_LEN_1 * i + j];
+                    if (fabs(density[OY_LEN_1 * i + j]) < fabs(1.e-16)) density[OY_LEN_1 * i + j] = 0;
                 }
             }
             ++ic;
@@ -271,27 +477,111 @@ double *solve_2(double &tme) {
                     if (val > maxErr) maxErr = val;
                 }
 
+            // RESIDUAL
+
+            // point 1,1
+            rpCoef = HX * HY / 64.;
+            residual[OY_LEN_1 * OX_LEN + OY_LEN] = rpCoef * (
+                    9. * density[OY_LEN_1 * OX_LEN + OY_LEN] +
+                    3. * (
+                            density[OY_LEN_1 * OX_LEN + OY_LEN - 1] +
+                            density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN]
+                    ) +
+                    density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN - 1]
+            ) - phi[OY_LEN_1 * OX_LEN + OY_LEN];
+
+            // G3 -- (x_i, OY_LEN=D) -- top boundary
+            for (int i = 1; i < OX_LEN; ++i)
+                residual[OY_LEN_1 * i + OY_LEN] = rpCoef * (
+                        18. * density[OY_LEN_1 * i + OY_LEN] +
+                        6. * density[OY_LEN_1 * i + OY_LEN - 1] +
+                        3. * (
+                                density[OY_LEN_1 * (i + 1) + OY_LEN] +
+                                density[OY_LEN_1 * (i - 1) + OY_LEN]
+                        ) +
+                        density[OY_LEN_1 * (i + 1) + OY_LEN - 1] +
+                        density[OY_LEN_1 * (i - 1) + OY_LEN - 1]
+                ) - phi[OY_LEN_1 * i + OY_LEN];
+
+
+            // G2 -- (OX_LEN=B, y_j) -- right boundary
+            for (int j = 1; j < OY_LEN; ++j)
+                residual[OY_LEN_1 * OX_LEN + j] = rpCoef * (
+                        18. * density[OY_LEN_1 * OX_LEN + j] +
+                        6. * density[OY_LEN_1 * (OX_LEN - 1) + j] +
+                        3. * (
+                                density[OY_LEN_1 * OX_LEN + j - 1] +
+                                density[OY_LEN_1 * OX_LEN + j + 1]
+                        ) +
+                        density[OY_LEN_1 * (OX_LEN - 1) + j - 1] +
+                        density[OY_LEN_1 * (OX_LEN - 1) + j + 1]
+                ) - phi[OY_LEN_1 * OX_LEN + j];
+
+            for (int i = 1; i < OX_LEN; ++i) {
+                for (int j = 1; j < OY_LEN; ++j) {
+                    residual[OY_LEN_1 * i + j] = rpCoef * (
+                            36. * density[OY_LEN_1 * i + j] +
+                            6. * (
+                                    density[OY_LEN_1 * i + j - 1] + // left
+                                    density[OY_LEN_1 * (i - 1) + j] + // upper
+                                    density[OY_LEN_1 * i + j + 1] + // right
+                                    density[OY_LEN_1 * (i + 1) + j] // bottom
+                            ) +
+                            prev_density[OY_LEN_1 * (i + 1) + j + 1] + // bottom right
+                            prev_density[OY_LEN_1 * (i + 1) + j - 1] + // bottom left
+                            prev_density[OY_LEN_1 * (i - 1) + j + 1] + // upper right
+                            prev_density[OY_LEN_1 * (i - 1) + j - 1]  // upper left
+                    ) - phi[OY_LEN_1 * i + j];
+                }
+            }
+
+            maxRes = FLT_MIN;
+            for (int i = 0; i < OX_LEN_1; ++i)
+                for (int j = 0; j < OY_LEN_1; ++j) {
+                    double val = fabs(residual[i * OY_LEN_1 + j]);
+                    if (val > maxRes) maxRes = val;
+                }
+
             memcpy(prev_density, density, XY_LEN * sizeof(double));
         }
-        printf("Current tl = %d Iteration count = %d\n", tl, ic);
+
+        sum_rho = calc_array_sum(density, OX_LEN_1, OY_LEN_1, 0);
+        sum_abs_rho = calc_array_sum(density, OX_LEN_1, OY_LEN_1, 1);
+
+        printf("tl = %d IterCount = %d Max(Residual) = %le Sum(Rho) = %le Sum(absRho) = %le\n",
+               tl, ic, maxRes, sum_rho, sum_abs_rho);
         fflush(stdout);
+        // !!!!
+        if (tl % 1 == 0) {
+            print_surface("test2_1_phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+                          U_VELOCITY, V_VELOCITY, phi);
+            print_surface("test2_1_rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+                          U_VELOCITY, V_VELOCITY, density);
+            print_surface("test2_1_res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+                          U_VELOCITY, V_VELOCITY, residual);
+            double *err_lock = calc_error_2(HX, HY, tl * TAU, density);
+            print_surface("test2_1_err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(),
+                          TAU, U_VELOCITY, V_VELOCITY, err_lock);
+            delete[] err_lock;
+        }
     }
-    double *err = calc_error_2(HX, HY, density);
+    double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
     double l1_err = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err, TIME_STEP_CNT);
+    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err, maxRes, TIME_STEP_CNT);
     delete[] prev_density;
     delete[] phi;
     delete[] err;
+    delete[] residual;
     tme = GetTimer() / 1000;
     return density;
 }
 
-double *calc_error_2(double hx, double hy, double *solution) {
+double *calc_error_2(double hx, double hy, double tt, double *solution) {
     double *res = new double[XY_LEN];
     for (int i = 0; i < OX_LEN_1; i++)
         for (int j = 0; j < OY_LEN_1; j++)
             res[i * OY_LEN_1 + j] = fabs(solution[i * OY_LEN_1 + j]
-                                         - analytical_solution_circle(TAU * TIME_STEP_CNT, A + hx * i, C + hy * j));
+                                         - analytical_solution_circle(tt, A + hx * i, C + hy * j));
     return res;
 }
 
