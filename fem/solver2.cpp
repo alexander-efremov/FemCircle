@@ -60,10 +60,6 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         // p4 (x_{i-1/2}, y_{j+1/2})
         x4 = A + ii * HX - HX / 2.;
         y4 = C + jj * HY + HY / 2.;
-        if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
-            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
-            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
-                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
     else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
         // p1 (x_{OX_LEN-1/2}, y_{OY_LEN-1/2})
@@ -78,10 +74,6 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         // p4 (x_{OX_LEN-1/2}, D)
         x4 = B - HX / 2.;
         y4 = D;
-        if (x1 <= A || x1 > B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 > B
-            || y1 <= C || y1 > D || y2 <= C || y2 > D || y3 <= C || y3 > D || y4 <= C || y4 > D)
-            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
-                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
     else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G3 -- top boundary
         // p1 (x_{i-1/2}, y_{OY_LEN-1/2})
@@ -96,10 +88,6 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         //p4 (x_{i-1/2}, D)
         x4 = A + ii * HX - HX / 2.;
         y4 = D;
-        if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
-            || y1 <= C || y1 > D || y2 <= C || y2 > D || y3 <= C || y3 > D || y4 <= C || y4 > D)
-            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
-                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
     else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G2 -- right boundary
         // p1 (x_{OX_LEN-1/2}, y_{j-1/2})
@@ -114,12 +102,7 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         // p4 (x_{OX_LEN-1/2}, y_{j+1/2})
         x4 = B - HX / 2.;
         y4 = C + jj * HY + HY / 2.;
-        if (x1 <= A || x1 > B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 > B
-            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
-            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
-                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else printf("ERROR! INDEX i=%d j=%d ", ii, jj);
 
     double u = func_u(time_value, x1, y1);
     double v = func_v(time_value, x1, y1);
