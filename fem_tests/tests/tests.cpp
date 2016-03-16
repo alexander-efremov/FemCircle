@@ -182,6 +182,9 @@ TEST_F(FemFixture1, test2_1) {
     R_SQ = 0.099 * 0.099;
     INN_DENSITY = 1.;
     OUT_DENSITY = 0.;
+    RES_EPS = 1.e-14;
+    DBL_MIN_TRIM = 1.e-16;
+    INTEGR_TYPE = 1;
 
     OX_LEN = (int) 200;
     OY_LEN = (int) 200;

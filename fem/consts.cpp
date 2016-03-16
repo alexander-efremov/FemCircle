@@ -26,3 +26,7 @@ double INN_DENSITY = 0.;
 double OUT_DENSITY = 0.;
 double U_VELOCITY = 0.;
 double V_VELOCITY = 0.;
+double DBL_MIN_TRIM = 0.;
+double RES_EPS = 0.;
+int INTEGR_TYPE = 0;
+

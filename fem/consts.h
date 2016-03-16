@@ -21,6 +21,9 @@ extern double INN_DENSITY; // density inside circle
 extern double OUT_DENSITY; // density out of circle boundary
 extern double U_VELOCITY; // u velocity
 extern double V_VELOCITY; // v velocity
+extern double DBL_MIN_TRIM; // trim number to zero if it less than DBL_MIN_TRIM
+extern double RES_EPS; // EPS value for residual
+extern int INTEGR_TYPE; // Type of integration 1 = our, 2 - Elena method
 
 #define EPS 10e-8
 
