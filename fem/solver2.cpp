@@ -8,6 +8,19 @@
 #include "utils.h"
 #include "tecplot.h"
 
+void print_data_to_files(double *phi, double *density, double *residual, int tl) {
+    print_surface("test2_1_phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+                  U_VELOCITY, V_VELOCITY, phi);
+    print_surface("test2_1_rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+                  U_VELOCITY, V_VELOCITY, density);
+    print_surface("test2_1_res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+                  U_VELOCITY, V_VELOCITY, residual);
+    double *err_lock = calc_error_2(HX, HY, tl * TAU, density);
+    print_surface("test2_1_err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(),
+                  TAU, U_VELOCITY, V_VELOCITY, err_lock);
+    delete[] err_lock;
+}
+
 double get_center_x_2() { return A + 0.3; }
 
 double get_center_y_2() { return C + 0.3; }
@@ -124,32 +137,22 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
     v = func_v(time_value, x4, y4);
     x4 = x4 - TAU * u;
     y4 = y4 - TAU * v;
-    if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
-        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
-        printf("Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
-                       "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
-
-//    printf("i=%d j=%d:   1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
-//           ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
 
     int nx = 128;
     int ny = 128;
-    int nx_1 = nx + 1;
-    int ny_1 = ny + 1;
 
     double x_step = 1. / nx;
     double y_step = 1. / ny;
-    //double* jak = new double[nx_1*ny_1];
 
     // get right part for jakoby
     double phi = 0.;
     double mes = x_step * y_step;
-    for (int i = 0; i < nx; ++i) { // было nx_1
-        for (int j = 0; j < ny; ++j) { // было ny_1
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
 
             double ideal_x = i * x_step + x_step / 2.;
             double ideal_y = j * y_step + y_step / 2.;
-// Ne nado dlya vychisleniya yakobiana!
+
             double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
                             + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
             double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
@@ -316,13 +319,10 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
         }
 
     }
+
     //phi = 0.25 * phi * mes;
     if (fabs(phi) < fabs(1.e-16)) phi = 0;
 
-//    print_surface("test2_1_jakoby", nx, ny, x_step, y_step, (int)(time_value/TAU), A, C, get_center_x_2(), get_center_y_2(),
-//                       TAU, ii, jj, jak);
-
-//    delete jak;
     return phi;
 }
 
@@ -368,24 +368,16 @@ double *solve_2(double &tme) {
         prev_density[j] = analytical_solution_circle(0., A, C + HY * j);
         if (fabs(prev_density[j]) < fabs(1.e-16)) prev_density[j] = 0;
     }
-/*
-    // (0,0)
-    prev_density[0] = analytical_solution_circle(0., A, C);
-    // (1,0)
-    prev_density[OY_LEN_1 * OX_LEN] = analytical_solution_circle(0., A + HX * OX_LEN, C);
-    // (1,1)
-    prev_density[OY_LEN_1 * OX_LEN + OY_LEN] = analytical_solution_circle(0., A + HX * OX_LEN, C + HY * OY_LEN);
-    // (0,1)
-    prev_density[OY_LEN] = analytical_solution_circle(0., A, C + HY * OY_LEN);
-*/
+
     memcpy(density, prev_density, XY_LEN * sizeof(double));
 
     // inner points
-    for (int i = 1; i < OX_LEN; ++i)
+    for (int i = 1; i < OX_LEN; ++i) {
         for (int j = 1; j < OY_LEN; ++j) {
             prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(0., A + HX * i, C + HY * j);
             if (fabs(prev_density[OY_LEN_1 * i + j]) < fabs(1.e-16)) prev_density[OY_LEN_1 * i + j] = 0;
         }
+    }
 
     double sum_rho = calc_array_sum(prev_density, OX_LEN_1, OY_LEN_1, 0);
     double sum_abs_rho = calc_array_sum(prev_density, OX_LEN_1, OY_LEN_1, 1);
@@ -393,7 +385,6 @@ double *solve_2(double &tme) {
     printf("SUM ABS RHO INIT= %le\n", sum_abs_rho);
     fflush(stdout);
 
-    // TIME STEP START
     double maxRes = FLT_MAX;
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
         // with usage of prev_density we calculate phi function values
@@ -551,19 +542,9 @@ double *solve_2(double &tme) {
         printf("tl = %d IterCount = %d Max(Residual) = %le Sum(Rho) = %le Sum(absRho) = %le\n",
                tl, ic, maxRes, sum_rho, sum_abs_rho);
         fflush(stdout);
-        // !!!!
-        if (tl % 1 == 0) {
-            print_surface("test2_1_phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
-                          U_VELOCITY, V_VELOCITY, phi);
-            print_surface("test2_1_rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
-                          U_VELOCITY, V_VELOCITY, density);
-            print_surface("test2_1_res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
-                          U_VELOCITY, V_VELOCITY, residual);
-            double *err_lock = calc_error_2(HX, HY, tl * TAU, density);
-            print_surface("test2_1_err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(),
-                          TAU, U_VELOCITY, V_VELOCITY, err_lock);
-            delete[] err_lock;
-        }
+
+        if (tl % 1 == 0)
+            print_data_to_files(phi, density, residual, tl);
     }
     double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
     double l1_err = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
