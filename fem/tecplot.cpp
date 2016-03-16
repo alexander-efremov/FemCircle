@@ -1,8 +1,8 @@
 #include <iostream>
 #include "tecplot.h"
 
-void print_surface_as_v1(const char *filename, int ox_len, int oy_len,
-                         double hx, double hy, double *data) {
+void print_surface_internal(const char *filename, int ox_len, int oy_len,
+                            double hx, double hy, double *data) {
     FILE *pfile = fopen(filename, "w");
     fprintf(pfile, "TITLE = 'DEM DATA | DEM DATA | DEM DATA | DEM DATA'\nVARIABLES = 'X' 'Y' 'E'\nZONE T='SubZone'");
     fprintf(pfile, "\nI=%d J=%d K=%d ZONETYPE=Ordered", oy_len + 1, ox_len + 1, 1);
@@ -21,7 +21,7 @@ bool print_surface(const char *filename, int ox_len, int oy_len,
     char name[550];
     sprintf(name, "%s_nx=%d_ny=%d_hx=%f_hy=%f_t=%d_x0=%f_y0=%f_tau=%f_u=%f_v=%f.dat",
             filename, ox_len + 1, oy_len + 1, hx, hy, t, x0, y0, tau, u, v);
-    print_surface_as_v1(name, ox_len, oy_len, hx, hy, data);
+    print_surface_internal(name, ox_len, oy_len, hx, hy, data);
     return true;
 }
 

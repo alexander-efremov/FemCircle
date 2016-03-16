@@ -211,6 +211,7 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
 
     return phi;
 }
+
 // ОБХОД ГРАНИЦЫ НЕВЕРНЫЙ! ДЕЛАТЬ КАК В SOLVER2
 double *solve_1(double &tme) {
     StartTimer();
