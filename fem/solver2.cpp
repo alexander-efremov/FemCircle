@@ -9,14 +9,14 @@
 #include "tecplot.h"
 
 void print_data_to_files(double *phi, double *density, double *residual, int tl) {
-    print_surface("test2_1_phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
                   U_VELOCITY, V_VELOCITY, phi);
-    print_surface("test2_1_rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+    print_surface("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
                   U_VELOCITY, V_VELOCITY, density);
-    print_surface("test2_1_res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+    print_surface("res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
                   U_VELOCITY, V_VELOCITY, residual);
     double *err_lock = calc_error_2(HX, HY, tl * TAU, density);
-    print_surface("test2_1_err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(),
+    print_surface("err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(),
                   TAU, U_VELOCITY, V_VELOCITY, err_lock);
     delete[] err_lock;
 }
