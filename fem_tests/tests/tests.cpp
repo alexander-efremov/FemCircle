@@ -241,7 +241,7 @@ TEST_F(FemFixture1, test2_2) {
     double tme = 0.;
 
     double d = 0;
-    for (int i = 3; i < 4; ++i) {
+    for (int i = 1; i < 2; ++i) {
         switch (i) {
             case 0:
                 d = 50.;
@@ -318,6 +318,7 @@ TEST_F(FemFixture1, test2_2) {
                       V_VELOCITY, exact0);
         print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                       V_VELOCITY, exactT);
+
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
         double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
         printf("l1 %le \n", l1);
