@@ -38,7 +38,7 @@ inline static double analytical_solution_circle(double t, double x, double y) {
 }
 
 // Elena integration process
-static double get_phi_integ_elena(int ii, int jj, double *density, double time_value) {
+static double get_phi_integ_trapezium(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;
     double y1 = 0.;
     double x2 = 0.;
@@ -120,7 +120,8 @@ static double get_phi_integ_elena(int ii, int jj, double *density, double time_v
             printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else printf("ERROR! INDEX i=%d j=%d ", ii, jj);
+    else
+        printf("ERROR! INDEX i=%d j=%d ", ii, jj);
 
     double u = func_u(time_value, x1, y1);
     double v = func_v(time_value, x1, y1);
@@ -143,8 +144,8 @@ static double get_phi_integ_elena(int ii, int jj, double *density, double time_v
         printf("Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                        "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
 
-    int nx = 128;
-    int ny = 128;
+    int nx = IDEAL_SQ_SIZE_X;
+    int ny = IDEAL_SQ_SIZE_Y;
 
     double x_step = 1. / nx;
     double y_step = 1. / ny;
@@ -301,7 +302,7 @@ static double get_phi_integ_elena(int ii, int jj, double *density, double time_v
 }
 
 // our integration process
-static double get_phi_integ_main(int ii, int jj, double *density, double time_value) {
+static double get_phi_integ_midpoint(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;
     double y1 = 0.;
     double x2 = 0.;
@@ -406,8 +407,8 @@ static double get_phi_integ_main(int ii, int jj, double *density, double time_va
         printf("Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                        "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
 
-    int nx = 128;
-    int ny = 128;
+    int nx = IDEAL_SQ_SIZE_X;
+    int ny = IDEAL_SQ_SIZE_Y;
 
     double x_step = 1. / nx;
     double y_step = 1. / ny;
@@ -529,10 +530,10 @@ double *solve_2(double &tme) {
         for (int i = 1; i < OX_LEN; ++i) {
             double integ = 0.;
             if (INTEGR_TYPE == 1) {
-                integ = get_phi_integ_main(i, OY_LEN, prev_density, TAU * tl);
+                integ = get_phi_integ_midpoint(i, OY_LEN, prev_density, TAU * tl);
             }
             else if (INTEGR_TYPE == 2) {
-                integ = get_phi_integ_elena(i, OY_LEN, prev_density, TAU * tl);
+                integ = get_phi_integ_trapezium(i, OY_LEN, prev_density, TAU * tl);
             }
             phi[OY_LEN_1 * i + OY_LEN] = integ;
         }
@@ -541,20 +542,20 @@ double *solve_2(double &tme) {
         for (int j = 1; j < OY_LEN; ++j) {
             double integ = 0.;
             if (INTEGR_TYPE == 1) {
-                integ = get_phi_integ_main(OX_LEN, j, prev_density, TAU * tl);
+                integ = get_phi_integ_midpoint(OX_LEN, j, prev_density, TAU * tl);
             }
             else if (INTEGR_TYPE == 2) {
-                integ = get_phi_integ_elena(OX_LEN, j, prev_density, TAU * tl);
+                integ = get_phi_integ_trapezium(OX_LEN, j, prev_density, TAU * tl);
             }
             phi[OY_LEN_1 * OX_LEN + j] = integ;
         }
 
         double integ = 0.;
         if (INTEGR_TYPE == 1) {
-            integ = get_phi_integ_main(OX_LEN, OY_LEN, prev_density, TAU * tl);
+            integ = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl);
         }
         else if (INTEGR_TYPE == 2) {
-            integ = get_phi_integ_elena(OX_LEN, OY_LEN, prev_density, TAU * tl);
+            integ = get_phi_integ_trapezium(OX_LEN, OY_LEN, prev_density, TAU * tl);
         }
         // point (1,1)
         phi[OY_LEN_1 * OX_LEN + OY_LEN] = integ;
@@ -564,10 +565,10 @@ double *solve_2(double &tme) {
             for (int j = 1; j < OY_LEN; ++j) {
                 double integ = 0.;
                 if (INTEGR_TYPE == 1) {
-                    integ = get_phi_integ_main(i, j, prev_density, TAU * tl);
+                    integ = get_phi_integ_midpoint(i, j, prev_density, TAU * tl);
                 }
                 else if (INTEGR_TYPE == 2) {
-                    integ = get_phi_integ_elena(i, j, prev_density, TAU * tl);
+                    integ = get_phi_integ_trapezium(i, j, prev_density, TAU * tl);
                 }
                 phi[OY_LEN_1 * i + j] = integ;
             }

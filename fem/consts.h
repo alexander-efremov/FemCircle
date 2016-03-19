@@ -23,7 +23,9 @@ extern double U_VELOCITY; // u velocity
 extern double V_VELOCITY; // v velocity
 extern double DBL_MIN_TRIM; // trim number to zero if it less than DBL_MIN_TRIM
 extern double RES_EPS; // EPS value for residual
-extern int INTEGR_TYPE; // Type of integration 1 = our, 2 - Elena method
+extern int INTEGR_TYPE; // Type of integration 1 = midpoint, 2 - trapezium
+extern int IDEAL_SQ_SIZE_X; // Size of ideal square by x
+extern int IDEAL_SQ_SIZE_Y; // Size of ideal square by y
 
 #define EPS 10e-8
 
