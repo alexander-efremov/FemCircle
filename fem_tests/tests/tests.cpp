@@ -279,8 +279,8 @@ TEST_F(FemFixture1, test2_2) {
         OY_LEN_1 = OY_LEN + 1;
         HX = (B - A) / OX_LEN;
         HY = (D - C) / OY_LEN;
-        IDEAL_SQ_SIZE_X = 256;
-        IDEAL_SQ_SIZE_Y = 256;
+        IDEAL_SQ_SIZE_X = 128;
+        IDEAL_SQ_SIZE_Y = 128;
 
         INTEGR_TYPE = 1;
 
