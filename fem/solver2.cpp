@@ -37,7 +37,6 @@ inline static double analytical_solution_circle(double t, double x, double y) {
     return OUT_DENSITY;
 }
 
-// Elena integration process
 static double get_phi_integ_trapezium(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;
     double y1 = 0.;
@@ -301,7 +300,6 @@ static double get_phi_integ_trapezium(int ii, int jj, double *density, double ti
     return phi;
 }
 
-// our integration process
 static double get_phi_integ_midpoint(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;
     double y1 = 0.;

@@ -176,7 +176,7 @@ inline bool is_empty_file(FILE *f) {
 
 inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1, double res_inf, int time_steps) {
     FILE *file;
-    const char* filename = "/home/jane/ClionProjects/fem_cirle/statistics.dat";
+    const char* filename = "/home/jane/ClionProjects/fem_circle/statistics.dat";
     file = fopen(filename, "a");
     if (file == NULL) {
         perror("Error opening file.");

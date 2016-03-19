@@ -241,7 +241,7 @@ TEST_F(FemFixture1, test2_2) {
     double tme = 0.;
 
     double d = 0;
-    for (int i = 4; i < 5; ++i) {
+    for (int i = 3; i < 4; ++i) {
         switch (i) {
             case 0:
                 d = 50.;
@@ -302,7 +302,6 @@ TEST_F(FemFixture1, test2_2) {
         printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
         printf("IDEAL_SQ_SIZE_X = %d\n", IDEAL_SQ_SIZE_X);
         printf("IDEAL_SQ_SIZE_Y = %d\n", IDEAL_SQ_SIZE_Y);
-
 
         double *density = solve_2(tme);
         double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
