@@ -189,9 +189,13 @@ TEST_F(FemFixture1, test2_1) {
     OY_LEN_1 = OY_LEN + 1;
     HX = (B - A) / OX_LEN;
     HY = (D - C) / OY_LEN;
+    IDEAL_SQ_SIZE_X = 256;
+    IDEAL_SQ_SIZE_Y = 256;
 
-    U_VELOCITY = 1.;//1.;
-    V_VELOCITY = 1.;//1.;
+    INTEGR_TYPE = 1;
+
+    U_VELOCITY = 1.;
+    V_VELOCITY = 1.;
     TAU = 1.e-3;
     //TIME_STEP_CNT = (int) ((1 - get_center_x_2() - get_center_y_2()) / TAU);
     TIME_STEP_CNT = 100;
@@ -204,6 +208,9 @@ TEST_F(FemFixture1, test2_1) {
     printf("U = %le\n", U_VELOCITY);
     printf("V = %le\n", V_VELOCITY);
     printf("TIME_STEP_CNT = %d\n", TIME_STEP_CNT);
+    printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
+    printf("IDEAL_SQ_SIZE_X = %d\n", IDEAL_SQ_SIZE_X);
+    printf("IDEAL_SQ_SIZE_Y = %d\n", IDEAL_SQ_SIZE_Y);
 
     double *density = solve_2(tme);
     double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -212,13 +219,13 @@ TEST_F(FemFixture1, test2_1) {
 
     double y0 = get_center_y_2();
     double x0 = get_center_x_2();
-    print_surface("test2_1_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+    print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                   V_VELOCITY, density);
-    print_surface("test2_1_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+    print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                   V_VELOCITY, err);
-    print_surface("test2_1_exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
+    print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
                   V_VELOCITY, exact0);
-    print_surface("test2_1_exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+    print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                   V_VELOCITY, exactT);
     double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
     double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
@@ -275,6 +282,8 @@ TEST_F(FemFixture1, test2_2) {
         IDEAL_SQ_SIZE_X = 256;
         IDEAL_SQ_SIZE_Y = 256;
 
+        INTEGR_TYPE = 1;
+
         U_VELOCITY = 1.;
         V_VELOCITY = 1.;
         TAU = 16. / pow(2., (i + 1));
@@ -290,6 +299,10 @@ TEST_F(FemFixture1, test2_2) {
         printf("U = %le\n", U_VELOCITY);
         printf("V = %le\n", V_VELOCITY);
         printf("TIME_STEP_CNT = %d\n", TIME_STEP_CNT);
+        printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
+        printf("IDEAL_SQ_SIZE_X = %d\n", IDEAL_SQ_SIZE_X);
+        printf("IDEAL_SQ_SIZE_Y = %d\n", IDEAL_SQ_SIZE_Y);
+
 
         double *density = solve_2(tme);
         double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -298,13 +311,13 @@ TEST_F(FemFixture1, test2_2) {
 
         double x0 = get_center_x_2();
         double y0 = get_center_y_2();
-        print_surface("test2_1_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+        print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                       V_VELOCITY, density);
-        print_surface("test2_1_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+        print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                       V_VELOCITY, err);
-        print_surface("test2_1_exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
+        print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
                       V_VELOCITY, exact0);
-        print_surface("test2_1_exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+        print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                       V_VELOCITY, exactT);
         double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
         double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);

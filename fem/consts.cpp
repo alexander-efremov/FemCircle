@@ -28,7 +28,7 @@ double U_VELOCITY = 0.;
 double V_VELOCITY = 0.;
 double DBL_MIN_TRIM = 0.;
 double RES_EPS = 0.;
-int INTEGR_TYPE = 0;
+int INTEGR_TYPE = 1;
 int IDEAL_SQ_SIZE_X = 0;
 int IDEAL_SQ_SIZE_Y = 0;
 
