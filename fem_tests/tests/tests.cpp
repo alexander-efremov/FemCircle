@@ -213,6 +213,8 @@ TEST_F(FemFixture1, test2_1) {
     printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
     printf("IDEAL_SQ_SIZE_X = %d\n", IDEAL_SQ_SIZE_X);
     printf("IDEAL_SQ_SIZE_Y = %d\n", IDEAL_SQ_SIZE_Y);
+    printf("CENTER_OFFSET_X = %le\n", CENTER_OFFSET_X);
+    printf("CENTER_OFFSET_Y = %le\n", CENTER_OFFSET_Y);
 
     double *density = solve_2(tme);
     double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -307,6 +309,8 @@ TEST_F(FemFixture1, test2_2) {
             printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
             printf("IDEAL_SQ_SIZE_X = %d\n", IDEAL_SQ_SIZE_X);
             printf("IDEAL_SQ_SIZE_Y = %d\n", IDEAL_SQ_SIZE_Y);
+            printf("CENTER_OFFSET_X = %le\n", CENTER_OFFSET_X);
+            printf("CENTER_OFFSET_Y = %le\n", CENTER_OFFSET_Y);
 
             double *density = solve_2(tme);
             double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -336,6 +340,7 @@ TEST_F(FemFixture1, test2_2) {
     }
 }
 
+// тестируем вылет пятна за границу
 TEST_F(FemFixture1, test2_3) {
     double tme = 0.;
     for (int iter = 0; iter < 1; ++iter) {
@@ -405,6 +410,8 @@ TEST_F(FemFixture1, test2_3) {
             printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
             printf("IDEAL_SQ_SIZE_X = %d\n", IDEAL_SQ_SIZE_X);
             printf("IDEAL_SQ_SIZE_Y = %d\n", IDEAL_SQ_SIZE_Y);
+            printf("CENTER_OFFSET_X = %le\n", CENTER_OFFSET_X);
+            printf("CENTER_OFFSET_Y = %le\n", CENTER_OFFSET_Y);
 
             double *density = solve_2(tme);
             double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
