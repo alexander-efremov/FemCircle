@@ -26,6 +26,9 @@ extern double RES_EPS; // EPS value for residual
 extern int INTEGR_TYPE; // Type of integration 1 = midpoint, 2 - trapezium
 extern int IDEAL_SQ_SIZE_X; // Size of ideal square by x
 extern int IDEAL_SQ_SIZE_Y; // Size of ideal square by y
+extern double CENTER_OFFSET_X; // Offset of center of circle by x
+extern double CENTER_OFFSET_Y; // Offset of center of circle by y
+
 
 #define EPS 10e-8
 

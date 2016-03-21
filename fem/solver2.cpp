@@ -21,9 +21,9 @@ void print_data_to_files(double *phi, double *density, double *residual, int tl)
     delete[] err_lock;
 }
 
-double get_center_x_2() { return A + 0.3; }
+double get_center_x_2() { return A + CENTER_OFFSET_X; }
 
-double get_center_y_2() { return C + 0.3; }
+double get_center_y_2() { return C + CENTER_OFFSET_Y; }
 
 inline static double func_u(double t, double x, double y) { return U_VELOCITY; }
 

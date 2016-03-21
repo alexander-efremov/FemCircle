@@ -31,4 +31,6 @@ double RES_EPS = 1.e-14;
 int INTEGR_TYPE = 1;
 int IDEAL_SQ_SIZE_X = 0;
 int IDEAL_SQ_SIZE_Y = 0;
+double CENTER_OFFSET_X = 0.;
+double CENTER_OFFSET_Y = 0.;
 
