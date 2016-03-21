@@ -13,8 +13,8 @@ void print_data_to_files(double *phi, double *density, double *residual, int tl)
 //                  U_VELOCITY, V_VELOCITY, phi);
     print_surface("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
                   U_VELOCITY, V_VELOCITY, density);
-    print_surface("res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
-                  U_VELOCITY, V_VELOCITY, residual);
+//    print_surface("res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+//                  U_VELOCITY, V_VELOCITY, residual);
     double *err_lock = calc_error_2(HX, HY, tl * TAU, density);
     print_surface("err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(),
                   TAU, U_VELOCITY, V_VELOCITY, err_lock);
@@ -503,7 +503,7 @@ double *solve_2(double &tme) {
     for (int i = 1; i < OX_LEN; ++i) {
         for (int j = 1; j < OY_LEN; ++j) {
             prev_density[OY_LEN_1 * i + j] = analytical_solution_circle(0., A + HX * i, C + HY * j);
-            if (fabs(prev_density[OY_LEN_1 * i + j]) < fabs(DBL_MIN_TRIM)) prev_density[OY_LEN_1 * i + j] = 0;
+            //if (fabs(prev_density[OY_LEN_1 * i + j]) < fabs(DBL_MIN_TRIM)) prev_density[OY_LEN_1 * i + j] = 0;
         }
     }
 
