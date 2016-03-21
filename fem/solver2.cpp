@@ -9,8 +9,8 @@
 #include "tecplot.h"
 
 void print_data_to_files(double *phi, double *density, double *residual, int tl) {
-    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
-                  U_VELOCITY, V_VELOCITY, phi);
+//    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+//                  U_VELOCITY, V_VELOCITY, phi);
     print_surface("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
                   U_VELOCITY, V_VELOCITY, density);
     print_surface("res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
@@ -442,7 +442,6 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
                           + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
                           + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
                           + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
-
 
             phi += mes * dens * jakob;
         }
