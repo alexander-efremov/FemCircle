@@ -34,7 +34,7 @@ public:
 
 void print_params() {
     printf("\nOX_LENxOY_LEN = %dx%d\n", OX_LEN, OY_LEN);
-    printf("(U, V) = (%le, %le\n)", U_VELOCITY, V_VELOCITY);
+    printf("(U, V) = (%le, %le)\n", U_VELOCITY, V_VELOCITY);
     printf("(HX, HY) = (%le, %le)\n", HX, HY);
     printf("TAU = %le\n", TAU);
     printf("TIME_STEP_CNT = %d\n", TIME_STEP_CNT);
