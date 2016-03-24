@@ -717,7 +717,15 @@ double *solve_2(double &tme) {
         fflush(stdout);
 
         if (tl % 1 == 0)
+        {
             print_data_to_files(phi, density, residual, tl);
+            int fixed_x = (int)(get_center_x_2()/HX);
+            int fixed_y = (int)(get_center_y_2() / HY);
+            print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+                               U_VELOCITY, V_VELOCITY, density, fixed_y);
+            print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+                               U_VELOCITY, V_VELOCITY, density, fixed_x);
+        }
     }
 
     double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);

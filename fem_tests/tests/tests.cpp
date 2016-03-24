@@ -397,7 +397,7 @@ TEST_F(FemFixture1, test2_3) {
             TAU = 16. / pow(2., (i + 1));
             TAU *= 1.e-3;
             //TIME_STEP_CNT = (int) pow(2., i);
-            TIME_STEP_CNT = 250;
+            TIME_STEP_CNT = 1;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
