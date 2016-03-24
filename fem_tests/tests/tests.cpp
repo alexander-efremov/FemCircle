@@ -32,6 +32,17 @@ public:
     }
 };
 
+void print_params() {
+    printf("\nOX_LENxOY_LEN = %dx%d\n", OX_LEN, OY_LEN);
+    printf("(U, V) = (%le, %le\n)", U_VELOCITY, V_VELOCITY);
+    printf("(HX, HY) = (%le, %le)\n", HX, HY);
+    printf("TAU = %le\n", TAU);
+    printf("TIME_STEP_CNT = %d\n", TIME_STEP_CNT);
+    printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
+    printf("IDEAL_SQ_SIZE = %dx%d\n", IDEAL_SQ_SIZE_X, IDEAL_SQ_SIZE_Y);
+    printf("CENTER_OFFSET = %le, %le\n", CENTER_OFFSET_X, CENTER_OFFSET_Y);
+}
+
 TEST_F(FemFixture, test1) {
     double tme = 0.;
 
@@ -81,7 +92,9 @@ TEST_F(FemFixture, test1) {
         XY_LEN = OX_LEN_1 * OY_LEN_1;
         U_VELOCITY = 0.;
         V_VELOCITY = 0.;
-        printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
+
+        print_params();
+
         double *density = solve_1(tme);
         double *err = calc_error_1(HX, HY, density);
         double x0 = get_center_x_1();
@@ -148,9 +161,8 @@ TEST_F(FemFixture, test2) {
         U_VELOCITY = a;
         V_VELOCITY = a;
         TAU = std::min(HX / (3. * a), HY / (3. * a));
-        printf("\nHX = %le\n", HX);
-        printf("HY = %le\n", HY);
-        printf("TAU = %le\n", TAU);
+
+        print_params();
 
         TIME_STEP_CNT = (int) 1;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
@@ -203,18 +215,7 @@ TEST_F(FemFixture1, test2_1) {
     TIME_STEP_CNT = 100;
     XY_LEN = OX_LEN_1 * OY_LEN_1;
 
-    printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
-    printf("HX = %le\n", HX);
-    printf("HY = %le\n", HY);
-    printf("TAU = %le\n", TAU);
-    printf("U = %le\n", U_VELOCITY);
-    printf("V = %le\n", V_VELOCITY);
-    printf("TIME_STEP_CNT = %d\n", TIME_STEP_CNT);
-    printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
-    printf("IDEAL_SQ_SIZE_X = %d\n", IDEAL_SQ_SIZE_X);
-    printf("IDEAL_SQ_SIZE_Y = %d\n", IDEAL_SQ_SIZE_Y);
-    printf("CENTER_OFFSET_X = %le\n", CENTER_OFFSET_X);
-    printf("CENTER_OFFSET_Y = %le\n", CENTER_OFFSET_Y);
+    print_params();
 
     double *density = solve_2(tme);
     double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -299,18 +300,7 @@ TEST_F(FemFixture1, test2_2) {
             TIME_STEP_CNT = 400;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
-            printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
-            printf("HX = %le\n", HX);
-            printf("HY = %le\n", HY);
-            printf("TAU = %le\n", TAU);
-            printf("U = %le\n", U_VELOCITY);
-            printf("V = %le\n", V_VELOCITY);
-            printf("TIME_STEP_CNT = %d\n", TIME_STEP_CNT);
-            printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
-            printf("IDEAL_SQ_SIZE_X = %d\n", IDEAL_SQ_SIZE_X);
-            printf("IDEAL_SQ_SIZE_Y = %d\n", IDEAL_SQ_SIZE_Y);
-            printf("CENTER_OFFSET_X = %le\n", CENTER_OFFSET_X);
-            printf("CENTER_OFFSET_Y = %le\n", CENTER_OFFSET_Y);
+            print_params();
 
             double *density = solve_2(tme);
             double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -400,18 +390,7 @@ TEST_F(FemFixture1, test2_3) {
             TIME_STEP_CNT = 1;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
-            printf("\nOX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
-            printf("HX = %le\n", HX);
-            printf("HY = %le\n", HY);
-            printf("TAU = %le\n", TAU);
-            printf("U = %le\n", U_VELOCITY);
-            printf("V = %le\n", V_VELOCITY);
-            printf("TIME_STEP_CNT = %d\n", TIME_STEP_CNT);
-            printf("INTEGR_TYPE = %d\n", INTEGR_TYPE);
-            printf("IDEAL_SQ_SIZE_X = %d\n", IDEAL_SQ_SIZE_X);
-            printf("IDEAL_SQ_SIZE_Y = %d\n", IDEAL_SQ_SIZE_Y);
-            printf("CENTER_OFFSET_X = %le\n", CENTER_OFFSET_X);
-            printf("CENTER_OFFSET_Y = %le\n", CENTER_OFFSET_Y);
+            print_params();
 
             double *density = solve_2(tme);
             double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
