@@ -172,8 +172,8 @@ TEST_F(FemFixture, test2) {
         printf("OX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
         double *density = solve_2(tme);
         double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
-        double x0 = get_center_x_2();
-        double y0 = get_center_y_2();
+        double x0 = get_center_x();
+        double y0 = get_center_y();
         print_surface("test2_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                       V_VELOCITY, density);
         print_surface("test2_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
@@ -224,8 +224,8 @@ TEST_F(FemFixture1, test2_1) {
     double *exact0 = get_exact_solution_2(HX, HY, 0);
     double *exactT = get_exact_solution_2(HX, HY, TAU * TIME_STEP_CNT);
 
-    double y0 = get_center_y_2();
-    double x0 = get_center_x_2();
+    double y0 = get_center_y();
+    double x0 = get_center_x();
     print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                   V_VELOCITY, density);
     print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
@@ -309,8 +309,8 @@ TEST_F(FemFixture1, test2_2) {
             double *exact0 = get_exact_solution_2(HX, HY, 0);
             double *exactT = get_exact_solution_2(HX, HY, TAU * TIME_STEP_CNT);
 
-            double x0 = get_center_x_2();
-            double y0 = get_center_y_2();
+            double x0 = get_center_x();
+            double y0 = get_center_y();
             print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                           V_VELOCITY, density);
             print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
@@ -399,8 +399,8 @@ TEST_F(FemFixture1, test2_3) {
             double *exact0 = get_exact_solution_2(HX, HY, 0);
             double *exactT = get_exact_solution_2(HX, HY, TAU * TIME_STEP_CNT);
 
-            double x0 = get_center_x_2();
-            double y0 = get_center_y_2();
+            double x0 = get_center_x();
+            double y0 = get_center_y();
             print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                           V_VELOCITY, density);
             print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
