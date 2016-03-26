@@ -3,7 +3,6 @@
 #include <string.h>
 #include <float.h>
 #include "consts.h"
-#include "solver1.h"
 #include "timer.h"
 #include "common.h"
 

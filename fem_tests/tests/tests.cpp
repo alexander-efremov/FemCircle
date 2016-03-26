@@ -2,9 +2,6 @@
 #include <cmath>
 #include <common.h>
 #include "gtest/gtest.h"
-#include "consts.h"
-#include "solver1.h"
-#include "solver2.h"
 
 class FemFixture : public ::testing::Test {
 protected:

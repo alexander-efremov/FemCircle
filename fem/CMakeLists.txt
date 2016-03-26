@@ -7,9 +7,11 @@ add_definitions(-std=c++0x)
 set(HEADER_FILES
     utils.h
     timer.h
+    common.h
+    consts.h
     )
 
 set(SOURCE_FILES
-       consts.h solver1.h solver1.cpp solver2.h solver2.cpp consts.cpp common.h)
+       solver1.cpp solver2.cpp consts.cpp)
 
 add_library(fem STATIC ${SOURCE_FILES} ${HEADER_FILES})
