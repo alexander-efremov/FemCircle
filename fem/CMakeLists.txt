@@ -5,13 +5,11 @@ project(fem)
 add_definitions(-std=c++0x)
 
 set(HEADER_FILES
-    tecplot.h
     utils.h
     timer.h
     )
 
 set(SOURCE_FILES
-    tecplot.cpp
-        consts.h solver1.h solver1.cpp solver2.h solver2.cpp consts.cpp)
+       consts.h solver1.h solver1.cpp solver2.h solver2.cpp consts.cpp common.h)
 
 add_library(fem STATIC ${SOURCE_FILES} ${HEADER_FILES})

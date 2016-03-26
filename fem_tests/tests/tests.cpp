@@ -1,10 +1,10 @@
 #include <utils.h>
 #include <cmath>
+#include <common.h>
 #include "gtest/gtest.h"
 #include "consts.h"
 #include "solver1.h"
 #include "solver2.h"
-#include "tecplot.h"
 
 class FemFixture : public ::testing::Test {
 protected:
@@ -92,13 +92,15 @@ TEST_F(FemFixture, test1) {
         XY_LEN = OX_LEN_1 * OY_LEN_1;
         U_VELOCITY = 0.;
         V_VELOCITY = 0.;
+        CENTER_OFFSET_X = OX_LEN * HX / 2.;
+        CENTER_OFFSET_Y = OY_LEN * HY / 2.;
 
         print_params();
 
         double *density = solve_1(tme);
         double *err = calc_error_1(HX, HY, density);
-        double x0 = get_center_x_1();
-        double y0 = get_center_y_1();
+        double x0 = get_center_x();
+        double y0 = get_center_y();
         print_surface("test1_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                       V_VELOCITY, density);
         print_surface("test1_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,

@@ -6,32 +6,28 @@
 #include "solver2.h"
 #include "timer.h"
 #include "utils.h"
-#include "tecplot.h"
+#include "common.h"
 
 void print_data_to_files(double *phi, double *density, double *residual, int tl) {
 //    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
 //                  U_VELOCITY, V_VELOCITY, phi);
-    print_surface("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+    print_surface("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
                   U_VELOCITY, V_VELOCITY, density);
 //    print_surface("res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
 //                  U_VELOCITY, V_VELOCITY, residual);
     double *err_lock = calc_error_2(HX, HY, tl * TAU, density);
-    print_surface("err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(),
+    print_surface("err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(),
                   TAU, U_VELOCITY, V_VELOCITY, err_lock);
     delete[] err_lock;
 }
-
-double get_center_x_2() { return A + CENTER_OFFSET_X; }
-
-double get_center_y_2() { return C + CENTER_OFFSET_Y; }
 
 inline static double func_u(double t, double x, double y) { return U_VELOCITY; }
 
 inline static double func_v(double t, double x, double y) { return V_VELOCITY; }
 
 inline static double analytical_solution_circle(double t, double x, double y) {
-    double x0 = get_center_x_2() + t * func_u(t, x, y);
-    double y0 = get_center_y_2() + t * func_v(t, x, y);
+    double x0 = get_center_x() + t * func_u(t, x, y);
+    double y0 = get_center_y() + t * func_v(t, x, y);
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
     if (value <= R_SQ) return INN_DENSITY;
     return OUT_DENSITY;

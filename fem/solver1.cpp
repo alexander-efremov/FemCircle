@@ -5,14 +5,11 @@
 #include "consts.h"
 #include "solver1.h"
 #include "timer.h"
-
-double get_center_x_1() { return A + OX_LEN * HX / 2.; }
-
-double get_center_y_1() { return C + OY_LEN * HY / 2.; }
+#include "common.h"
 
 inline static double analytical_solution_circle(double x, double y) {
-    double x0 = get_center_x_1();
-    double y0 = get_center_y_1();
+    double x0 = get_center_x();
+    double y0 = get_center_y();
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
     if (value <= R_SQ) return INN_DENSITY;
     return OUT_DENSITY;
