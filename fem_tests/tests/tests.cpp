@@ -466,8 +466,8 @@ TEST_F(FemFixture1, test3_1) {
             IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
 
-            CENTER_OFFSET_X = 0.85;
-            CENTER_OFFSET_Y = 0.5;
+            CENTER_OFFSET_X = 0.5;
+            CENTER_OFFSET_Y = 0.7;
 
             INTEGR_TYPE = 1;
 
