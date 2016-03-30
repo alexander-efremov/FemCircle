@@ -20,9 +20,9 @@ void print_data_to_files(double *phi, double *density, double *residual, int tl)
     delete[] err_lock;
 }
 
-inline static double func_u(double t, double x, double y) { return U_VELOCITY; }
+inline static double func_u(double t, double x, double y) { return -y + CENTER_OFFSET_Y; }
 
-inline static double func_v(double t, double x, double y) { return V_VELOCITY; }
+inline static double func_v(double t, double x, double y) { return x - CENTER_OFFSET_X; }
 
 inline static double analytical_solution_circle(double t, double x, double y) {
     double x0 = get_center_x() + t * func_u(t, x, y);
