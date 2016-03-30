@@ -191,7 +191,6 @@ static double get_phi_integ_trapezium(int ii, int jj, double *density, double ti
                             + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
                             + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
 
-
             // point (x_{i+1},y_j)
             ideal_x = (i + 1) * x_step;
             ideal_y = j * y_step;
@@ -252,7 +251,6 @@ static double get_phi_integ_trapezium(int ii, int jj, double *density, double ti
                             + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
                             + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
                             + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
-
 
             // point (x_i,y_{j+1})
             ideal_x = i * x_step;
@@ -376,7 +374,8 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
             printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else printf("ERROR! INDEX i=%d j=%d ", ii, jj);
+    else
+        printf("ERROR! INDEX i=%d j=%d ", ii, jj);
 
     double u = func_u(time_value, x1, y1);
     double v = func_v(time_value, x1, y1);
