@@ -418,3 +418,93 @@ TEST_F(FemFixture1, test2_3) {
         }
     }
 }
+
+// тестируем третий случай - движение по кругу
+TEST_F(FemFixture1, test3_1) {
+    double tme = 0.;
+    for (int iter = 0; iter < 1; ++iter) {
+
+        double d = 0;
+        for (int i = 3; i < 4; ++i) {
+            switch (i) {
+                case 0:
+                    d = 50.;
+                    break;
+                case 1:
+                    d = 100.;
+                    break;
+                case 2:
+                    d = 200.;
+                    break;
+                case 3:
+                    d = 400.;
+                    break;
+                case 4:
+                    d = 800.;
+                    break;
+                case 5:
+                    d = 1600.;
+                    break;
+                default:
+                    return;
+            }
+
+            A = 0.;
+            B = 1.;
+            C = 0.;
+            D = 1.;
+            R_SQ = 0.099 * 0.099;
+            INN_DENSITY = 1.;
+            OUT_DENSITY = 0.;
+
+            OX_LEN = (int) d;
+            OY_LEN = (int) d;
+            OX_LEN_1 = OX_LEN + 1;
+            OY_LEN_1 = OY_LEN + 1;
+            HX = (B - A) / OX_LEN;
+            HY = (D - C) / OY_LEN;
+            IDEAL_SQ_SIZE_X = 128 * (iter + 1);
+            IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
+
+            CENTER_OFFSET_X = 0.85;
+            CENTER_OFFSET_Y = 0.5;
+
+            INTEGR_TYPE = 1;
+
+            U_VELOCITY = 1.;
+            V_VELOCITY = 1.;
+            TAU = 16. / pow(2., (i + 1));
+            TAU *= 1.e-3;
+            //TIME_STEP_CNT = (int) pow(2., i);
+            TIME_STEP_CNT = 1;
+            XY_LEN = OX_LEN_1 * OY_LEN_1;
+
+            print_params();
+
+            double *density = solve_3(tme);
+            double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
+            double *exact0 = get_exact_solution_3(HX, HY, 0);
+            double *exactT = get_exact_solution_3(HX, HY, TAU * TIME_STEP_CNT);
+
+            double x0 = get_center_x();
+            double y0 = get_center_y();
+            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, density);
+            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, err);
+            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, exact0);
+            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, exactT);
+
+            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
+            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            printf("l1 %le \n", l1);
+            printf("l_inf %le\n", l_inf);
+            delete[] density;
+            delete[] exact0;
+            delete[] exactT;
+            delete[] err;
+        }
+    }
+}
