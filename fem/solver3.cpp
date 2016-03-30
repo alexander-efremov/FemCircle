@@ -7,7 +7,7 @@
 #include "utils.h"
 #include "common.h"
 
-void print_data_to_files(double *phi, double *density, double *residual, int tl) {
+inline void print_data_to_files(double *phi, double *density, double *residual, int tl) {
 //    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
 //                  U_VELOCITY, V_VELOCITY, phi);
     print_surface("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
