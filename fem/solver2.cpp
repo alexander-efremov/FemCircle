@@ -153,7 +153,6 @@ static double get_phi_integ_trapezium(int ii, int jj, double *density, double ti
             double ideal_x = i * x_step + x_step / 2.;
             double ideal_y = j * y_step + y_step / 2.;
 
-
             double a11 = (x2 - x1) + (x1 + x3 - x2 - x4) * ideal_y;
             double a12 = (x4 - x1) + (x1 + x3 - x2 - x4) * ideal_x;
             double a21 = (y2 - y1) + (y1 + y3 - y2 - y4) * ideal_y;

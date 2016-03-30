@@ -28,7 +28,7 @@ inline static double analytical_solution_circle(double t, double x, double y) {
     double x0 = get_center_x() + t * func_u(t, x, y);
     double y0 = get_center_y() + t * func_v(t, x, y);
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
-    if (value <= R_SQ) return INN_DENSITY;
+    if (value < R_SQ) return INN_DENSITY;
     return OUT_DENSITY;
 }
 
@@ -152,7 +152,6 @@ static double get_phi_integ_trapezium(int ii, int jj, double *density, double ti
 
             double ideal_x = i * x_step + x_step / 2.;
             double ideal_y = j * y_step + y_step / 2.;
-
 
             double a11 = (x2 - x1) + (x1 + x3 - x2 - x4) * ideal_y;
             double a12 = (x4 - x1) + (x1 + x3 - x2 - x4) * ideal_x;
