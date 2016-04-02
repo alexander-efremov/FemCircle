@@ -492,13 +492,31 @@ TEST_F(FemFixture, test3_1) {
             TIME_STEP_CNT = 1;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
-            init_boundary_arrays();
+            init_boundary_arrays_and_cp();
 
             // заполнить g1, g2, g3, g4 и гр. точки
+            int midIndexX = OX_LEN_1/2;
+            int midIndexY = OY_LEN_1/2;
+            for (int i = midIndexX; i < OX_LEN_1; ++i)
+                G1[i] = 1;
+            for (int j = midIndexY; j < OY_LEN_1; ++j)
+                G2[j] = 1;
+            for (int i = 0; i <= midIndexX; ++i)
+                G3[i] = 1;
+            for (int j = 0; j <= midIndexY; ++j)
+                G4[j] = 1;
 
+            // угловые все считаем?
+            CP00 = 1;
+            CP01 = 1;
+            CP10 = 1;
+            CP11 = 1;
 
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));
+            printf("midIndexX = %d\n", midIndexX);
+            printf("midIndexY = %d\n", midIndexY);
+
             double *density = solve_3(tme);
             double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
             double *exact0 = get_exact_solution_3(HX, HY, 0);
