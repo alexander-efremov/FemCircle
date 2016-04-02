@@ -487,24 +487,33 @@ TEST_F(FemFixture, test3_1) {
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
-            TAU = 1.e-5;
+            TAU = 2.5e-3;
 
             TIME_STEP_CNT = 1;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
 
-            // заполнить g1, g2, g3, g4 и гр. точки
-            int midIndexX = OX_LEN_1/2;
-            int midIndexY = OY_LEN_1/2;
-            for (int i = midIndexX; i < OX_LEN_1; ++i)
+            int midIndexX = OX_LEN_1 / 2;
+            int midIndexY = OY_LEN_1 / 2;
+            for (int i = midIndexX+1; i < OX_LEN_1; ++i)
                 G1[i] = 1;
-            for (int j = midIndexY; j < OY_LEN_1; ++j)
+            for (int j = midIndexY+1; j < OY_LEN_1; ++j)
                 G2[j] = 1;
-            for (int i = 0; i <= midIndexX; ++i)
+            for (int i = 0; i < midIndexX; ++i)
                 G3[i] = 1;
-            for (int j = 0; j <= midIndexY; ++j)
+            for (int j = 0; j < midIndexY; ++j)
                 G4[j] = 1;
+
+            /*CP00 = 1;
+            CP10 = 1;
+            CP01 = 1;
+            CP11 = 1;
+*/
+            CP00 = 0;
+            CP10 = 0;
+            CP01 = 0;
+            CP11 = 0;
 
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));

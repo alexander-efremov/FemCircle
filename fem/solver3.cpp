@@ -322,26 +322,32 @@ double *solve_3(double &tme) {
 
     // G1 -- (x_i, 0=C) -- bottom boundary
     for (int i = 0; i < OX_LEN_1; ++i) {
+
         prev_density[OY_LEN_1 * i] = analytical_solution_circle(0., A + HX * i, C);
         if (fabs(prev_density[OY_LEN_1 * i]) < fabs(DBL_MIN_TRIM)) prev_density[OY_LEN_1 * i] = 0;
+
     }
 
     // G2 -- (OX_LEN=B, y_j) -- right boundary
     for (int j = 1; j < OY_LEN; ++j) {
+
         prev_density[OY_LEN_1 * OX_LEN + j] = analytical_solution_circle(0., A + HX * OX_LEN, C + HY * j);
         if (fabs(prev_density[OY_LEN_1 * OX_LEN + j]) < fabs(DBL_MIN_TRIM)) prev_density[OY_LEN_1 * OX_LEN + j] = 0;
+
     }
 
     // G3 -- (x_i, OY_LEN=D) -- top boundary
     for (int i = 0; i < OX_LEN_1; ++i) {
         prev_density[OY_LEN_1 * i + OY_LEN] = analytical_solution_circle(0., A + HX * i, C + HY * OY_LEN);
         if (fabs(prev_density[OY_LEN_1 * i + OY_LEN]) < fabs(DBL_MIN_TRIM)) prev_density[OY_LEN_1 * i + OY_LEN] = 0;
+
     }
 
     // G4 -- (0=A, y_j) -- left boundary
     for (int j = 1; j < OY_LEN; ++j) {
         prev_density[j] = analytical_solution_circle(0., A, C + HY * j);
         if (fabs(prev_density[j]) < fabs(DBL_MIN_TRIM)) prev_density[j] = 0;
+
     }
 
     memcpy(density, prev_density, XY_LEN * sizeof(double));
