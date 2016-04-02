@@ -378,7 +378,7 @@ double *solve_3(double &tme) {
                 else if (INTEGR_TYPE == 2) {
                     value = get_phi_integ_trapezium(i, 0, prev_density, TAU * tl);
                 }
-                phi[OY_LEN_1 * i] = value; // индекс верно считается?
+                phi[OY_LEN_1 * i] = value;
             }
         }
 
@@ -420,7 +420,7 @@ double *solve_3(double &tme) {
                 else if (INTEGR_TYPE == 2) {
                     value = get_phi_integ_trapezium(0, j, prev_density, TAU * tl);
                 }
-                phi[j] = value; // правильный обход?
+                phi[j] = value;
             }
         }
 
