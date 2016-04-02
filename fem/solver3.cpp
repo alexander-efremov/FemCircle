@@ -425,6 +425,40 @@ double *solve_3(double &tme) {
         }
 
         // point (0.0)
+        if (CP00) {
+            double value = 0.;
+            if (INTEGR_TYPE == 1) {
+                value = get_phi_integ_midpoint(0, 0, prev_density, TAU * tl);
+            }
+            else if (INTEGR_TYPE == 2) {
+                value = get_phi_integ_trapezium(0, 0, prev_density, TAU * tl);
+            }
+            phi[0] = value;
+        }
+
+        // point (1.0)
+        if (CP10) {
+            double value = 0.;
+            if (INTEGR_TYPE == 1) {
+                value = get_phi_integ_midpoint(OX_LEN, 0, prev_density, TAU * tl);
+            }
+            else if (INTEGR_TYPE == 2) {
+                value = get_phi_integ_trapezium(OX_LEN, 0, prev_density, TAU * tl);
+            }
+            phi[OY_LEN_1 * OX_LEN] = value;
+        }
+
+        // point (0.1)
+        if (CP01) {
+            double value = 0.;
+            if (INTEGR_TYPE == 1) {
+                value = get_phi_integ_midpoint(0, OY_LEN, prev_density, TAU * tl);
+            }
+            else if (INTEGR_TYPE == 2) {
+                value = get_phi_integ_trapezium(0, OY_LEN, prev_density, TAU * tl);
+            }
+            phi[OY_LEN] = value;
+        }
 
         // point (1,1)
         if (CP11) {
