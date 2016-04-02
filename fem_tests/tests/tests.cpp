@@ -496,9 +496,9 @@ TEST_F(FemFixture, test3_1) {
 
             int midIndexX = OX_LEN_1 / 2;
             int midIndexY = OY_LEN_1 / 2;
-            for (int i = midIndexX+1; i < OX_LEN_1; ++i)
+            for (int i = midIndexX + 1; i < OX_LEN_1; ++i)
                 G1[i] = 1;
-            for (int j = midIndexY+1; j < OY_LEN_1; ++j)
+            for (int j = midIndexY + 1; j < OY_LEN_1; ++j)
                 G2[j] = 1;
             for (int i = 0; i < midIndexX; ++i)
                 G3[i] = 1;
