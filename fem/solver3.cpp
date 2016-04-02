@@ -320,6 +320,48 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
         x4 = B - HX / 2.;
         y4 = D;
     }
+    else if (ii == 0 && jj == OY_LEN) { // point (0,1)  omega_{i,j-1}
+        // p1 (A, y_{OY_LEN-1/2})
+        x1 = A;
+        y1 = D - HY / 2.;
+        // p2 (x_{1/2}, y_{OY_LEN-1/2})
+        x2 = A + HX / 2.;
+        y2 = D - HY / 2.;
+        // p3 (x_{1/2}, D)
+        x3 = A + HX / 2.;
+        y3 = D;
+        // p4 (A, D)
+        x4 = A;
+        y4 = D;
+    }
+    else if (ii == 0 && jj == 0) { // point (0,0)  omega_{i,j}
+        // p1 (A, C)
+        x1 = A;
+        y1 = C;
+        // p2 (x_{1/2}, C)
+        x2 = A + HX / 2.;
+        y2 = C;
+        // p3 (x_{1/2}, y_{1/2})
+        x3 = A + HX / 2.;
+        y3 = C + HY / 2.;
+        // p4 (A, y_{1/2})
+        x4 = A;
+        y4 = C + HY / 2.;
+    }
+    else if (ii == OX_LEN && jj == 0) { // point (1,0)  omega_{i-1,j}
+        // p1 (x_{OX_LEN-1/2}, C)
+        x1 = B - HX / 2.;
+        y1 = C;
+        // p2 (B, C)
+        x2 = B;
+        y2 = C;
+        // p3 (B, y_{1/2})
+        x3 = B;
+        y3 = C + HY / 2.;
+        // p4 (x_{OX_LEN-1/2}, y_{1/2})
+        x4 = B - HX / 2.;
+        y4 = C + HY / 2.;
+    }
     else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G3 -- top boundary
         // p1 (x_{i-1/2}, y_{OY_LEN-1/2})
         x1 = A + ii * HX - HX / 2.;
