@@ -35,12 +35,23 @@ void print_params() {
     printf("CENTER_OFFSET = %le, %le\n", CENTER_OFFSET_X, CENTER_OFFSET_Y);
 }
 
-void init_boundary_arrays()
-{
+void init_boundary_arrays_and_cp() {
     G1 = new int[OX_LEN_1];
     G2 = new int[OY_LEN_1];
     G3 = new int[OX_LEN_1];
     G4 = new int[OY_LEN_1];
+    for (int i = 0; i < OX_LEN_1; ++i) {
+        G1[i] = 0;
+        G3[i] = 0;
+    }
+    for (int j = 0; j < OY_LEN_1; ++j) {
+        G2[j] = 0;
+        G4[j] = 0;
+    }
+    CP00 = 0;
+    CP10 = 0;
+    CP01 = 0;
+    CP11 = 0;
 }
 
 TEST_F(FemFixture, test1) {
@@ -484,6 +495,7 @@ TEST_F(FemFixture, test3_1) {
             init_boundary_arrays();
 
             // заполнить g1, g2, g3, g4 и гр. точки
+
 
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));
