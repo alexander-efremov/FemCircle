@@ -362,6 +362,34 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
         x4 = B - HX / 2.;
         y4 = C + HY / 2.;
     }
+    else if (ii > 0 && ii < OX_LEN && jj == 0) { // G1 -- bottom boundary
+        // p1 (x_{i-1/2}, C)
+        x1 = A + ii * HX - HX / 2.;
+        y1 = C;
+        // p2 (x_{i+1/2}, C)
+        x2 = A + ii * HX + HX / 2.;
+        y2 = C;
+        // p3 (x_{i+1/2}, y_{1/2})
+        x3 = A + ii * HX + HX / 2.;
+        y3 = C + HY / 2.;
+        // p4 (x_{i-1/2}, y_{1/2})
+        x4 = A + ii * HX - HX / 2.;
+        y4 = C + HY / 2.;
+    }
+    else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G2 -- right boundary
+        // p1 (x_{OX_LEN-1/2}, y_{j-1/2})
+        x1 = B - HX / 2.;
+        y1 = C + jj * HY - HY / 2.;
+        // p2 (B, y_{j-1/2})
+        x2 = B;
+        y2 = C + jj * HY - HY / 2.;
+        // p3 (B, y_{j+1/2})
+        x3 = B;
+        y3 = C + jj * HY + HY / 2.;
+        // p4 (x_{OX_LEN-1/2}, y_{j+1/2})
+        x4 = B - HX / 2.;
+        y4 = C + jj * HY + HY / 2.;
+    }
     else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G3 -- top boundary
         // p1 (x_{i-1/2}, y_{OY_LEN-1/2})
         x1 = A + ii * HX - HX / 2.;
@@ -376,18 +404,18 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
         x4 = A + ii * HX - HX / 2.;
         y4 = D;
     }
-    else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G2 -- right boundary
-        // p1 (x_{OX_LEN-1/2}, y_{j-1/2})
-        x1 = B - HX / 2.;
+    else if (ii == 0 && jj > 0 && jj < OY_LEN) { // G4 -- left boundary
+        // p1 (A, y_{j-1/2})
+        x1 = A;
         y1 = C + jj * HY - HY / 2.;
-        // p2 (B, y_{j-1/2})
-        x2 = B;
+        // p2 (x_{1/2}, y_{j-1/2})
+        x2 = A + HX / 2.;
         y2 = C + jj * HY - HY / 2.;
-        // p3 (B, y_{j+1/2})
-        x3 = B;
+        //p3 (x_{1/2}, y_{j+1/2})
+        x3 = A + HX / 2.;
         y3 = C + jj * HY + HY / 2.;
-        // p4 (x_{OX_LEN-1/2}, y_{j+1/2})
-        x4 = B - HX / 2.;
+        //p4 (A, y_{j+1/2})
+        x4 = A;
         y4 = C + jj * HY + HY / 2.;
     }
     else
