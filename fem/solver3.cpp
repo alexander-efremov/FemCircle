@@ -425,7 +425,7 @@ double *solve_3(double &tme) {
         }
 
         // point (0.0)
-        if (CP00) {
+        if (CP00 == 1) {
             double value = 0.;
             if (INTEGR_TYPE == 1) {
                 value = get_phi_integ_midpoint(0, 0, prev_density, TAU * tl);
@@ -437,7 +437,7 @@ double *solve_3(double &tme) {
         }
 
         // point (1.0)
-        if (CP10) {
+        if (CP10 == 1) {
             double value = 0.;
             if (INTEGR_TYPE == 1) {
                 value = get_phi_integ_midpoint(OX_LEN, 0, prev_density, TAU * tl);
@@ -449,7 +449,7 @@ double *solve_3(double &tme) {
         }
 
         // point (0.1)
-        if (CP01) {
+        if (CP01 == 1) {
             double value = 0.;
             if (INTEGR_TYPE == 1) {
                 value = get_phi_integ_midpoint(0, OY_LEN, prev_density, TAU * tl);
@@ -461,7 +461,7 @@ double *solve_3(double &tme) {
         }
 
         // point (1,1)
-        if (CP11) {
+        if (CP11 == 1) {
             double value = 0.;
             if (INTEGR_TYPE == 1) {
                 value = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl);
@@ -493,36 +493,100 @@ double *solve_3(double &tme) {
         while ((maxErr > EPS || maxRes > RES_EPS) && ic < OX_LEN_1) {
 
             //<editor-fold desc="Calculate density">
-            // point 1,1
-            double rpCoef = 64. / (9. * HX * HY);
-            density[OY_LEN_1 * OX_LEN + OY_LEN] = -1. / 3. * (prev_density[OY_LEN_1 * OX_LEN + OY_LEN - 1]
-                                                              + prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN])
-                                                  - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN - 1]
-                                                  + rpCoef * phi[OY_LEN_1 * OX_LEN + OY_LEN];
-            if (fabs(density[OY_LEN_1 * OX_LEN + OY_LEN]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * OX_LEN + OY_LEN] = 0;
 
-            // G3 -- (x_i, OY_LEN=D) -- top boundary
-            rpCoef = 32. / (9. * HX * HY);
+            // G1 -- (x_i, 0=C) -- bottom boundary
+            double rpCoef = 32. / (9. * HX * HY);
             for (int i = 1; i < OX_LEN; ++i) {
-                density[OY_LEN_1 * i + OY_LEN] = -1. / 3. * prev_density[OY_LEN_1 * i + OY_LEN - 1]
-                                                 - 1. / 6. * (prev_density[OY_LEN_1 * (i + 1) + OY_LEN] +
-                                                              prev_density[OY_LEN_1 * (i - 1) + OY_LEN])
-                                                 - 1. / 18. * (prev_density[OY_LEN_1 * (i + 1) + OY_LEN - 1] +
-                                                               prev_density[OY_LEN_1 * (i - 1) + OY_LEN - 1])
-                                                 + rpCoef * phi[OY_LEN_1 * i + OY_LEN];
-                if (fabs(density[OY_LEN_1 * i + OY_LEN]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * i + OY_LEN] = 0;
+                if (G1[i] == 1) {
+                    density[OY_LEN_1 * i] = -1. / 3. * prev_density[OY_LEN_1 * i + 1]
+                                            - 1. / 6. * (prev_density[OY_LEN_1 * (i + 1)] +
+                                                         prev_density[OY_LEN_1 * (i - 1)])
+                                            - 1. / 18. * (prev_density[OY_LEN_1 * (i + 1) + 1] +
+                                                          prev_density[OY_LEN_1 * (i - 1) + 1])
+                                            + rpCoef * phi[OY_LEN_1 * i];
+                    if (fabs(density[OY_LEN_1 * i]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * i] = 0;
+                }
             }
 
             // G2 -- (OX_LEN=B, y_j) -- right boundary
-            rpCoef = 32. / (9. * HX * HY);
             for (int j = 1; j < OY_LEN; ++j) {
-                density[OY_LEN_1 * OX_LEN + j] = -1. / 3. * prev_density[OY_LEN_1 * (OX_LEN - 1) + j]
-                                                 - 1. / 6. * (prev_density[OY_LEN_1 * OX_LEN + j - 1] +
-                                                              prev_density[OY_LEN_1 * OX_LEN + j + 1])
-                                                 - 1. / 18. * (prev_density[OY_LEN_1 * (OX_LEN - 1) + j - 1] +
-                                                               prev_density[OY_LEN_1 * (OX_LEN - 1) + j + 1])
-                                                 + rpCoef * phi[OY_LEN_1 * OX_LEN + j];
-                if (fabs(density[OY_LEN_1 * OX_LEN + j]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * OX_LEN + j] = 0;
+                if (G2[j] == 1) {
+                    density[OY_LEN_1 * OX_LEN + j] = -1. / 3. * prev_density[OY_LEN_1 * (OX_LEN - 1) + j]
+                                                     - 1. / 6. * (prev_density[OY_LEN_1 * OX_LEN + j - 1] +
+                                                                  prev_density[OY_LEN_1 * OX_LEN + j + 1])
+                                                     - 1. / 18. * (prev_density[OY_LEN_1 * (OX_LEN - 1) + j - 1] +
+                                                                   prev_density[OY_LEN_1 * (OX_LEN - 1) + j + 1])
+                                                     + rpCoef * phi[OY_LEN_1 * OX_LEN + j];
+                    if (fabs(density[OY_LEN_1 * OX_LEN + j]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * OX_LEN + j] = 0;
+                }
+            }
+
+            // G3 -- (x_i, OY_LEN=D) -- top boundary
+            for (int i = 1; i < OX_LEN; ++i) {
+                if (G3[i] == 1) {
+                    density[OY_LEN_1 * i + OY_LEN] = -1. / 3. * prev_density[OY_LEN_1 * i + OY_LEN - 1]
+                                                     - 1. / 6. * (prev_density[OY_LEN_1 * (i + 1) + OY_LEN] +
+                                                                  prev_density[OY_LEN_1 * (i - 1) + OY_LEN])
+                                                     - 1. / 18. * (prev_density[OY_LEN_1 * (i + 1) + OY_LEN - 1] +
+                                                                   prev_density[OY_LEN_1 * (i - 1) + OY_LEN - 1])
+                                                     + rpCoef * phi[OY_LEN_1 * i + OY_LEN];
+                    if (fabs(density[OY_LEN_1 * i + OY_LEN]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * i + OY_LEN] = 0;
+                }
+            }
+
+            // G4 -- (0=A, y_j) -- left boundary
+            for (int j = 1; j < OY_LEN; ++j) {
+                if (G4[j] == 1) { // проверить коэф-ты
+                    density[j] = -1. / 3. * prev_density[OY_LEN_1 + j]
+                                 - 1. / 6. * (prev_density[j + 1] +
+                                              prev_density[j - 1])
+                                 - 1. / 18. * (prev_density[OY_LEN_1 + j + 1] +
+                                               prev_density[OY_LEN_1 + j - 1])
+                                 + rpCoef * phi[j];
+                    if (fabs(density[j]) < fabs(DBL_MIN_TRIM)) density[j] = 0;
+                }
+            }
+
+            rpCoef = 64. / (9. * HX * HY);
+
+            // point (0,0)
+            if (CP00 == 1) {
+                density[0] = -1. / 3. * (prev_density[1]
+                                         + prev_density[OY_LEN_1])
+                             - 1. / 9. * prev_density[OY_LEN_1 + 1]
+                             + rpCoef * phi[0];
+                if (fabs(density[0]) < fabs(DBL_MIN_TRIM))
+                    density[0] = 0;
+            }
+
+            // point (1,0)
+            if (CP10 == 1) {
+                density[OY_LEN_1 * OX_LEN] = -1. / 3. * (prev_density[OY_LEN_1 * OX_LEN + 1]
+                                                         + prev_density[OY_LEN_1 * (OX_LEN - 1)])
+                                             - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + 1]
+                                             + rpCoef * phi[OY_LEN_1 * OX_LEN];
+                if (fabs(density[OY_LEN_1 * OX_LEN]) < fabs(DBL_MIN_TRIM))
+                    density[OY_LEN_1 * OX_LEN] = 0;
+            }
+
+            // point (0,1)
+            if (CP01 == 1) {
+                density[OY_LEN] = -1. / 3. * (prev_density[OY_LEN - 1]
+                                              + prev_density[OY_LEN_1 + OY_LEN])
+                                  - 1. / 9. * prev_density[OY_LEN_1 + OY_LEN - 1]
+                                  + rpCoef * phi[OY_LEN];
+                if (fabs(density[OY_LEN]) < fabs(DBL_MIN_TRIM))
+                    density[OY_LEN] = 0;
+            }
+
+            // point (1,1)
+            if (CP11 == 1) {
+                density[OY_LEN_1 * OX_LEN + OY_LEN] = -1. / 3. * (prev_density[OY_LEN_1 * OX_LEN + OY_LEN - 1]
+                                                                  + prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN])
+                                                      - 1. / 9. * prev_density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN - 1]
+                                                      + rpCoef * phi[OY_LEN_1 * OX_LEN + OY_LEN];
+                if (fabs(density[OY_LEN_1 * OX_LEN + OY_LEN]) < fabs(DBL_MIN_TRIM))
+                    density[OY_LEN_1 * OX_LEN + OY_LEN] = 0;
             }
 
             rpCoef = 16. / (9. * HX * HY);
@@ -630,11 +694,10 @@ double *solve_3(double &tme) {
                calc_array_sum(density, OX_LEN_1, OY_LEN_1, 1));
         fflush(stdout);
 
-        if (tl % 1 == 0)
-        {
+        if (tl % 1 == 0) {
             print_data_to_files(phi, density, residual, tl);
-            int fixed_x = (int)(get_center_x()/HX);
-            int fixed_y = (int)(get_center_y() / HY);
+            int fixed_x = (int) (get_center_x() / HX);
+            int fixed_y = (int) (get_center_y() / HY);
             print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
                                U_VELOCITY, V_VELOCITY, density, fixed_y);
             print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
