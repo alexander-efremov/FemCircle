@@ -356,10 +356,8 @@ double *solve_3(double &tme) {
 
     //</editor-fold>
 
-    double sum_rho = calc_array_sum(prev_density, OX_LEN_1, OY_LEN_1, 0);
-    double sum_abs_rho = calc_array_sum(prev_density, OX_LEN_1, OY_LEN_1, 1);
-    printf("SUM RHO INIT = %le\n", sum_rho);
-    printf("SUM ABS RHO INIT= %le\n", sum_abs_rho);
+    printf("SUM RHO INIT = %le\n", calc_array_sum(prev_density, OX_LEN_1, OY_LEN_1, 0));
+    printf("SUM ABS RHO INIT= %le\n", calc_array_sum(prev_density, OX_LEN_1, OY_LEN_1, 1));
     fflush(stdout);
 
     double maxRes = FLT_MAX;
@@ -370,28 +368,60 @@ double *solve_3(double &tme) {
 
         // with usage of prev_density we calculate phi function values
 
-        // G3 -- (x_i, OY_LEN=D) -- top boundary
+        // G1 -- (x_i, 0=C) -- bottom boundary
         for (int i = 1; i < OX_LEN; ++i) {
-            double integ = 0.;
-            if (INTEGR_TYPE == 1) {
-                integ = get_phi_integ_midpoint(i, OY_LEN, prev_density, TAU * tl);
+            if (G1[i] == 1) {
+                double value = 0.;
+                if (INTEGR_TYPE == 1) {
+                    value = get_phi_integ_midpoint(i, 0, prev_density, TAU * tl);
+                }
+                else if (INTEGR_TYPE == 2) {
+                    value = get_phi_integ_trapezium(i, 0, prev_density, TAU * tl);
+                }
+                phi[OY_LEN_1 * i] = value; // индекс верно считается?
             }
-            else if (INTEGR_TYPE == 2) {
-                integ = get_phi_integ_trapezium(i, OY_LEN, prev_density, TAU * tl);
-            }
-            phi[OY_LEN_1 * i + OY_LEN] = integ;
         }
 
         // G2 -- (OX_LEN=B, y_j) -- right boundary
         for (int j = 1; j < OY_LEN; ++j) {
-            double integ = 0.;
-            if (INTEGR_TYPE == 1) {
-                integ = get_phi_integ_midpoint(OX_LEN, j, prev_density, TAU * tl);
+            if (G2[j] == 1) {
+                double value = 0.;
+                if (INTEGR_TYPE == 1) {
+                    value = get_phi_integ_midpoint(OX_LEN, j, prev_density, TAU * tl);
+                }
+                else if (INTEGR_TYPE == 2) {
+                    value = get_phi_integ_trapezium(OX_LEN, j, prev_density, TAU * tl);
+                }
+                phi[OY_LEN_1 * OX_LEN + j] = value;
             }
-            else if (INTEGR_TYPE == 2) {
-                integ = get_phi_integ_trapezium(OX_LEN, j, prev_density, TAU * tl);
+        }
+
+        // G3 -- (x_i, OY_LEN=D) -- top boundary
+        for (int i = 1; i < OX_LEN; ++i) {
+            if (G3[i] == 1) {
+                double value = 0.;
+                if (INTEGR_TYPE == 1) {
+                    value = get_phi_integ_midpoint(i, OY_LEN, prev_density, TAU * tl);
+                }
+                else if (INTEGR_TYPE == 2) {
+                    value = get_phi_integ_trapezium(i, OY_LEN, prev_density, TAU * tl);
+                }
+                phi[OY_LEN_1 * i + OY_LEN] = value;
             }
-            phi[OY_LEN_1 * OX_LEN + j] = integ;
+        }
+
+        // G4 -- (0=A, y_j) -- left boundary
+        for (int j = 1; j < OY_LEN; ++j) {
+            if (G4[j] == 1) {
+                double value = 0.;
+                if (INTEGR_TYPE == 1) {
+                    value = get_phi_integ_midpoint(0, j, prev_density, TAU * tl);
+                }
+                else if (INTEGR_TYPE == 2) {
+                    value = get_phi_integ_trapezium(0, j, prev_density, TAU * tl);
+                }
+                phi[j] = value; // правильный обход?
+            }
         }
 
         double integ = 0.;
