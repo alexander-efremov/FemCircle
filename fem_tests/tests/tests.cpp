@@ -506,12 +506,6 @@ TEST_F(FemFixture, test3_1) {
             for (int j = 0; j <= midIndexY; ++j)
                 G4[j] = 1;
 
-            // угловые все считаем?
-            CP00 = 1;
-            CP01 = 1;
-            CP10 = 1;
-            CP11 = 1;
-
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));
             printf("midIndexX = %d\n", midIndexX);
