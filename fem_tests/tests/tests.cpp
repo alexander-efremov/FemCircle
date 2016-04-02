@@ -16,19 +16,6 @@ public:
     }
 };
 
-class FemFixture1 : public ::testing::Test {
-protected:
-    virtual void TearDown() {
-    }
-
-    virtual void SetUp() {
-    }
-
-public:
-    FemFixture1() : Test() {
-    }
-};
-
 void print_params() {
     printf("\nOX_LENxOY_LEN = %dx%d\n", OX_LEN, OY_LEN);
     printf("(U, V) = (%le, %le)\n", U_VELOCITY, V_VELOCITY);
@@ -184,7 +171,7 @@ TEST_F(FemFixture, test2) {
     }
 }
 
-TEST_F(FemFixture1, test2_1) {
+TEST_F(FemFixture, test2_1) {
     double tme = 0.;
     A = 0.;
     B = 1.;
@@ -241,7 +228,7 @@ TEST_F(FemFixture1, test2_1) {
     delete[] err;
 }
 
-TEST_F(FemFixture1, test2_2) {
+TEST_F(FemFixture, test2_2) {
     double tme = 0.;
     for (int iter = 0; iter < 1; ++iter) {
 
@@ -330,7 +317,7 @@ TEST_F(FemFixture1, test2_2) {
 }
 
 // тестируем вылет пятна за границу
-TEST_F(FemFixture1, test2_3) {
+TEST_F(FemFixture, test2_3) {
     double tme = 0.;
     for (int iter = 0; iter < 1; ++iter) {
 
@@ -420,7 +407,7 @@ TEST_F(FemFixture1, test2_3) {
 }
 
 // тестируем третий случай - движение по кругу
-TEST_F(FemFixture1, test3_1) {
+TEST_F(FemFixture, test3_1) {
     double tme = 0.;
     for (int iter = 0; iter < 1; ++iter) {
 
