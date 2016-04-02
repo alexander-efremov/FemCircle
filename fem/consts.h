@@ -28,6 +28,14 @@ extern int IDEAL_SQ_SIZE_X; // Size of ideal square by x
 extern int IDEAL_SQ_SIZE_Y; // Size of ideal square by y
 extern double CENTER_OFFSET_X; // Offset of center of circle by x
 extern double CENTER_OFFSET_Y; // Offset of center of circle by y
+extern int* G1; // bottom boundary
+extern int* G2; // right boundary
+extern int* G3; // top boundary
+extern int* G4; // left boundary
+extern int CP1; // corner point 1 - bottom left
+extern int CP2; // corner point 2 - bottom right
+extern int CP3; // corner point 3 - top right
+extern int CP4; // corner point 4 - top left
 
 
 #define EPS 10e-8

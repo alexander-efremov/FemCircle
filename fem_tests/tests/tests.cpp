@@ -6,6 +6,14 @@
 class FemFixture : public ::testing::Test {
 protected:
     virtual void TearDown() {
+        if (G1 != NULL)
+            delete[] G1;
+        if (G2 != NULL)
+            delete[] G2;
+        if (G3 != NULL)
+            delete[] G3;
+        if (G4 != NULL)
+            delete[] G4;
     }
 
     virtual void SetUp() {
@@ -466,7 +474,7 @@ TEST_F(FemFixture, test3_1) {
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             print_params();
-            printf("rel = %le\n", HX/(-HY+1.));
+            printf("rel = %le\n", HX / (-HY + 1.));
             double *density = solve_3(tme);
             double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
             double *exact0 = get_exact_solution_3(HX, HY, 0);

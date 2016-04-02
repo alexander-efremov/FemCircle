@@ -33,4 +33,12 @@ int IDEAL_SQ_SIZE_X = 0;
 int IDEAL_SQ_SIZE_Y = 0;
 double CENTER_OFFSET_X = 0.;
 double CENTER_OFFSET_Y = 0.;
+int* G1 = NULL;
+int* G2 = NULL;
+int* G3 = NULL;
+int* G4 = NULL;
+int CP1 = 0;
+int CP2 = 0;
+int CP3 = 0;
+int CP4 = 0;
 
