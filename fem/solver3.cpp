@@ -619,43 +619,120 @@ double *solve_3(double &tme) {
 
             //<editor-fold desc="Calculate residual">
 
-            // point 1,1
-            rpCoef = HX * HY / 64.;
-            residual[OY_LEN_1 * OX_LEN + OY_LEN] = rpCoef * (
-                    9. * density[OY_LEN_1 * OX_LEN + OY_LEN] +
-                    3. * (
-                            density[OY_LEN_1 * OX_LEN + OY_LEN - 1] +
-                            density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN]
-                    ) +
-                    density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN - 1]
-            ) - phi[OY_LEN_1 * OX_LEN + OY_LEN];
-
-            // G3 -- (x_i, OY_LEN=D) -- top boundary
-            for (int i = 1; i < OX_LEN; ++i)
-                residual[OY_LEN_1 * i + OY_LEN] = rpCoef * (
-                        18. * density[OY_LEN_1 * i + OY_LEN] +
-                        6. * density[OY_LEN_1 * i + OY_LEN - 1] +
-                        3. * (
-                                density[OY_LEN_1 * (i + 1) + OY_LEN] +
-                                density[OY_LEN_1 * (i - 1) + OY_LEN]
-                        ) +
-                        density[OY_LEN_1 * (i + 1) + OY_LEN - 1] +
-                        density[OY_LEN_1 * (i - 1) + OY_LEN - 1]
-                ) - phi[OY_LEN_1 * i + OY_LEN];
-
+            // !!!!!! КАЖЕТСЯ ЧТО НУЖНО ЗАДАВАТЬ rp_coef правильно для каждой из границ !!!!!!!
+            //rpCoef = 32. / (9. * HX * HY);
+            // G1 -- (x_i, 0=C) -- bottom boundary
+            for (int i = 1; i < OX_LEN; ++i) {
+                if (G1[i] == 1) {
+                    residual[OY_LEN_1 * i] = rpCoef * (
+                            18. * density[OY_LEN_1 * i] +
+                            6. * density[OY_LEN_1 * i + 1] +
+                            3. * (
+                                    density[OY_LEN_1 * (i - 1)] +
+                                    density[OY_LEN_1 * (i + 1)]
+                            ) +
+                            density[OY_LEN_1 * (i - 1) + 1] +
+                            density[OY_LEN_1 * (i + 1) + 1]
+                    ) - phi[OY_LEN_1 * i];
+                }
+            }
 
             // G2 -- (OX_LEN=B, y_j) -- right boundary
-            for (int j = 1; j < OY_LEN; ++j)
-                residual[OY_LEN_1 * OX_LEN + j] = rpCoef * (
-                        18. * density[OY_LEN_1 * OX_LEN + j] +
-                        6. * density[OY_LEN_1 * (OX_LEN - 1) + j] +
+            for (int j = 1; j < OY_LEN; ++j) {
+                if (G2[j] == 1) {
+                    residual[OY_LEN_1 * OX_LEN + j] = rpCoef * (
+                            18. * density[OY_LEN_1 * OX_LEN + j] +
+                            6. * density[OY_LEN_1 * (OX_LEN - 1) + j] +
+                            3. * (
+                                    density[OY_LEN_1 * OX_LEN + j - 1] +
+                                    density[OY_LEN_1 * OX_LEN + j + 1]
+                            ) +
+                            density[OY_LEN_1 * (OX_LEN - 1) + j - 1] +
+                            density[OY_LEN_1 * (OX_LEN - 1) + j + 1]
+                    ) - phi[OY_LEN_1 * OX_LEN + j];
+                }
+            }
+
+            // G3 -- (x_i, OY_LEN=D) -- top boundary
+            for (int i = 1; i < OX_LEN; ++i) {
+                if (G3[i] == 1) {
+                    residual[OY_LEN_1 * i + OY_LEN] = rpCoef * (
+                            18. * density[OY_LEN_1 * i + OY_LEN] +
+                            6. * density[OY_LEN_1 * i + OY_LEN - 1] +
+                            3. * (
+                                    density[OY_LEN_1 * (i + 1) + OY_LEN] +
+                                    density[OY_LEN_1 * (i - 1) + OY_LEN]
+                            ) +
+                            density[OY_LEN_1 * (i + 1) + OY_LEN - 1] +
+                            density[OY_LEN_1 * (i - 1) + OY_LEN - 1]
+                    ) - phi[OY_LEN_1 * i + OY_LEN];
+                }
+            }
+
+            // G4 -- (0=A, y_j) -- left boundary
+            for (int j = 1; j < OY_LEN; ++j) {
+                if (G4[j] == 1) {
+                    residual[j] = rpCoef * (
+                            18. * density[j] +
+                            6. * density[OY_LEN_1 + j] +
+                            3. * (
+                                    density[j + 1] +
+                                    density[j - 1]
+                            ) +
+                            density[OY_LEN_1 + j + 1] +
+                            density[OY_LEN_1 + j - 1]
+                    ) - phi[j];
+                }
+            }
+
+            rpCoef = HX * HY / 64.;
+            // point (0,0)
+            if (CP00 == 1) {
+                residual[0] = rpCoef * (
+                        9. * density[0] +
                         3. * (
-                                density[OY_LEN_1 * OX_LEN + j - 1] +
-                                density[OY_LEN_1 * OX_LEN + j + 1]
+                                density[1] +
+                                density[OY_LEN_1]
                         ) +
-                        density[OY_LEN_1 * (OX_LEN - 1) + j - 1] +
-                        density[OY_LEN_1 * (OX_LEN - 1) + j + 1]
-                ) - phi[OY_LEN_1 * OX_LEN + j];
+                        density[OY_LEN_1 + 1]
+                ) - phi[0];
+            }
+
+            // point (1,0)
+            if (CP10 == 1) {
+                residual[OY_LEN_1 * OX_LEN] = rpCoef * (
+                        9. * density[OY_LEN_1 * OX_LEN] +
+                        3. * (
+                                density[OY_LEN_1 * (OX_LEN - 1)] +
+                                density[OY_LEN_1 * OX_LEN + 1]
+                        ) +
+                        density[OY_LEN_1 * (OX_LEN - 1) + 1]
+                ) - phi[OY_LEN_1 * OX_LEN];
+            }
+
+            // point (0,1)
+            if (CP01 == 1) {
+                residual[OY_LEN] = rpCoef * (
+                        9. * density[OY_LEN] +
+                        3. * (
+                                density[OY_LEN - 1] +
+                                density[OY_LEN_1 + OY_LEN]
+                        ) +
+                        density[OY_LEN_1 + OY_LEN - 1]
+                ) - phi[OY_LEN];
+            }
+
+            // point (1,1)
+            if (CP11 == 1) {
+                residual[OY_LEN_1 * OX_LEN + OY_LEN] = rpCoef * (
+                        9. * density[OY_LEN_1 * OX_LEN + OY_LEN] +
+                        3. * (
+                                density[OY_LEN_1 * OX_LEN + OY_LEN - 1] +
+                                density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN]
+                        ) +
+                        density[OY_LEN_1 * (OX_LEN - 1) + OY_LEN - 1]
+                ) - phi[OY_LEN_1 * OX_LEN + OY_LEN];
+            }
 
             // inner points
             for (int i = 1; i < OX_LEN; ++i) {
