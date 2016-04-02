@@ -23,6 +23,7 @@ extern double U_VELOCITY; // u velocity
 extern double V_VELOCITY; // v velocity
 extern double DBL_MIN_TRIM; // trim number to zero if it less than DBL_MIN_TRIM
 extern double RES_EPS; // EPS value for residual
+extern double EPS; // EPS value
 extern int INTEGR_TYPE; // Type of integration 1 = midpoint, 2 - trapezium
 extern int IDEAL_SQ_SIZE_X; // Size of ideal square by x
 extern int IDEAL_SQ_SIZE_Y; // Size of ideal square by y
@@ -32,12 +33,9 @@ extern int* G1; // bottom boundary
 extern int* G2; // right boundary
 extern int* G3; // top boundary
 extern int* G4; // left boundary
-extern int CP1; // corner point 1 - bottom left
-extern int CP2; // corner point 2 - bottom right
-extern int CP3; // corner point 3 - top right
-extern int CP4; // corner point 4 - top left
-
-
-#define EPS 10e-8
+extern int CP00; // corner point (0,0) - bottom left
+extern int CP10; // corner point (1,0) - bottom right
+extern int CP11; // corner point (1,1) - top right
+extern int CP01; // corner point (0,1) - top left
 
 #endif //FEM_CIRCLE_CONSTS_H

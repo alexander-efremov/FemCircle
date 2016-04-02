@@ -424,27 +424,31 @@ double *solve_3(double &tme) {
             }
         }
 
-        double integ = 0.;
-        if (INTEGR_TYPE == 1) {
-            integ = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl);
-        }
-        else if (INTEGR_TYPE == 2) {
-            integ = get_phi_integ_trapezium(OX_LEN, OY_LEN, prev_density, TAU * tl);
-        }
+        // point (0.0)
+
         // point (1,1)
-        phi[OY_LEN_1 * OX_LEN + OY_LEN] = integ;
+        if (CP11) {
+            double value = 0.;
+            if (INTEGR_TYPE == 1) {
+                value = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl);
+            }
+            else if (INTEGR_TYPE == 2) {
+                value = get_phi_integ_trapezium(OX_LEN, OY_LEN, prev_density, TAU * tl);
+            }
+            phi[OY_LEN_1 * OX_LEN + OY_LEN] = value;
+        }
 
         // inner points
         for (int i = 1; i < OX_LEN; ++i)
             for (int j = 1; j < OY_LEN; ++j) {
-                double integ = 0.;
+                double value = 0.;
                 if (INTEGR_TYPE == 1) {
-                    integ = get_phi_integ_midpoint(i, j, prev_density, TAU * tl);
+                    value = get_phi_integ_midpoint(i, j, prev_density, TAU * tl);
                 }
                 else if (INTEGR_TYPE == 2) {
-                    integ = get_phi_integ_trapezium(i, j, prev_density, TAU * tl);
+                    value = get_phi_integ_trapezium(i, j, prev_density, TAU * tl);
                 }
-                phi[OY_LEN_1 * i + j] = integ;
+                phi[OY_LEN_1 * i + j] = value;
             }
 
         //</editor-fold>
@@ -587,11 +591,9 @@ double *solve_3(double &tme) {
             memcpy(prev_density, density, XY_LEN * sizeof(double));
         }
 
-        sum_rho = calc_array_sum(density, OX_LEN_1, OY_LEN_1, 0);
-        sum_abs_rho = calc_array_sum(density, OX_LEN_1, OY_LEN_1, 1);
-
         printf("tl = %d IterCount = %d Max(Residual) = %le Sum(Rho) = %le Sum(absRho) = %le\n",
-               tl, ic, maxRes, sum_rho, sum_abs_rho);
+               tl, ic, maxRes, calc_array_sum(density, OX_LEN_1, OY_LEN_1, 0),
+               calc_array_sum(density, OX_LEN_1, OY_LEN_1, 1));
         fflush(stdout);
 
         if (tl % 1 == 0)
