@@ -347,7 +347,6 @@ double *solve_3(double &tme) {
     for (int j = 1; j < OY_LEN; ++j) {
         prev_density[j] = analytical_solution_circle(0., A, C + HY * j);
         if (fabs(prev_density[j]) < fabs(DBL_MIN_TRIM)) prev_density[j] = 0;
-0
     }
 
     memcpy(density, prev_density, XY_LEN * sizeof(double));
