@@ -496,29 +496,47 @@ TEST_F(FemFixture, test3_1) {
 
             int midIndexX = OX_LEN_1 / 2;
             int midIndexY = OY_LEN_1 / 2;
-            for (int i = midIndexX + 1; i < OX_LEN_1; ++i)
-                G1[i] = 1;
-            for (int j = midIndexY + 1; j < OY_LEN_1; ++j)
-                G2[j] = 1;
-            for (int i = 0; i < midIndexX; ++i)
-                G3[i] = 1;
-            for (int j = 0; j < midIndexY; ++j)
-                G4[j] = 1;
+            for (int i = 0; i < OX_LEN_1; ++i) {
+                if (i * HX + A < .5 && i > 0)
+                    G1[i] = 1;
+            }
+            for (int j = 0; j < OY_LEN_1; ++j) {
+                if (j * HY + C < .5 && j > 0)
+                    G2[j] = 1;
+            }
+            for (int i = 0; i < OX_LEN_1; ++i) {
+                if (i * HX + A > .5 && i < OX_LEN_1 - 1)
+                    G3[i] = 1;
+            }
+            for (int j = 0; j < OY_LEN_1; ++j) {
+                if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
+                    G4[j] = 1;
+                }
+            }
 
-            /*CP00 = 1;
+            CP00 = 1;
             CP10 = 1;
             CP01 = 1;
             CP11 = 1;
-*/
-            CP00 = 0;
+
+            /*CP00 = 0;
             CP10 = 0;
             CP01 = 0;
-            CP11 = 0;
+            CP11 = 0;*/
 
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));
             printf("midIndexX = %d\n", midIndexX);
             printf("midIndexY = %d\n", midIndexY);
+            printf("G1\n");
+            print_vector(G1, OX_LEN_1);
+            printf("G2\n");
+            print_vector(G2, OY_LEN_1);
+            printf("G3\n");
+            print_vector(G3, OX_LEN_1);
+            printf("G4\n");
+            print_vector(G4, OY_LEN_1);
+
 
             double *density = solve_3(tme);
             double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);

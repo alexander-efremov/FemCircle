@@ -147,6 +147,13 @@ inline void print_vector(double *a, int n, int precision = 8) {
     }
 }
 
+inline void print_vector(int *a, int n) {
+    for (int k = 0; k < n; ++k) {
+        printf("%d ", a[k]);
+    }
+    printf("\n");
+}
+
 inline double get_l1_norm(double hx, double hy, int x_len, int y_len, double *data) {
     double r = 0.;
     for (int i = 0; i < x_len; ++i)
