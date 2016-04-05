@@ -20,15 +20,19 @@ inline void print_data_to_files(double *phi, double *density, double *residual, 
     delete[] err_lock;
 }
 
-inline static double func_u(double t, double x, double y) { return -y + CENTER_OFFSET_Y; }
+inline static double func_u(double t, double x, double y) { return U_VELOCITY; }
 
-inline static double func_v(double t, double x, double y) { return x - CENTER_OFFSET_X; }
+inline static double func_v(double t, double x, double y) { return V_VELOCITY; }
 
 inline static double analytical_solution_circle(double t, double x, double y) {
-    double x0 = get_center_x() + t * func_u(t, x, y);
-    double y0 = get_center_y() + t * func_v(t, x, y);
+    double r = 0.2;
+    double da = 1. /*omega*/;
+
+    double x0 = get_center_x() - r*sin(t*da);
+    double y0 = get_center_y() + r*cos(t*da);
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
-    if (value < R_SQ) return INN_DENSITY;
+    if (value < R_SQ)
+        return INN_DENSITY;
     return OUT_DENSITY;
 }
 
@@ -247,11 +251,12 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
     v = func_v(time_value, x4, y4);
     x4 = x4 - TAU * u;
     y4 = y4 - TAU * v;
-    if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
+    /*
+     if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
         || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
         printf("PREV Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                        "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
-
+*/
     int nx = IDEAL_SQ_SIZE_X;
     int ny = IDEAL_SQ_SIZE_Y;
 
@@ -322,7 +327,6 @@ double *solve_3(double &tme) {
 
     // G1 -- (x_i, 0=C) -- bottom boundary
     for (int i = 0; i < OX_LEN_1; ++i) {
-
         prev_density[OY_LEN_1 * i] = analytical_solution_circle(0., A + HX * i, C);
         if (fabs(prev_density[OY_LEN_1 * i]) < fabs(DBL_MIN_TRIM)) prev_density[OY_LEN_1 * i] = 0;
 
@@ -330,7 +334,6 @@ double *solve_3(double &tme) {
 
     // G2 -- (OX_LEN=B, y_j) -- right boundary
     for (int j = 1; j < OY_LEN; ++j) {
-
         prev_density[OY_LEN_1 * OX_LEN + j] = analytical_solution_circle(0., A + HX * OX_LEN, C + HY * j);
         if (fabs(prev_density[OY_LEN_1 * OX_LEN + j]) < fabs(DBL_MIN_TRIM)) prev_density[OY_LEN_1 * OX_LEN + j] = 0;
 
@@ -778,13 +781,13 @@ double *solve_3(double &tme) {
 
         if (tl % 1 == 0) {
             print_data_to_files(phi, density, residual, tl);
-            int fixed_x = (int) (get_center_x() / HX);
+            /*int fixed_x = (int) (get_center_x() / HX);
             int fixed_y = (int) (get_center_y() / HY);
             print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
                                U_VELOCITY, V_VELOCITY, density, fixed_y);
             print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
                                U_VELOCITY, V_VELOCITY, density, fixed_x);
-        }
+*/        }
     }
 
     double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);

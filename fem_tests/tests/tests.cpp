@@ -489,7 +489,7 @@ TEST_F(FemFixture, test3_1) {
             V_VELOCITY = 1.;
             TAU = 2.5e-3;
 
-            TIME_STEP_CNT = 1;
+            TIME_STEP_CNT = 50;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
@@ -537,7 +537,6 @@ TEST_F(FemFixture, test3_1) {
             printf("G4\n");
             print_vector(G4, OY_LEN_1);
 
-
             double *density = solve_3(tme);
             double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
             double *exact0 = get_exact_solution_3(HX, HY, 0);
@@ -562,6 +561,88 @@ TEST_F(FemFixture, test3_1) {
             delete[] exact0;
             delete[] exactT;
             delete[] err;
+        }
+    }
+}
+
+// тестируем третий случай - движение по кругу
+TEST_F(FemFixture, test3_2) {
+    double tme = 0.;
+    for (int iter = 0; iter < 1; ++iter) {
+
+        double d = 0;
+        for (int i = 2; i < 3; ++i) {
+            switch (i) {
+                case 0:
+                    d = 50.;
+                    break;
+                case 1:
+                    d = 100.;
+                    break;
+                case 2:
+                    d = 200.;
+                    break;
+                case 3:
+                    d = 400.;
+                    break;
+                case 4:
+                    d = 800.;
+                    break;
+                case 5:
+                    d = 1600.;
+                    break;
+                default:
+                    return;
+            }
+
+            A = 0.;
+            B = 1.;
+            C = 0.;
+            D = 1.;
+            R_SQ = 0.099 * 0.099;
+            INN_DENSITY = 1.;
+            OUT_DENSITY = 0.;
+
+            OX_LEN = (int) d;
+            OY_LEN = (int) d;
+            OX_LEN_1 = OX_LEN + 1;
+            OY_LEN_1 = OY_LEN + 1;
+            HX = (B - A) / OX_LEN;
+            HY = (D - C) / OY_LEN;
+            IDEAL_SQ_SIZE_X = 128 * (iter + 1);
+            IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
+
+            CENTER_OFFSET_X = 0.5;
+            CENTER_OFFSET_Y = 0.5;
+
+            INTEGR_TYPE = 1;
+
+            U_VELOCITY = 1.;
+            V_VELOCITY = 1.;
+            TAU = 2.5e-3;
+
+            TIME_STEP_CNT = 50;
+            XY_LEN = OX_LEN_1 * OY_LEN_1;
+
+            double x0 = get_center_x();
+            double y0 = get_center_y();
+
+            double *exact0 = get_exact_solution_3(HX, HY, 0.);
+            double *exactT = get_exact_solution_3(HX, HY, TAU * TIME_STEP_CNT);
+            for (int j = 0; j <  TIME_STEP_CNT; ++j) {
+                double *exact0 = get_exact_solution_3(HX, HY, j*TAU);
+                print_surface("exact", OX_LEN, OY_LEN, HX, HY, j, A, C, x0, y0, TAU, U_VELOCITY,
+                              V_VELOCITY, exact0);
+            }
+
+            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, exact0);
+            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, exactT);
+
+
+            delete[] exact0;
+            delete[] exactT;
         }
     }
 }
