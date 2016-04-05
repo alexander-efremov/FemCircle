@@ -786,8 +786,8 @@ double *solve_3(double &tme) {
             print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
                                U_VELOCITY, V_VELOCITY, density, fixed_y);
             print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-                               U_VELOCITY, V_VELOCITY, density, fixed_x);
-*/        }
+                               U_VELOCITY, V_VELOCITY, density, fixed_x);*/
+        }
     }
 
     double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
