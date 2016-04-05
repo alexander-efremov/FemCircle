@@ -487,6 +487,7 @@ TEST_F(FemFixture, test3_1) {
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
+            OMEGA = 1.;
             TAU = 2.5e-3;
 
             TIME_STEP_CNT = 50;
@@ -519,10 +520,14 @@ TEST_F(FemFixture, test3_1) {
             CP01 = 1;
             CP11 = 1;
 
-            /*CP00 = 0;
-            CP10 = 0;
-            CP01 = 0;
-            CP11 = 0;*/
+            /*
+
+             CP00 = 0;
+             CP10 = 0;
+             CP01 = 0;
+             CP11 = 0;
+
+             */
 
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));
@@ -619,6 +624,7 @@ TEST_F(FemFixture, test3_2) {
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
+            OMEGA = 1.;
             TAU = 2.5e-3;
 
             TIME_STEP_CNT = 50;

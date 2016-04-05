@@ -26,7 +26,7 @@ inline static double func_v(double t, double x, double y) { return V_VELOCITY; }
 
 inline static double analytical_solution_circle(double t, double x, double y) {
     double r = 0.2;
-    double da = 1. /*omega*/;
+    double da = OMEGA;
 
     double x0 = get_center_x() - r*sin(t*da);
     double y0 = get_center_y() + r*cos(t*da);
