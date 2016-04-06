@@ -20,9 +20,9 @@ inline void print_data_to_files(double *phi, double *density, double *residual, 
     delete[] err_lock;
 }
 
-inline static double func_u(double t, double x, double y) { return U_VELOCITY; }
+inline static double func_u(double t, double x, double y) { return (-y+CENTER_OFFSET_Y)*U_VELOCITY; }
 
-inline static double func_v(double t, double x, double y) { return V_VELOCITY; }
+inline static double func_v(double t, double x, double y) { return (x-CENTER_OFFSET_X)*V_VELOCITY; }
 
 inline static double analytical_solution_circle(double t, double x, double y) {
     double r = 0.2;
@@ -498,7 +498,7 @@ double *solve_3(double &tme) {
         ic = 0;
         double maxErr = FLT_MAX;
 
-        while ((maxErr > EPS || maxRes > RES_EPS) && ic < OX_LEN_1) {
+        while ((maxErr > EPS || maxRes > RES_EPS) && ic < 5 * OX_LEN_1) {
 
             //<editor-fold desc="Calculate density">
 
@@ -628,7 +628,9 @@ double *solve_3(double &tme) {
             //<editor-fold desc="Calculate residual">
 
             // !!!!!! КАЖЕТСЯ ЧТО НУЖНО ЗАДАВАТЬ rp_coef правильно для каждой из границ !!!!!!!
-            //rpCoef = 32. / (9. * HX * HY);
+
+            rpCoef = HX * HY / 64.;
+
             // G1 -- (x_i, 0=C) -- bottom boundary
             for (int i = 1; i < OX_LEN; ++i) {
                 if (G1[i] == 1) {
@@ -693,7 +695,6 @@ double *solve_3(double &tme) {
                 }
             }
 
-            rpCoef = HX * HY / 64.;
             // point (0,0)
             if (CP00 == 1) {
                 residual[0] = rpCoef * (
