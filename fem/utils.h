@@ -154,13 +154,36 @@ inline void print_vector(int *a, int n) {
     printf("\n");
 }
 
-inline double get_l1_norm(double hx, double hy, int x_len, int y_len, double *data) {
+inline double get_l1_norm_vec(int x_len, int y_len, double *data) { // new
+    double r = 0.;
+    for (int i = 0; i < x_len; ++i)
+        for (int j = 0; j < y_len; ++j)
+            r += fabs(data[y_len * i + j]);
+    return r / (x_len * y_len);
+}
+
+
+inline double get_l1_norm(double hx, double hy, int x_len, int y_len, double *data) { // old
     double r = 0.;
     for (int i = 0; i < x_len; ++i)
         for (int j = 0; j < y_len; ++j)
             r += fabs(data[y_len * i + j]);
     return r * hx * hy;
 }
+
+
+
+inline double get_l1_norm_int_trapezoidal(double hx, double hy, int x_len, int y_len, double *data) {
+    double r = 0.;
+    for (int i = 0; i < x_len; ++i)
+        for (int j = 0; j < y_len; ++j)
+            r += (fabs(data[y_len * i + j] +
+                  fabs(data[y_len * (i + 1) + j] +
+                  fabs(data[y_len * i + j + 1] +
+                  fabs(data[y_len * (i + 1) + j + 1]) * hx*hy;
+    return r;
+}
+
 
 inline double get_l_inf_norm(int x_len, int y_len, double *data) {
     double max = FLT_MIN;
@@ -181,7 +204,7 @@ inline bool is_empty_file(FILE *f) {
     return false;
 }
 
-inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1, double res_inf, int time_steps) {
+inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1_vec, double err_l1_tr, double res_inf, int time_steps) {
     FILE *file;
     const char* filename = "/home/jane/ClionProjects/fem_circle/statistics.dat";
     file = fopen(filename, "a");
@@ -190,10 +213,10 @@ inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount,
         return;
     }
     if (is_empty_file(file)) {
-        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR", "MAXRESIDUAL", "TIMESTP");
+        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR-VEC", "L1ERR-TR", "MAXRESIDUAL", "TIMESTP");
     }
 
-    fprintf(file, "%d\t%d\t%le\t%d\t%le\t%le\t%d\n", ox_len, oy_len, tau, iterCount, err_l1, res_inf, time_steps);
+    fprintf(file, "%d\t%d\t%le\t%d\t%le\t%le\t%le\t%d\n", ox_len, oy_len, tau, iterCount, err_l1_vec, err_l1_tr, res_inf, time_steps);
 
     fclose(file);
 }

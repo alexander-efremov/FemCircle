@@ -235,6 +235,9 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
 
     get_coordinates_on_curr(ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
 
+//    printf("POINT: %d   %d :  x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le **
+//                   x4=%.8le * y4=%.8le\n", ii,jj, x1,y1, x2,y2, x3,y3, x4,y4);
+
     double u = func_u(time_value, x1, y1);
     double v = func_v(time_value, x1, y1);
     x1 = x1 - TAU * u;
@@ -780,7 +783,7 @@ double *solve_3(double &tme) {
                calc_array_sum(density, OX_LEN_1, OY_LEN_1, 1));
         fflush(stdout);
 
-        if (tl % 1 == 0) {
+        if (tl % 5 == 0) {
             print_data_to_files(phi, density, residual, tl);
             /*int fixed_x = (int) (get_center_x() / HX);
             int fixed_y = (int) (get_center_y() / HY);
@@ -792,8 +795,9 @@ double *solve_3(double &tme) {
     }
 
     double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
-    double l1_err = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err, maxRes, TIME_STEP_CNT);
+    double l1_err_vec = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
+    double l1_err_tr = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
+    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, TIME_STEP_CNT);
 
     delete[] prev_density;
     delete[] phi;

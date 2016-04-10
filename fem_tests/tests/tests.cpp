@@ -1,7 +1,11 @@
 #include <utils.h>
 #include <cmath>
 #include <common.h>
+#include <dirent.h>
+#include <fstream>
 #include "gtest/gtest.h"
+#include <algorithm>
+#include <locale>
 
 class FemFixture : public ::testing::Test {
 protected:
@@ -52,6 +56,162 @@ void init_boundary_arrays_and_cp() {
     CP10 = 0;
     CP01 = 0;
     CP11 = 0;
+}
+
+/*function... might want it in some class?*/
+int getdir(std::string dir, std::vector<std::string> &files) {
+    DIR *dp;
+    struct dirent *dirp;
+    if ((dp = opendir(dir.c_str())) == NULL) {
+        std::cout << "Error opening " << dir << std::endl;
+        return -1;
+    }
+
+    while ((dirp = readdir(dp)) != NULL) {
+        files.push_back(std::string(dirp->d_name));
+    }
+    closedir(dp);
+    return 0;
+}
+
+bool starts_with(const std::string &s1, const std::string &s2) {
+    return s2.size() <= s1.size() && s1.compare(0, s2.size(), s2) == 0;
+}
+
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
+// trim from start
+static inline std::string &ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
+}
+
+// trim from end
+static inline std::string &rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+
+// trim from both ends
+static inline std::string &trim(std::string &s) {
+    return ltrim(rtrim(s));
+}
+
+double *getArr(const int skipLines, std::string file, int size) const {
+    int idx = 0;
+    double *arr = new double[size];
+    std::ifstream input(file.c_str());
+    std::string line;
+
+    for (int j = 0; j < skipLines; ++j) {
+        std::getline(input, line);
+    }
+
+    while (std::getline(input, line)) {
+        std::vector<std::string> splt = split(line, ' ');
+        splt[2] = trim(splt[2]);
+        double d = atof(splt[2].c_str());
+        arr[idx] = d;
+    }
+    return arr;
+}
+
+
+int get_tl(std::string &basic_string) {
+    std::vector<std::string> splt = split(basic_string, '_');
+    std::vector<std::string> t = split(splt[5], '=');
+    return atoi(t[1].c_str());
+}
+
+TEST_F(FemFixture, tecplot2dTo1d) {
+    const int skipLines = 6;
+    A = 0.;
+    B = 1.;
+    C = 0.;
+    D = 1.;
+    OX_LEN = 400;
+    OY_LEN = 400;
+    OX_LEN_1 = OX_LEN + 1;
+    OY_LEN_1 = OY_LEN + 1;
+    XY_LEN = OX_LEN_1 * OY_LEN_1;
+    R_SQ = 0.099 * 0.099;
+    INN_DENSITY = 1.;
+    OUT_DENSITY = 0.;
+
+    HX = (B - A) / OX_LEN;
+    HY = (D - C) / OY_LEN;
+    IDEAL_SQ_SIZE_X = 128 * (3 + 1);
+    IDEAL_SQ_SIZE_Y = 128 * (3 + 1);
+
+    CENTER_OFFSET_X = 0.5;
+    CENTER_OFFSET_Y = 0.5;
+
+    INTEGR_TYPE = 1;
+
+    U_VELOCITY = 1.;
+    V_VELOCITY = 1.;
+    OMEGA = 1.;
+    TAU = 2.5e-3;
+
+    TIME_STEP_CNT = 2700;
+
+    double fixed_y = 0;
+    double fixed_x = 0;
+
+    std::string dir = std::string("/home/jane/ClionProjects/fem_circle/fem_tests/test3_1/");
+    std::vector<std::string> files = std::vector<std::string>();
+
+    getdir(dir, files);
+
+    std::vector<std::string> errFiles = std::vector<std::string>();
+    std::vector<std::string> rhoFiles = std::vector<std::string>();
+    for (unsigned int i = 0; i < files.size(); i++) {
+        if (starts_with(files[i], "err")) {
+            errFiles.push_back(files[i]);
+        }
+    }
+
+    for (unsigned int i = 0; i < files.size(); i++) {
+        if (starts_with(files[i], "rho")) {
+            rhoFiles.push_back(files[i]);
+        }
+    }
+    std::cout << "Starting rho files convertsion..." << std::endl;
+    for (unsigned int i = 0; i < rhoFiles.size(); i++) {
+        std::cout << rhoFiles[i] << std::endl;
+        int tl = get_tl(rhoFiles[i]);
+        double *arr = getArr(skipLines, rhoFiles[i], XY_LEN);
+        print_line_along_x("rho_x_1d", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                           U_VELOCITY, V_VELOCITY, arr, fixed_y);
+        print_line_along_y("rho_y_1d", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                           U_VELOCITY, V_VELOCITY, arr, fixed_x);
+        delete[] arr;
+    }
+    std::cout << "Starting err files convertsion..." << std::endl;
+    for (unsigned int i = 0; i < errFiles.size(); i++) {
+        std::cout << errFiles[i] << std::endl;
+        int tl = get_tl(errFiles[i]);
+        double *arr = getArr(skipLines, errFiles[i], XY_LEN);
+        print_line_along_x("err_x_1d", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                           U_VELOCITY, V_VELOCITY, arr, fixed_y);
+        print_line_along_y("err_x_1d", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                           U_VELOCITY, V_VELOCITY, arr, fixed_x);
+        delete[] arr;
+    }
 }
 
 TEST_F(FemFixture, test1) {
@@ -433,13 +593,102 @@ TEST_F(FemFixture, test2_3) {
     }
 }
 
+// тестируем проход по диагонали с переходом по ячейкам
+TEST_F(FemFixture, test2_4) {
+    double tme = 0.;
+    for (int iter = 0; iter < 1; ++iter) {
+
+        double d = 0;
+        for (int i = 3; i < 4; ++i) {
+            switch (i) {
+                case 0:
+                    d = 50.;
+                    break;
+                case 1:
+                    d = 100.;
+                    break;
+                case 2:
+                    d = 200.;
+                    break;
+                case 3:
+                    d = 400.;
+                    break;
+                case 4:
+                    d = 800.;
+                    break;
+                case 5:
+                    d = 1600.;
+                    break;
+                default:
+                    return;
+            }
+
+            A = 0.;
+            B = 1.;
+            C = 0.;
+            D = 1.;
+            R_SQ = 0.099 * 0.099;
+            INN_DENSITY = 1.;
+            OUT_DENSITY = 0.;
+
+            OX_LEN = (int) d;
+            OY_LEN = (int) d;
+            OX_LEN_1 = OX_LEN + 1;
+            OY_LEN_1 = OY_LEN + 1;
+            HX = (B - A) / OX_LEN;
+            HY = (D - C) / OY_LEN;
+            IDEAL_SQ_SIZE_X = 128 * (iter + 1);
+            IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
+
+            CENTER_OFFSET_X = 0.3;
+            CENTER_OFFSET_Y = 0.3;
+
+            INTEGR_TYPE = 1;
+
+            U_VELOCITY = 1.;
+            V_VELOCITY = 1.;
+            TAU = HX;
+            //TIME_STEP_CNT = (int) pow(2., i);
+            TIME_STEP_CNT = 1;
+            XY_LEN = OX_LEN_1 * OY_LEN_1;
+
+            print_params();
+
+            double *density = solve_2(tme);
+            double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
+            double *exact0 = get_exact_solution_2(HX, HY, 0);
+            double *exactT = get_exact_solution_2(HX, HY, TAU * TIME_STEP_CNT);
+
+            double x0 = get_center_x();
+            double y0 = get_center_y();
+            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, density);
+            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, err);
+            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, exact0);
+            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                          V_VELOCITY, exactT);
+
+            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
+            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            printf("l1 %le \n", l1);
+            printf("l_inf %le\n", l_inf);
+            delete[] density;
+            delete[] exact0;
+            delete[] exactT;
+            delete[] err;
+        }
+    }
+}
+
 // тестируем третий случай - движение по кругу
 TEST_F(FemFixture, test3_1) {
     double tme = 0.;
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 2; i < 3; ++i) {
+        for (int i = 3; i < 4; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -488,9 +737,9 @@ TEST_F(FemFixture, test3_1) {
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
             OMEGA = 1.;
-            TAU = 1.e-3;
+            TAU = 2.5e-3;
 
-            TIME_STEP_CNT = 50;
+            TIME_STEP_CNT = 2700;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
@@ -522,10 +771,10 @@ TEST_F(FemFixture, test3_1) {
 
             */
 
-             CP00 = 0;
-             CP10 = 0;
-             CP01 = 0;
-             CP11 = 0;
+            CP00 = 0;
+            CP10 = 0;
+            CP01 = 0;
+            CP11 = 0;
 
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));
@@ -556,7 +805,8 @@ TEST_F(FemFixture, test3_1) {
             print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                           V_VELOCITY, exactT);
 
-            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
+            //           double l1 = get_l1_norm_int_middle(HX, HY, OX_LEN_1, OY_LEN_1, err);
             double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
@@ -633,8 +883,8 @@ TEST_F(FemFixture, test3_2) {
 
             double *exact0 = get_exact_solution_3(HX, HY, 0.);
             double *exactT = get_exact_solution_3(HX, HY, TAU * TIME_STEP_CNT);
-            for (int j = 0; j <  TIME_STEP_CNT; ++j) {
-                double *exact0 = get_exact_solution_3(HX, HY, j*TAU);
+            for (int j = 0; j < TIME_STEP_CNT; ++j) {
+                double *exact0 = get_exact_solution_3(HX, HY, j * TAU);
                 print_surface("exact", OX_LEN, OY_LEN, HX, HY, j, A, C, x0, y0, TAU, U_VELOCITY,
                               V_VELOCITY, exact0);
             }
@@ -790,3 +1040,4 @@ TEST_F(FemFixture, test3_3) {
         }
     }
 }
+
