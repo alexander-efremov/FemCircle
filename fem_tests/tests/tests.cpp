@@ -111,7 +111,7 @@ static inline std::string &trim(std::string &s) {
     return ltrim(rtrim(s));
 }
 
-double *getArr(const int skipLines, std::string file, int size) const {
+double *getArr(const int skipLines, std::string file, int size) {
     int idx = 0;
     double *arr = new double[size];
     std::ifstream input(file.c_str());
@@ -458,8 +458,8 @@ TEST_F(FemFixture, test2_2) {
             OY_LEN_1 = OY_LEN + 1;
             HX = (B - A) / OX_LEN;
             HY = (D - C) / OY_LEN;
-            IDEAL_SQ_SIZE_X = 128 * (iter + 1);
-            IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
+            IDEAL_SQ_SIZE_X = 4;
+            IDEAL_SQ_SIZE_Y = 4;
             CENTER_OFFSET_X = 0.3;
             CENTER_OFFSET_Y = 0.3;
 
@@ -467,10 +467,10 @@ TEST_F(FemFixture, test2_2) {
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
-            TAU = 16. / pow(2., (i + 1));
-            TAU *= 1.e-3;
-            //TIME_STEP_CNT = (int) pow(2., i);
-            TIME_STEP_CNT = 400;
+            //TAU = 16. / pow(2., (i + 1));
+            TAU = 1.2e-3;
+            TIME_STEP_CNT = (int) pow(2., i);
+            TIME_STEP_CNT = 20;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             print_params();

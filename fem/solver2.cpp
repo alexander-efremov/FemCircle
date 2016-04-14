@@ -510,6 +510,7 @@ double *solve_2(double &tme) {
     fflush(stdout);
 
     double maxRes = FLT_MAX;
+    double *extrems = new double[2];
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
 
@@ -568,7 +569,7 @@ double *solve_2(double &tme) {
 
         ic = 0;
         double maxErr = FLT_MAX;
-        while (((maxErr > EPS) || (maxRes > RES_EPS)) && (ic < OX_LEN_1)) {
+        while (((maxErr > EPS) || (maxRes > RES_EPS)) && (ic < OX_LEN_1*OY_LEN_1)) {
 
             //<editor-fold desc="Calculate density">
             // point 1,1
@@ -705,14 +706,17 @@ double *solve_2(double &tme) {
 
         sum_rho = calc_array_sum(density, OX_LEN_1, OY_LEN_1, 0);
         sum_abs_rho = calc_array_sum(density, OX_LEN_1, OY_LEN_1, 1);
+        extrems = calc_array_extrems(density, OX_LEN_1, OY_LEN_1);
 
-        printf("tl = %d IterCount = %d Max(Residual) = %le Sum(Rho) = %le Sum(absRho) = %le\n",
-               tl, ic, maxRes, sum_rho, sum_abs_rho);
+
+        printf("tl = %d IterCount = %d Max(Residual) = %le Sum(Rho) = %le Sum(absRho) = %le"
+                       "Min(Rho) = %le Max(Rho) = %le\n",
+               tl, ic, maxRes, sum_rho, sum_abs_rho, extrems[0], extrems[1]);
         fflush(stdout);
 
         if (tl % 1 == 0)
         {
-            print_data_to_files(phi, density, residual, tl);
+ //           print_data_to_files(phi, density, residual, tl);
             int fixed_x = (int)(get_center_x()/HX);
             int fixed_y = (int)(get_center_y() / HY);
             print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
@@ -723,13 +727,17 @@ double *solve_2(double &tme) {
     }
 
     double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
-    double l1_err = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err, maxRes, TIME_STEP_CNT);
+//    double l1_err = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
+    double l1_err_vec = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
+    double l1_err_tr = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
+    extrems = calc_array_extrems(density, OX_LEN_1, OY_LEN_1);
+    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, extrems, TIME_STEP_CNT);
 
     delete[] prev_density;
     delete[] phi;
     delete[] err;
     delete[] residual;
+    delete[] extrems;
     tme = GetTimer() / 1000;
     return density;
 }

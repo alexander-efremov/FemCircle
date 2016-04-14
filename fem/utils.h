@@ -177,10 +177,10 @@ inline double get_l1_norm_int_trapezoidal(double hx, double hy, int x_len, int y
     double r = 0.;
     for (int i = 0; i < x_len; ++i)
         for (int j = 0; j < y_len; ++j)
-            r += (fabs(data[y_len * i + j] +
-                  fabs(data[y_len * (i + 1) + j] +
-                  fabs(data[y_len * i + j + 1] +
-                  fabs(data[y_len * (i + 1) + j + 1]) * hx*hy;
+            r += (fabs(data[y_len * i + j]) +
+                  fabs(data[y_len * (i + 1) + j]) +
+                  fabs(data[y_len * i + j + 1]) +
+                  fabs(data[y_len * (i + 1) + j + 1])) * hx*hy;
     return r;
 }
 
@@ -204,7 +204,7 @@ inline bool is_empty_file(FILE *f) {
     return false;
 }
 
-inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1_vec, double err_l1_tr, double res_inf, int time_steps) {
+inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1_vec, double err_l1_tr, double res_inf, double *extrem, int time_steps) {
     FILE *file;
     const char* filename = "/home/jane/ClionProjects/fem_circle/statistics.dat";
     file = fopen(filename, "a");
@@ -213,10 +213,10 @@ inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount,
         return;
     }
     if (is_empty_file(file)) {
-        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR-VEC", "L1ERR-TR", "MAXRESIDUAL", "TIMESTP");
+        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR-VEC", "L1ERR-TR", "MAXRESIDUAL", "MIN_RHO", "MAX_RHO", "TIMESTP");
     }
 
-    fprintf(file, "%d\t%d\t%le\t%d\t%le\t%le\t%le\t%d\n", ox_len, oy_len, tau, iterCount, err_l1_vec, err_l1_tr, res_inf, time_steps);
+    fprintf(file, "%d\t%d\t%le\t%d\t%le\t%le\t%le\t%le\t%le\t%d\n", ox_len, oy_len, tau, iterCount, err_l1_vec, err_l1_tr, res_inf, extrem[0], extrem[1], time_steps);
 
     fclose(file);
 }
@@ -236,6 +236,23 @@ inline double calc_array_sum(double *a, int ox_len, int oy_len, bool isAbs) {
     return res;
 }
 
+inline double *calc_array_extrems(double *a, int ox_len, int oy_len) {
+    double *res = new double[2];
+
+    double maxRes = a[0];
+    double minRes = a[0];
+    for (int i = 0; i < ox_len; ++i) {
+        for (int j = 0; j < oy_len; ++j) {
+            double val = a[i * oy_len + j];
+            if (val > maxRes) maxRes = val;
+            if (val < minRes) minRes = val;
+        }
+    }
+
+    res[0] = minRes; res[1] = maxRes;
+    return res;
+}
+
 inline void print_surface(const char *filename, int ox_len, int oy_len,
                    double hx, double hy, int t, double a, double c, double x0, double y0,
                    double tau, double u, double v, double *data) {
@@ -243,7 +260,7 @@ inline void print_surface(const char *filename, int ox_len, int oy_len,
     sprintf(name, "%s_nx=%d_ny=%d_hx=%f_hy=%f_t=%d_x0=%f_y0=%f_tau=%f_u=%f_v=%f_a=%f_c=%f.dat",
             filename, ox_len + 1, oy_len + 1, hx, hy, t, x0, y0, tau, u, v, a, c);
     FILE *file = fopen(name, "w");
-    fprintf(file, "TITLE = 'DEM DATA | DEM DATA | DEM DATA | DEM DATA'\nVARIABLES = 'X' 'Y' 'E'\nZONE T='SubZone'");
+    fprintf(file, "TITLE = 'DEM DATA | DEM DATA | DEM DATA | DEM DATA'\nVARIABLES = 'x' 'y' 'rho'\nZONE T='SubZone'");
     fprintf(file, "\nI=%d J=%d K=%d ZONETYPE=Ordered", oy_len + 1, ox_len + 1, 1);
     fprintf(file, "\nDATAPACKING=POINT\nDT=(SINGLE SINGLE SINGLE)");
     for (int i = 0; i < ox_len + 1; i++)
@@ -261,7 +278,7 @@ inline void print_line_along_x(const char *filename, int ox_len, int oy_len,
     sprintf(name, "line_by_x_%s_nx=%d_ny=%d_hx=%f_hy=%f_t=%d_x0=%f_y0=%f_tau=%f_u=%f_v=%f_a=%f_c=%f.dat",
             filename, ox_len + 1, oy_len + 1, hx, hy, t, x0, y0, tau, u, v, a, c);
     FILE *file = fopen(filename, "w");
-    fprintf(file, "TITLE = \"XY LINE\"\nVARIABLES = \"X\", \"F\"\nZONE T=\"Only Zone\",");
+    fprintf(file, "TITLE = \"XY LINE\"\nVARIABLES = \"x\", \"rho\"\nZONE T=\"Only Zone\",");
     fprintf(file, " I=%d, F=POINT", ox_len + 1);
     for (int i = 0; i < ox_len + 1; i++)
         fprintf(file, "\n%-30.20g  %-30.20g", i * hx, data[(oy_len + 1) * i + fixed_y]);

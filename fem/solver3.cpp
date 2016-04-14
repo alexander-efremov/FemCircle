@@ -372,6 +372,7 @@ double *solve_3(double &tme) {
     fflush(stdout);
 
     double maxRes = FLT_MAX;
+    double *extrems = new double[2];
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
 
@@ -797,12 +798,16 @@ double *solve_3(double &tme) {
     double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
     double l1_err_vec = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
     double l1_err_tr = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
-    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, TIME_STEP_CNT);
+//    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, TIME_STEP_CNT);
+    extrems = calc_array_extrems(density, OX_LEN_1, OY_LEN_1);
+    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, extrems, TIME_STEP_CNT);
+
 
     delete[] prev_density;
     delete[] phi;
     delete[] err;
     delete[] residual;
+    delete[] extrems;
     tme = GetTimer() / 1000;
     return density;
 }
