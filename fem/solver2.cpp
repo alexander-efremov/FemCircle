@@ -445,6 +445,150 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
     return phi;
 }
 
+static double get_phi_integ_exact(int ii, int jj, double *density, double time_value) {
+    double x1 = 0.;
+    double y1 = 0.;
+    double x2 = 0.;
+    double y2 = 0.;
+    double x3 = 0.;
+    double y3 = 0.;
+    double x4 = 0.;
+    double y4 = 0.;
+
+    if (ii > 0 && ii < OX_LEN && jj > 0 && jj < OY_LEN) {
+        // p1 (x_{i-1/2}, y_{j-1/2})
+        x1 = A + ii * HX - HX / 2.;
+        y1 = C + jj * HY - HY / 2.;
+        // p2 (x_{i+1/2}, y_{j-1/2})
+        x2 = A + ii * HX + HX / 2.;
+        y2 = C + jj * HY - HY / 2.;
+        // p3 (x_{i+1/2}, y_{j+1/2})
+        x3 = A + ii * HX + HX / 2.;
+        y3 = C + jj * HY + HY / 2.;
+        // p4 (x_{i-1/2}, y_{j+1/2})
+        x4 = A + ii * HX - HX / 2.;
+        y4 = C + jj * HY + HY / 2.;
+        if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
+            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+    }
+    else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
+        // p1 (x_{OX_LEN-1/2}, y_{OY_LEN-1/2})
+        x1 = B - HX / 2.;
+        y1 = D - HY / 2.;
+        // p2 (B, y_{OY_LEN-1/2})
+        x2 = B;
+        y2 = D - HY / 2.;
+        // p3 (B, D)
+        x3 = B;
+        y3 = D;
+        // p4 (x_{OX_LEN-1/2}, D)
+        x4 = B - HX / 2.;
+        y4 = D;
+        if (x1 <= A || x1 > B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 > B
+            || y1 <= C || y1 > D || y2 <= C || y2 > D || y3 <= C || y3 > D || y4 <= C || y4 > D)
+            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+    }
+    else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G3 -- top boundary
+        // p1 (x_{i-1/2}, y_{OY_LEN-1/2})
+        x1 = A + ii * HX - HX / 2.;
+        y1 = D - HY / 2.;
+        // p2 (x_{i+1/2}, y_{OY_LEN-1/2})
+        x2 = A + ii * HX + HX / 2.;
+        y2 = D - HY / 2.;
+        //p3 (x_{i+1/2}, D)
+        x3 = A + ii * HX + HX / 2.;
+        y3 = D;
+        //p4 (x_{i-1/2}, D)
+        x4 = A + ii * HX - HX / 2.;
+        y4 = D;
+        if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
+            || y1 <= C || y1 > D || y2 <= C || y2 > D || y3 <= C || y3 > D || y4 <= C || y4 > D)
+            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+    }
+    else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G2 -- right boundary
+        // p1 (x_{OX_LEN-1/2}, y_{j-1/2})
+        x1 = B - HX / 2.;
+        y1 = C + jj * HY - HY / 2.;
+        // p2 (B, y_{j-1/2})
+        x2 = B;
+        y2 = C + jj * HY - HY / 2.;
+        // p3 (B, y_{j+1/2})
+        x3 = B;
+        y3 = C + jj * HY + HY / 2.;
+        // p4 (x_{OX_LEN-1/2}, y_{j+1/2})
+        x4 = B - HX / 2.;
+        y4 = C + jj * HY + HY / 2.;
+        if (x1 <= A || x1 > B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 > B
+            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+            printf("ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                           "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+    }
+    else printf("ERROR! INDEX i=%d j=%d ", ii, jj);
+
+    double u = func_u(time_value, x1, y1);
+    double v = func_v(time_value, x1, y1);
+    x1 = x1 - TAU * u;
+    y1 = y1 - TAU * v;
+    u = func_u(time_value, x2, y2);
+    v = func_v(time_value, x2, y2);
+    x2 = x2 - TAU * u;
+    y2 = y2 - TAU * v;
+    u = func_u(time_value, x3, y3);
+    v = func_v(time_value, x3, y3);
+    x3 = x3 - TAU * u;
+    y3 = y3 - TAU * v;
+    u = func_u(time_value, x4, y4);
+    v = func_v(time_value, x4, y4);
+    x4 = x4 - TAU * u;
+    y4 = y4 - TAU * v;
+    if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
+        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        printf("Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                       "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+
+    int nx = IDEAL_SQ_SIZE_X;
+    int ny = IDEAL_SQ_SIZE_Y;
+
+    double x_step = 1. / nx;
+    double y_step = 1. / ny;
+
+    // get right part for jakoby
+    double phi = 0.;
+    double mes = x_step * y_step;
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+
+            double ideal_x = i * x_step + x_step / 2.;
+            double ideal_y = j * y_step + y_step / 2.;
+
+            double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
+                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
+            double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
+                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+
+            // find out in which square real point was placed
+            int sq_i = (int) ((real_x - A) / HX);
+            int sq_j = (int) ((real_y - C) / HY);
+
+            double dens = density[sq_i * OY_LEN_1 + sq_j]
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j]
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1]
+                          + density[sq_i * OY_LEN_1 + sq_j + 1];
+
+            dens = dens / 4.;
+
+            phi += mes * dens;
+        }
+    }
+
+    if (fabs(phi) < fabs(DBL_MIN_TRIM)) phi = 0;
+    return phi;
+}
+
 double *solve_2(double &tme) {
     StartTimer();
 
@@ -527,6 +671,9 @@ double *solve_2(double &tme) {
             else if (INTEGR_TYPE == 2) {
                 integ = get_phi_integ_trapezium(i, OY_LEN, prev_density, TAU * tl);
             }
+            else if (INTEGR_TYPE == 3) {
+                integ = get_phi_integ_exact(i, OY_LEN, prev_density, TAU * tl);
+            }
             phi[OY_LEN_1 * i + OY_LEN] = integ;
         }
 
@@ -539,6 +686,9 @@ double *solve_2(double &tme) {
             else if (INTEGR_TYPE == 2) {
                 integ = get_phi_integ_trapezium(OX_LEN, j, prev_density, TAU * tl);
             }
+            else if (INTEGR_TYPE == 3) {
+                integ = get_phi_integ_exact(OX_LEN, j, prev_density, TAU * tl);
+            }
             phi[OY_LEN_1 * OX_LEN + j] = integ;
         }
 
@@ -548,6 +698,9 @@ double *solve_2(double &tme) {
         }
         else if (INTEGR_TYPE == 2) {
             integ = get_phi_integ_trapezium(OX_LEN, OY_LEN, prev_density, TAU * tl);
+        }
+        else if (INTEGR_TYPE == 3) {
+            integ = get_phi_integ_exact(OX_LEN, OY_LEN, prev_density, TAU * tl);
         }
         // point (1,1)
         phi[OY_LEN_1 * OX_LEN + OY_LEN] = integ;
@@ -561,6 +714,9 @@ double *solve_2(double &tme) {
                 }
                 else if (INTEGR_TYPE == 2) {
                     integ = get_phi_integ_trapezium(i, j, prev_density, TAU * tl);
+                }
+                else if (INTEGR_TYPE == 3) {
+                    integ = get_phi_integ_exact(i, j, prev_density, TAU * tl);
                 }
                 phi[OY_LEN_1 * i + j] = integ;
             }
@@ -716,7 +872,7 @@ double *solve_2(double &tme) {
 
         if (tl % 1 == 0)
         {
- //           print_data_to_files(phi, density, residual, tl);
+          print_data_to_files(phi, density, residual, tl);
             int fixed_x = (int)(get_center_x()/HX);
             int fixed_y = (int)(get_center_y() / HY);
             print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,

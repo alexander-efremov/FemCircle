@@ -43,4 +43,3 @@ int CP00 = 0;
 int CP10 = 0;
 int CP11 = 0;
 int CP01 = 0;
-
