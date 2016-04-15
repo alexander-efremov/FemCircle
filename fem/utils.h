@@ -277,7 +277,7 @@ inline void print_line_along_x(const char *filename, int ox_len, int oy_len,
     char name[650];
     sprintf(name, "line_by_x_%s_nx=%d_ny=%d_hx=%f_hy=%f_t=%d_x0=%f_y0=%f_tau=%f_u=%f_v=%f_a=%f_c=%f.dat",
             filename, ox_len + 1, oy_len + 1, hx, hy, t, x0, y0, tau, u, v, a, c);
-    FILE *file = fopen(filename, "w");
+    FILE *file = fopen(name, "w");
     fprintf(file, "TITLE = \"XY LINE\"\nVARIABLES = \"x\", \"rho\"\nZONE T=\"Only Zone\",");
     fprintf(file, " I=%d, F=POINT", ox_len + 1);
     for (int i = 0; i < ox_len + 1; i++)

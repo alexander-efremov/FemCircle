@@ -741,7 +741,7 @@ TEST_F(FemFixture, test2_5) {
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
-            TAU = HX;
+            TAU = HX/2.;
             //TIME_STEP_CNT = (int) pow(2., i);
             //TIME_STEP_CNT = 1;
             TIME_STEP_CNT = 1; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
@@ -834,7 +834,7 @@ TEST_F(FemFixture, test2_6) {
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
-            TAU = HX;
+            TAU = HX/2.;
             //TIME_STEP_CNT = (int) pow(2., i);
             //TIME_STEP_CNT = 1;
             TIME_STEP_CNT = 160; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160

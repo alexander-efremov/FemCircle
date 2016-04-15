@@ -870,7 +870,6 @@ double *solve_2(double &tme) {
         sum_abs_rho = calc_array_sum(density, OX_LEN_1, OY_LEN_1, 1);
         extrems = calc_array_extrems(density, OX_LEN_1, OY_LEN_1);
 
-
         printf("tl = %d IterCount = %d Max(Residual) = %le Sum(Rho) = %le Sum(absRho) = %le"
                        "Min(Rho) = %le Max(Rho) = %le\n",
                tl, ic, maxRes, sum_rho, sum_abs_rho, extrems[0], extrems[1]);
