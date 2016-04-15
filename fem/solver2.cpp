@@ -396,8 +396,11 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
     y4 = y4 - TAU * v;
     if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
         || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+    {
         printf("Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                        "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+        return 0.; //!!!!
+    }
 
     int nx = IDEAL_SQ_SIZE_X;
     int ny = IDEAL_SQ_SIZE_Y;
@@ -547,9 +550,12 @@ static double get_phi_integ_exact(int ii, int jj, double *density, double time_v
     y4 = y4 - TAU * v;
     if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
         || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+    {
         printf("Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                        "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
 
+        return 0.;// на всякий случай
+    }
     int nx = IDEAL_SQ_SIZE_X;
     int ny = IDEAL_SQ_SIZE_Y;
 
