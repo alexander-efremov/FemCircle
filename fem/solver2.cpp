@@ -395,8 +395,7 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
     x4 = x4 - TAU * u;
     y4 = y4 - TAU * v;
     if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
-        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
-    {
+        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D) {
         printf("Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                        "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
         return 0.; //!!!!
@@ -549,47 +548,32 @@ static double get_phi_integ_exact(int ii, int jj, double *density, double time_v
     x4 = x4 - TAU * u;
     y4 = y4 - TAU * v;
     if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
-        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
-    {
+        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D) {
         printf("Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                        "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
 
         return 0.;// на всякий случай
     }
-    int nx = IDEAL_SQ_SIZE_X;
-    int ny = IDEAL_SQ_SIZE_Y;
 
-    double x_step = 1. / nx;
-    double y_step = 1. / ny;
+    int sq_i = (int) ((x1 - A) / HX);
+    int sq_j = (int) ((y1 - C) / HY);
+
 
     // get right part for jakoby
-    double phi = 0.;
-    double mes = x_step * y_step;
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
+    int ip = ii - 1;
+    int jp = jj - 1;
 
-            double ideal_x = i * x_step + x_step / 2.;
-            double ideal_y = j * y_step + y_step / 2.;
-
-            double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
-                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
-            double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
-                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
-
-            // find out in which square real point was placed
-            int sq_i = (int) ((real_x - A) / HX);
-            int sq_j = (int) ((real_y - C) / HY);
-
-            double dens = density[sq_i * OY_LEN_1 + sq_j]
-                          + density[(sq_i + 1) * OY_LEN_1 + sq_j]
-                          + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1]
-                          + density[sq_i * OY_LEN_1 + sq_j + 1];
-
-            dens = dens / 4.;
-
-            phi += mes * dens;
-        }
+    if (ip != sq_i || jp != sq_j) {
+        printf("ALARM! (%d %d) != (%d %d)\n", ip, jp, sq_i, sq_j);
     }
+
+    double mes = HX * HY;
+    double dens = density[ip * OY_LEN_1 + jp]
+                  + density[(ip + 1) * OY_LEN_1 + jp]
+                  + density[(ip + 1) * OY_LEN_1 + jp + 1]
+                  + density[ip * OY_LEN_1 + jp + 1];
+    dens = dens / 4.;
+    double phi = dens * mes;
 
     if (fabs(phi) < fabs(DBL_MIN_TRIM)) phi = 0;
     return phi;
@@ -731,7 +715,7 @@ double *solve_2(double &tme) {
 
         ic = 0;
         double maxErr = FLT_MAX;
-        while (((maxErr > EPS) || (maxRes > RES_EPS)) && (ic < OX_LEN_1*OY_LEN_1)) {
+        while (((maxErr > EPS) || (maxRes > RES_EPS)) && (ic < OX_LEN_1 * OY_LEN_1)) {
 
             //<editor-fold desc="Calculate density">
             // point 1,1
@@ -875,11 +859,10 @@ double *solve_2(double &tme) {
                tl, ic, maxRes, sum_rho, sum_abs_rho, extrems[0], extrems[1]);
         fflush(stdout);
 
-        if (tl % 1 == 0)
-        {
-          print_data_to_files(phi, density, residual, tl);
-            int fixed_x = (int)(get_center_x()/HX);
-            int fixed_y = (int)(get_center_y() / HY);
+        if (tl % 1 == 0) {
+            print_data_to_files(phi, density, residual, tl);
+            int fixed_x = (int) (get_center_x() / HX);
+            int fixed_y = (int) (get_center_y() / HY);
             print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
                                U_VELOCITY, V_VELOCITY, density, fixed_y);
             print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,

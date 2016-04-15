@@ -744,7 +744,7 @@ TEST_F(FemFixture, test2_5) {
             TAU = HX/2.;
             //TIME_STEP_CNT = (int) pow(2., i);
             //TIME_STEP_CNT = 1;
-            TIME_STEP_CNT = 1; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
+            TIME_STEP_CNT = (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
 
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
@@ -837,7 +837,7 @@ TEST_F(FemFixture, test2_6) {
             TAU = HX/2.;
             //TIME_STEP_CNT = (int) pow(2., i);
             //TIME_STEP_CNT = 1;
-            TIME_STEP_CNT = 160; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
+            TIME_STEP_CNT = (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
 
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
