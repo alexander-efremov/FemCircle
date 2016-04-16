@@ -637,21 +637,23 @@ TEST_F(FemFixture, test2_4) {
             OY_LEN_1 = OY_LEN + 1;
             HX = (B - A) / OX_LEN;
             HY = (D - C) / OY_LEN;
-            IDEAL_SQ_SIZE_X = 128 * (iter + 1);
-            IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
+            //IDEAL_SQ_SIZE_X = 128 * (iter + 1);
+            //IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
+            IDEAL_SQ_SIZE_X = 64 * (iter + 1);
+            IDEAL_SQ_SIZE_Y = 64 * (iter + 1);
 
             CENTER_OFFSET_X = 0.3;
             CENTER_OFFSET_Y = 0.3;
 
-            INTEGR_TYPE = 1;
+            INTEGR_TYPE = 4;
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
-            TAU = HX;
+            TAU = 2.*HX;
 
             //TIME_STEP_CNT = (int) pow(2., i);
-            //TIME_STEP_CNT = 1;
-            TIME_STEP_CNT = (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
+            TIME_STEP_CNT = 50;
+            //TIME_STEP_CNT = (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
 
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
