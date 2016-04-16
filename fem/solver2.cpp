@@ -1026,8 +1026,8 @@ double *solve_2(double &tme) {
 
         if (tl % 1 == 0) {
             print_data_to_files(phi, density, residual, tl);
-            double x_0 = get_center_x() + tl * TAU * func_u(0,0,0);
-            double y_0 = get_center_y() + tl * TAU * func_v(0,0,0);
+            double x_0 = get_center_x() + tl * TAU * func_u(0, 0, 0);
+            double y_0 = get_center_y() + tl * TAU * func_v(0, 0, 0);
             int fixed_x = (int) (x_0 / HX);
             int fixed_y = (int) (y_0 / HY);
 
