@@ -1026,13 +1026,14 @@ double *solve_2(double &tme) {
 
         if (tl % 1 == 0) {
             print_data_to_files(phi, density, residual, tl);
-//            double x0 = get_center_x() + t * func_u(t, x, y);
-//            double y0 = get_center_y() + t * func_v(t, x, y);
-            int fixed_x = (int) (get_center_x() + tl * TAU * func_u(0,0,0) / HX);
-            int fixed_y = (int) (get_center_y() + tl * TAU * func_v(0,0,0) / HY);
-            print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+            double x_0 = get_center_x() + tl * TAU * func_u(0,0,0);
+            double y_0 = get_center_y() + tl * TAU * func_v(0,0,0);
+            int fixed_x = (int) (x_0 / HX);
+            int fixed_y = (int) (y_0 / HY);
+
+            print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, x_0, y_0, TAU,
                                U_VELOCITY, V_VELOCITY, density, fixed_y);
-            print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+            print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, x_0, y_0, TAU,
                                U_VELOCITY, V_VELOCITY, density, fixed_x);
         }
     }

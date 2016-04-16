@@ -649,10 +649,10 @@ TEST_F(FemFixture, test2_4) {
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
-            TAU = 2.*HX;
+            TAU = HX;
 
             //TIME_STEP_CNT = (int) pow(2., i);
-            TIME_STEP_CNT = 50;
+            TIME_STEP_CNT = 5;
             //TIME_STEP_CNT = (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
 
             XY_LEN = OX_LEN_1 * OY_LEN_1;
