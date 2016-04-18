@@ -1024,7 +1024,7 @@ double *solve_2(double &tme) {
                tl, ic, maxRes, sum_rho, sum_abs_rho, extrems[0], extrems[1]);
         fflush(stdout);
 
-        if (tl % 1 == 0) {
+        if (tl % 10 == 0) {
             print_data_to_files(phi, density, residual, tl);
             double x_0 = get_center_x() + tl * TAU * func_u(0, 0, 0);
             double y_0 = get_center_y() + tl * TAU * func_v(0, 0, 0);
@@ -1037,6 +1037,16 @@ double *solve_2(double &tme) {
                                U_VELOCITY, V_VELOCITY, density, fixed_x);
         }
     }
+
+    double x_0 = get_center_x() + TIME_STEP_CNT * TAU * func_u(0, 0, 0);
+    double y_0 = get_center_y() + TIME_STEP_CNT * TAU * func_v(0, 0, 0);
+    int fixed_x = (int) (x_0 / HX);
+    int fixed_y = (int) (y_0 / HY);
+
+    print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x_0, y_0, TAU,
+                       U_VELOCITY, V_VELOCITY, density, fixed_y);
+    print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x_0, y_0, TAU,
+                       U_VELOCITY, V_VELOCITY, density, fixed_x);
 
     double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
 //    double l1_err = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);

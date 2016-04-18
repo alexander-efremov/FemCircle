@@ -596,6 +596,8 @@ TEST_F(FemFixture, test2_3) {
 // тестируем проход по диагонали с переходом по ячейкам
 TEST_F(FemFixture, test2_4) {
     double tme = 0.;
+    IDEAL_SQ_SIZE_X = 64;
+    IDEAL_SQ_SIZE_Y = 64;
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
@@ -639,8 +641,7 @@ TEST_F(FemFixture, test2_4) {
             HY = (D - C) / OY_LEN;
             //IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             //IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
-            IDEAL_SQ_SIZE_X = 64 * (iter + 1);
-            IDEAL_SQ_SIZE_Y = 64 * (iter + 1);
+
 
             CENTER_OFFSET_X = 0.3;
             CENTER_OFFSET_Y = 0.3;
@@ -652,8 +653,8 @@ TEST_F(FemFixture, test2_4) {
             TAU = HX;
 
             //TIME_STEP_CNT = (int) pow(2., i);
-            TIME_STEP_CNT = 5;
-            //TIME_STEP_CNT = (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
+            //TIME_STEP_CNT = 80;
+            TIME_STEP_CNT = 1 + (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
 
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
@@ -683,6 +684,8 @@ TEST_F(FemFixture, test2_4) {
             delete[] exact0;
             delete[] exactT;
             delete[] err;
+            IDEAL_SQ_SIZE_X *= 2;
+            IDEAL_SQ_SIZE_Y *= 2;
         }
     }
 }

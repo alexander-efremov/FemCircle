@@ -4,6 +4,7 @@
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
+#include "consts.h"
 
 inline void print_matrix_to_file(int n, int m, double *data, const char *filename) {
     FILE *f = fopen(filename, "w");
