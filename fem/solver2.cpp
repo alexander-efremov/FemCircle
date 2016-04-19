@@ -7,22 +7,23 @@
 #include "utils.h"
 #include "common.h"
 
-inline void print_data_to_files(double *phi, double *density, double *residual, int tl) {
-//    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
-//                  U_VELOCITY, V_VELOCITY, phi);
-    print_surface("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-                  U_VELOCITY, V_VELOCITY, density);
-//    print_surface("res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
-//                  U_VELOCITY, V_VELOCITY, residual);
-    double *err_lock = calc_error_2(HX, HY, tl * TAU, density);
-    print_surface("err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(),
-                  TAU, U_VELOCITY, V_VELOCITY, err_lock);
-    delete[] err_lock;
-}
+
 
 inline static double func_u(double t, double x, double y) { return U_VELOCITY; }
 
 inline static double func_v(double t, double x, double y) { return V_VELOCITY; }
+
+inline void print_data_to_files(double *phi, double *density, double *residual, int tl) {
+    double x0 = get_center_x() + tl*TAU * func_u(tl*TAU, get_center_x(), get_center_y());
+    double y0 = get_center_y() + tl*TAU* func_v(tl*TAU, get_center_x(), get_center_y());
+    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, x0, y0, TAU, U_VELOCITY, V_VELOCITY, phi);
+    print_surface("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, x0, y0, TAU, U_VELOCITY, V_VELOCITY, density);
+//    print_surface("res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x_2(), get_center_y_2(), TAU,
+//                  U_VELOCITY, V_VELOCITY, residual);
+    double *err_lock = calc_error_2(HX, HY, tl * TAU, density);
+    print_surface("err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, x0, y0, TAU, U_VELOCITY, V_VELOCITY, err_lock);
+    delete[] err_lock;
+}
 
 inline static double analytical_solution_circle(double t, double x, double y) {
     double x0 = get_center_x() + t * func_u(t, x, y);
@@ -30,6 +31,15 @@ inline static double analytical_solution_circle(double t, double x, double y) {
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
     if (value <= R_SQ) return INN_DENSITY;
     return OUT_DENSITY;
+}
+
+double *calc_error_22(double hx, double hy, double tt, double *solution) {
+    double *res = new double[XY_LEN];
+    for (int i = 0; i < OX_LEN_1; i++)
+        for (int j = 0; j < OY_LEN_1; j++)
+            res[i * OY_LEN_1 + j] =solution[i * OY_LEN_1 + j]
+                                   - analytical_solution_circle(tt, A + hx * i, C + hy * j);
+    return res;
 }
 
 static double get_phi_integ_trapezium(int ii, int jj, double *density, double time_value) {
@@ -798,6 +808,7 @@ double *solve_2(double &tme) {
 
     double maxRes = FLT_MAX;
     double *extrems = new double[2];
+    double *extrems_err = new double[2];
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
 
@@ -1024,7 +1035,7 @@ double *solve_2(double &tme) {
                tl, ic, maxRes, sum_rho, sum_abs_rho, extrems[0], extrems[1]);
         fflush(stdout);
 
-        if (tl % 10 == 0) {
+        if (tl % 1 == 0) {
             print_data_to_files(phi, density, residual, tl);
             double x_0 = get_center_x() + tl * TAU * func_u(0, 0, 0);
             double y_0 = get_center_y() + tl * TAU * func_v(0, 0, 0);
@@ -1043,23 +1054,30 @@ double *solve_2(double &tme) {
     int fixed_x = (int) (x_0 / HX);
     int fixed_y = (int) (y_0 / HY);
 
-    print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x_0, y_0, TAU,
+/*    print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x_0, y_0, TAU,
                        U_VELOCITY, V_VELOCITY, density, fixed_y);
     print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x_0, y_0, TAU,
                        U_VELOCITY, V_VELOCITY, density, fixed_x);
+*/
+    double *err = calc_error_22(HX, HY, TAU * TIME_STEP_CNT, density);
+    print_line_along_x("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x_0, y_0, TAU,
+                       U_VELOCITY, V_VELOCITY, err, fixed_y);
+    print_line_along_y("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x_0, y_0, TAU,
+                       U_VELOCITY, V_VELOCITY, err, fixed_x);
+    extrems_err = calc_array_extrems(err, OX_LEN_1, OY_LEN_1);
 
-    double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
-//    double l1_err = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
+    err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
     double l1_err_vec = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
     double l1_err_tr = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
     extrems = calc_array_extrems(density, OX_LEN_1, OY_LEN_1);
-    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, extrems, TIME_STEP_CNT);
+    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, extrems, extrems_err, TIME_STEP_CNT);
 
     delete[] prev_density;
     delete[] phi;
     delete[] err;
     delete[] residual;
     delete[] extrems;
+    delete[] extrems_err;
     tme = GetTimer() / 1000;
     return density;
 }
@@ -1072,7 +1090,6 @@ double *calc_error_2(double hx, double hy, double tt, double *solution) {
                                          - analytical_solution_circle(tt, A + hx * i, C + hy * j));
     return res;
 }
-
 double *get_exact_solution_2(double hx, double hy, double t) {
     double *res = new double[XY_LEN];
     for (int i = 0; i < OX_LEN_1; i++)

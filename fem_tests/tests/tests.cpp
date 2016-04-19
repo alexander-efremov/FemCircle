@@ -596,8 +596,8 @@ TEST_F(FemFixture, test2_3) {
 // тестируем проход по диагонали с переходом по ячейкам
 TEST_F(FemFixture, test2_4) {
     double tme = 0.;
-    IDEAL_SQ_SIZE_X = 64;
-    IDEAL_SQ_SIZE_Y = 64;
+    IDEAL_SQ_SIZE_X = 128;
+    IDEAL_SQ_SIZE_Y = 128;
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
@@ -629,7 +629,8 @@ TEST_F(FemFixture, test2_4) {
             B = 1.;
             C = 0.;
             D = 1.;
-            R_SQ = 0.099 * 0.099;
+//            R_SQ = 0.099 * 0.099;
+            R_SQ = 0.0999 * 0.0999;
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
@@ -650,11 +651,13 @@ TEST_F(FemFixture, test2_4) {
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
-            TAU = HX;
+//            TAU = HX;
+            TAU = 0.001;
 
             //TIME_STEP_CNT = (int) pow(2., i);
             //TIME_STEP_CNT = 80;
-            TIME_STEP_CNT = 1 + (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
+            TIME_STEP_CNT = 1;
+            //TIME_STEP_CNT = 1 + (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
 
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
@@ -676,9 +679,11 @@ TEST_F(FemFixture, test2_4) {
             print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
                           V_VELOCITY, exactT);
 
-            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
+            printf("l1_err_vec %le \n", l1);
+            l1 = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
             double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
-            printf("l1 %le \n", l1);
+            printf("l1_err_tr %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
             delete[] exact0;

@@ -205,7 +205,8 @@ inline bool is_empty_file(FILE *f) {
     return false;
 }
 
-inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1_vec, double err_l1_tr, double res_inf, double *extrem, int time_steps) {
+inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount, double err_l1_vec,
+                              double err_l1_tr, double res_inf, double *extrem, double *extrem_err, int time_steps) {
     FILE *file;
     const char* filename = "/home/jane/ClionProjects/fem_circle/statistics.dat";
     file = fopen(filename, "a");
@@ -214,10 +215,12 @@ inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount,
         return;
     }
     if (is_empty_file(file)) {
-        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR-VEC", "L1ERR-TR", "MAXRESIDUAL", "MIN_RHO", "MAX_RHO", "TIMESTP");
+        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "ITERCOUNT", "L1ERR-VEC",
+                "L1ERR-TR", "MAXRESIDUAL", "MIN_RHO", "MAX_RHO", "MIN_ERR", "MAX_ERR", "TIMESTP");
     }
 
-    fprintf(file, "%d\t%d\t%le\t%d\t%le\t%le\t%le\t%le\t%le\t%d\n", ox_len, oy_len, tau, iterCount, err_l1_vec, err_l1_tr, res_inf, extrem[0], extrem[1], time_steps);
+    fprintf(file, "%d\t%d\t%le\t%d\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%d\n", ox_len, oy_len, tau, iterCount,
+            err_l1_vec, err_l1_tr, res_inf, extrem[0], extrem[1], extrem_err[0], extrem_err[1], time_steps);
 
     fclose(file);
 }

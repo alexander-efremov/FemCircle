@@ -800,7 +800,8 @@ double *solve_3(double &tme) {
     double l1_err_tr = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
 //    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, TIME_STEP_CNT);
     extrems = calc_array_extrems(density, OX_LEN_1, OY_LEN_1);
-    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, extrems, TIME_STEP_CNT);
+    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, extrems,
+                      extrems, TIME_STEP_CNT); // !!!!!!!! tmp stab
 
 
     delete[] prev_density;
