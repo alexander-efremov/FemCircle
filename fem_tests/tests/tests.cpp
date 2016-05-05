@@ -1247,7 +1247,7 @@ TEST_F(FemFixture, test4_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 3; i < 4; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -1285,22 +1285,22 @@ TEST_F(FemFixture, test4_1) {
             OY_LEN_1 = OY_LEN + 1;
             HX = (B - A) / OX_LEN;
             HY = (D - C) / OY_LEN;
-            IDEAL_SQ_SIZE_X = 128 * (iter + 1);
-            IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
+            IDEAL_SQ_SIZE_X = 64 * (iter + 1);
+            IDEAL_SQ_SIZE_Y = 64 * (iter + 1);
 
-            CENTER_OFFSET_X = 0.5;
-            CENTER_OFFSET_Y = 0.7;
+            CENTER_OFFSET_X = 0.3;
+            CENTER_OFFSET_Y = 0.3;
 
             INTEGR_TYPE = 1;
 
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
-            OMEGA = 1.;
 
-            TAU = 16. / pow(2., (i + 1));
-            TAU *= 1.e-3;
+            //TAU = 16. / pow(2., (i + 1));
+            TAU = 1.e-3;
 
-            TIME_STEP_CNT = (int) pow(2., i);
+            //TIME_STEP_CNT = (int) pow(2., i);
+            TIME_STEP_CNT = 1;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
@@ -1308,36 +1308,18 @@ TEST_F(FemFixture, test4_1) {
             int midIndexX = OX_LEN_1 / 2;
             int midIndexY = OY_LEN_1 / 2;
             for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A < .5 && i > 0)
-                    G1[i] = 1;
+                G1[i] = 0;
+                G3[i] = 1;
             }
             for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C < .5 && j > 0)
-                    G2[j] = 1;
-            }
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A > .5 && i < OX_LEN_1 - 1)
-                    G3[i] = 1;
-            }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
-                    G4[j] = 1;
-                }
+                G2[j] = 1;
+                G4[j] = 0;
             }
 
-            CP00 = 1;
-            CP10 = 1;
-            CP01 = 1;
+            CP00 = 0;
+            CP10 = 0;
+            CP01 = 0;
             CP11 = 1;
-
-            /*
-
-             CP00 = 0;
-             CP10 = 0;
-             CP01 = 0;
-             CP11 = 0;
-
-             */
 
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));

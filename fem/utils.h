@@ -264,7 +264,7 @@ inline void print_surface(const char *filename, int ox_len, int oy_len,
     sprintf(name, "%s_nx=%d_ny=%d_hx=%f_hy=%f_t=%d_x0=%f_y0=%f_tau=%f_u=%f_v=%f_a=%f_c=%f.dat",
             filename, ox_len + 1, oy_len + 1, hx, hy, t, x0, y0, tau, u, v, a, c);
     FILE *file = fopen(name, "w");
-    fprintf(file, "TITLE = 'DEM DATA | DEM DATA | DEM DATA | DEM DATA'\nVARIABLES = 'x' 'y' 'rho'\nZONE T='SubZone'");
+    fprintf(file, "TITLE = 'DEM DATA | DEM DATA | DEM DATA | DEM DATA'\nVARIABLES = 'x' 'y' %s\nZONE T='SubZone'",filename);
     fprintf(file, "\nI=%d J=%d K=%d ZONETYPE=Ordered", oy_len + 1, ox_len + 1, 1);
     fprintf(file, "\nDATAPACKING=POINT\nDT=(SINGLE SINGLE SINGLE)");
     for (int i = 0; i < ox_len + 1; i++)
