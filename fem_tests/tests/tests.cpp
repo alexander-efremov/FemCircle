@@ -1247,7 +1247,7 @@ TEST_F(FemFixture, test4_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 3; i < 4; ++i) {
+        for (int i = 2; i < 3; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -1285,8 +1285,8 @@ TEST_F(FemFixture, test4_1) {
             OY_LEN_1 = OY_LEN + 1;
             HX = (B - A) / OX_LEN;
             HY = (D - C) / OY_LEN;
-            IDEAL_SQ_SIZE_X = 64 * (iter + 1);
-            IDEAL_SQ_SIZE_Y = 64 * (iter + 1);
+            IDEAL_SQ_SIZE_X = 32 * (iter + 1);
+            IDEAL_SQ_SIZE_Y = 32 * (iter + 1);
 
             CENTER_OFFSET_X = 0.3;
             CENTER_OFFSET_Y = 0.3;
@@ -1307,11 +1307,11 @@ TEST_F(FemFixture, test4_1) {
 
             int midIndexX = OX_LEN_1 / 2;
             int midIndexY = OY_LEN_1 / 2;
-            for (int i = 0; i < OX_LEN_1; ++i) {
+            for (int i = 1; i < OX_LEN; ++i) {
                 G1[i] = 0;
                 G3[i] = 1;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
+            for (int j = 1; j < OY_LEN; ++j) {
                 G2[j] = 1;
                 G4[j] = 0;
             }
