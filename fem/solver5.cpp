@@ -20,19 +20,15 @@ inline void print_data_to_files(double *phi, double *density, double *residual, 
     delete[] err_lock;
 }
 
-inline static double func_u(double t, double x, double y) { return (-y+CENTER_OFFSET_Y)*U_VELOCITY; }
+inline static double func_u(double t, double x, double y) { return (-y + CENTER_OFFSET_Y) * U_VELOCITY; }
 
-inline static double func_v(double t, double x, double y) { return (x-CENTER_OFFSET_X)*V_VELOCITY; }
+inline static double func_v(double t, double x, double y) { return (x - CENTER_OFFSET_X) * V_VELOCITY; }
 
 inline static double analytical_solution_circle(double t, double x, double y) {
-    double r = 0.2;
-    double da = OMEGA;
-
-    double x0 = get_center_x() - r*sin(t*da);
-    double y0 = get_center_y() + r*cos(t*da);
+    double x0 = get_center_x() + t * func_u(t, x, y);
+    double y0 = get_center_y() + t * func_v(t, x, y);
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
-    if (value < R_SQ)
-        return INN_DENSITY;
+    if (value <= R_SQ) return INN_DENSITY;
     return OUT_DENSITY;
 }
 
