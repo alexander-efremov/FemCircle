@@ -208,4 +208,10 @@ double *calc_error_4(double hx, double hy, double tt, double *solution);
 
 double *get_exact_solution_4(double hx, double hy, double t);
 
+double *solve_5(double &tme);
+
+double *calc_error_5(double hx, double hy, double tt, double *solution);
+
+double *get_exact_solution_5(double hx, double hy, double t);
+
 #endif //FEM_CIRCLE_COMMON_H
