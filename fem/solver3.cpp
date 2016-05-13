@@ -758,10 +758,10 @@ double *solve_3(double &tme) {
                                     density[OY_LEN_1 * i + j + 1] + // right
                                     density[OY_LEN_1 * (i + 1) + j] // bottom
                             ) +
-                            prev_density[OY_LEN_1 * (i + 1) + j + 1] + // bottom right
-                            prev_density[OY_LEN_1 * (i + 1) + j - 1] + // bottom left
-                            prev_density[OY_LEN_1 * (i - 1) + j + 1] + // upper right
-                            prev_density[OY_LEN_1 * (i - 1) + j - 1]  // upper left
+                            density[OY_LEN_1 * (i + 1) + j + 1] + // bottom right
+                            density[OY_LEN_1 * (i + 1) + j - 1] + // bottom left
+                            density[OY_LEN_1 * (i - 1) + j + 1] + // upper right
+                            density[OY_LEN_1 * (i - 1) + j - 1]  // upper left
                     ) - phi[OY_LEN_1 * i + j];
                 }
             }
