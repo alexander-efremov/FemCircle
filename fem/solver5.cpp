@@ -32,193 +32,6 @@ inline static double analytical_solution_circle(double t, double x, double y) {
     return OUT_DENSITY;
 }
 
-static double get_phi_integ_trapezium(int ii, int jj, double *density, double time_value) {
-    double x1 = 0.;
-    double y1 = 0.;
-    double x2 = 0.;
-    double y2 = 0.;
-    double x3 = 0.;
-    double y3 = 0.;
-    double x4 = 0.;
-    double y4 = 0.;
-
-    get_coordinates_on_curr(ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
-
-    double u = func_u(time_value, x1, y1);
-    double v = func_v(time_value, x1, y1);
-    x1 = x1 - TAU * u;
-    y1 = y1 - TAU * v;
-    u = func_u(time_value, x2, y2);
-    v = func_v(time_value, x2, y2);
-    x2 = x2 - TAU * u;
-    y2 = y2 - TAU * v;
-    u = func_u(time_value, x3, y3);
-    v = func_v(time_value, x3, y3);
-    x3 = x3 - TAU * u;
-    y3 = y3 - TAU * v;
-    u = func_u(time_value, x4, y4);
-    v = func_v(time_value, x4, y4);
-    x4 = x4 - TAU * u;
-    y4 = y4 - TAU * v;
-    if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
-        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
-        printf("PREV Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
-                       "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
-
-    int nx = IDEAL_SQ_SIZE_X;
-    int ny = IDEAL_SQ_SIZE_Y;
-
-    double x_step = 1. / nx;
-    double y_step = 1. / ny;
-
-    // get right part for jakoby
-    double phi = 0.;
-    double mes = x_step * y_step;
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-
-            double ideal_x = i * x_step + x_step / 2.;
-            double ideal_y = j * y_step + y_step / 2.;
-
-            double a11 = (x2 - x1) + (x1 + x3 - x2 - x4) * ideal_y;
-            double a12 = (x4 - x1) + (x1 + x3 - x2 - x4) * ideal_x;
-            double a21 = (y2 - y1) + (y1 + y3 - y2 - y4) * ideal_y;
-            double a22 = (y4 - y1) + (y1 + y3 - y2 - y4) * ideal_x;
-            double jakob = a11 * a22 - a21 * a12;
-
-            // point (x_i,y_j)
-            ideal_x = i * x_step;
-            ideal_y = j * y_step;
-
-            double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
-                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
-            double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
-                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
-
-            if (real_x < A || real_y < C || real_x > B || real_y > D) {
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
-                       time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
-                printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
-                       x1, y1, x2, y2, x3, y3, x4, y4);
-            }
-
-            // find out in which square real point was placed
-            int sq_i = (int) ((real_x - A) / HX);
-            int sq_j = (int) ((real_y - C) / HY);
-            if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1) {
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
-                       ii, jj, sq_i, sq_j);
-            }
-            double x = A + sq_i * HX;
-            double y = C + sq_j * HY;
-
-            // formula 4
-            double dens_1 = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
-                            + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
-                            + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
-                            + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
-
-            // point (x_{i+1},y_j)
-            ideal_x = (i + 1) * x_step;
-            ideal_y = j * y_step;
-            real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
-                     + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
-            real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
-                     + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
-            if (real_x < A || real_y < C || real_x > B || real_y > D) {
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
-                       time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
-                printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
-                       x1, y1, x2, y2, x3, y3, x4, y4);
-            }
-
-            // find out in which square real point was placed
-            sq_i = (int) ((real_x - A) / HX);
-            sq_j = (int) ((real_y - C) / HY);
-            if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1) {
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
-                       ii, jj, sq_i, sq_j);
-            }
-            x = A + sq_i * HX;
-            y = C + sq_j * HY;
-
-            // formula 4
-            double dens_2 = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
-                            + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
-                            + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
-                            + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
-
-
-            // point (x_{i+1},y_{j+1})
-            ideal_x = (i + 1) * x_step;
-            ideal_y = (j + 1) * y_step;
-            real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
-                     + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
-            real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
-                     + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
-            if (real_x < A || real_y < C || real_x > B || real_y > D) {
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
-                       time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
-                printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
-                       x1, y1, x2, y2, x3, y3, x4, y4);
-            }
-
-            // find out in which square real point was placed
-            sq_i = (int) ((real_x - A) / HX);
-            sq_j = (int) ((real_y - C) / HY);
-            if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1) {
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
-                       ii, jj, sq_i, sq_j);
-            }
-            x = A + sq_i * HX;
-            y = C + sq_j * HY;
-
-            // formula 4
-            double dens_3 = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
-                            + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
-                            + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
-                            + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
-
-            // point (x_i,y_{j+1})
-            ideal_x = i * x_step;
-            ideal_y = (j + 1) * y_step;
-            real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
-                     + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
-            real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
-                     + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
-            if (real_x < A || real_y < C || real_x > B || real_y > D) {
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : REAL x=%.8le * y=%.8le ** IDEAL x=%.8le * y=%.8le \n",
-                       time_value, ii, jj, real_x, real_y, ideal_x, ideal_y);
-                printf("1: %.8le * %.8le ** 2: %.8le * %.8le ** 3: %.8le * %.8le ** 4: %.8le * %.8le\n",
-                       x1, y1, x2, y2, x3, y3, x4, y4);
-            }
-
-            // find out in which square real point was placed
-            sq_i = (int) ((real_x - A) / HX);
-            sq_j = (int) ((real_y - C) / HY);
-            if (sq_i < 0 || sq_j < 0 || sq_i > OX_LEN - 1 || sq_j > OY_LEN - 1) {
-                printf("Time level %.8le! ERROR INDEX i=%d j=%d : i*=%d j*=%d\n", time_value,
-                       ii, jj, sq_i, sq_j);
-            }
-            x = A + sq_i * HX;
-            y = C + sq_j * HY;
-
-            // formula 4
-            double dens_4 = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
-                            + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
-                            + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
-                            + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
-
-            phi += (dens_1 + dens_2 + dens_3 + dens_4) * jakob;
-        }
-    }
-
-    phi = 0.25 * phi * mes;
-    if (fabs(phi) < fabs(DBL_MIN_TRIM)) phi = 0;
-
-    return phi;
-}
-
 static double get_phi_integ_midpoint(int ii, int jj, double *density, double time_value) {
     double x1 = 0.;
     double y1 = 0.;
@@ -379,119 +192,55 @@ double *solve_5(double &tme) {
         // G1 -- (x_i, 0=C) -- bottom boundary
         for (int i = 1; i < OX_LEN; ++i) {
             if (G1[i] == 1) {
-                double value = 0.;
-                if (INTEGR_TYPE == 1) {
-                    value = get_phi_integ_midpoint(i, 0, prev_density, TAU * tl);
-                }
-                else if (INTEGR_TYPE == 2) {
-                    value = get_phi_integ_trapezium(i, 0, prev_density, TAU * tl);
-                }
-                phi[OY_LEN_1 * i] = value;
+                phi[OY_LEN_1 * i] = get_phi_integ_midpoint(i, 0, prev_density, TAU * tl);;
             }
         }
 
         // G2 -- (OX_LEN=B, y_j) -- right boundary
         for (int j = 1; j < OY_LEN; ++j) {
             if (G2[j] == 1) {
-                double value = 0.;
-                if (INTEGR_TYPE == 1) {
-                    value = get_phi_integ_midpoint(OX_LEN, j, prev_density, TAU * tl);
-                }
-                else if (INTEGR_TYPE == 2) {
-                    value = get_phi_integ_trapezium(OX_LEN, j, prev_density, TAU * tl);
-                }
-                phi[OY_LEN_1 * OX_LEN + j] = value;
+                phi[OY_LEN_1 * OX_LEN + j] = get_phi_integ_midpoint(OX_LEN, j, prev_density, TAU * tl);;
             }
         }
 
         // G3 -- (x_i, OY_LEN=D) -- top boundary
         for (int i = 1; i < OX_LEN; ++i) {
             if (G3[i] == 1) {
-                double value = 0.;
-                if (INTEGR_TYPE == 1) {
-                    value = get_phi_integ_midpoint(i, OY_LEN, prev_density, TAU * tl);
-                }
-                else if (INTEGR_TYPE == 2) {
-                    value = get_phi_integ_trapezium(i, OY_LEN, prev_density, TAU * tl);
-                }
-                phi[OY_LEN_1 * i + OY_LEN] = value;
+                phi[OY_LEN_1 * i + OY_LEN] = get_phi_integ_midpoint(i, OY_LEN, prev_density, TAU * tl);;
             }
         }
 
         // G4 -- (0=A, y_j) -- left boundary
         for (int j = 1; j < OY_LEN; ++j) {
             if (G4[j] == 1) {
-                double value = 0.;
-                if (INTEGR_TYPE == 1) {
-                    value = get_phi_integ_midpoint(0, j, prev_density, TAU * tl);
-                }
-                else if (INTEGR_TYPE == 2) {
-                    value = get_phi_integ_trapezium(0, j, prev_density, TAU * tl);
-                }
-                phi[j] = value;
+                phi[j] = get_phi_integ_midpoint(0, j, prev_density, TAU * tl);;
             }
         }
 
         // point (0.0)
         if (CP00 == 1) {
-            double value = 0.;
-            if (INTEGR_TYPE == 1) {
-                value = get_phi_integ_midpoint(0, 0, prev_density, TAU * tl);
-            }
-            else if (INTEGR_TYPE == 2) {
-                value = get_phi_integ_trapezium(0, 0, prev_density, TAU * tl);
-            }
-            phi[0] = value;
+            phi[0] = get_phi_integ_midpoint(0, 0, prev_density, TAU * tl);;
         }
 
         // point (1.0)
         if (CP10 == 1) {
-            double value = 0.;
-            if (INTEGR_TYPE == 1) {
-                value = get_phi_integ_midpoint(OX_LEN, 0, prev_density, TAU * tl);
-            }
-            else if (INTEGR_TYPE == 2) {
-                value = get_phi_integ_trapezium(OX_LEN, 0, prev_density, TAU * tl);
-            }
-            phi[OY_LEN_1 * OX_LEN] = value;
+            phi[OY_LEN_1 * OX_LEN] = get_phi_integ_midpoint(OX_LEN, 0, prev_density, TAU * tl);;
         }
 
         // point (0.1)
         if (CP01 == 1) {
-            double value = 0.;
-            if (INTEGR_TYPE == 1) {
-                value = get_phi_integ_midpoint(0, OY_LEN, prev_density, TAU * tl);
-            }
-            else if (INTEGR_TYPE == 2) {
-                value = get_phi_integ_trapezium(0, OY_LEN, prev_density, TAU * tl);
-            }
-            phi[OY_LEN] = value;
+            phi[OY_LEN] = get_phi_integ_midpoint(0, OY_LEN, prev_density, TAU * tl);;
         }
 
         // point (1,1)
         if (CP11 == 1) {
-            double value = 0.;
-            if (INTEGR_TYPE == 1) {
-                value = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl);
-            }
-            else if (INTEGR_TYPE == 2) {
-                value = get_phi_integ_trapezium(OX_LEN, OY_LEN, prev_density, TAU * tl);
-            }
-            phi[OY_LEN_1 * OX_LEN + OY_LEN] = value;
+            phi[OY_LEN_1 * OX_LEN + OY_LEN] = value = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl);;
         }
 
         // inner points
         for (int i = 1; i < OX_LEN; ++i)
-            for (int j = 1; j < OY_LEN; ++j) {
-                double value = 0.;
-                if (INTEGR_TYPE == 1) {
-                    value = get_phi_integ_midpoint(i, j, prev_density, TAU * tl);
-                }
-                else if (INTEGR_TYPE == 2) {
-                    value = get_phi_integ_trapezium(i, j, prev_density, TAU * tl);
-                }
-                phi[OY_LEN_1 * i + j] = value;
-            }
+            for (int j = 1; j < OY_LEN; ++j)
+                phi[OY_LEN_1 * i + j] = get_phi_integ_midpoint(i, j, prev_density, TAU * tl);
 
         //</editor-fold>
 
