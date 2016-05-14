@@ -63,21 +63,21 @@ static void fill_coef(int ii, int jj, double *density, std::map<int, double> *ph
     double integ = 0;
     switch (type) {
         case dot_c00: // CP00
-            break;
+            //break;
         case dot_c10:  // CP10
-            break;
+            //break;
         case dot_c01: // CP01
-            break;
+            //    break;
         case dot_c11: // CP11
-            break;
+//            break;
         case dot_upper: // upper
-            break;
+//            break;
         case dot_left: // left
-            break;
+//            break;
         case dot_right: // right
-            break;
+//            break;
         case dot_bott: // bott
-            break;
+//            break;
         case 9: // inner
             integ = (density[sq_i * OY_LEN_1 + sq_j]
                      + density[(sq_i + 1) * OY_LEN_1 + sq_j]
@@ -435,49 +435,101 @@ double *solve_5(double &tme) {
         // G1 -- (x_i, 0=C) -- bottom boundary
         for (int i = 1; i < OX_LEN; ++i) {
             if (G1[i] == 1) {
-                phi[OY_LEN_1 * i] = get_phi_integ_midpoint(i, 0, prev_density, TAU * tl);
+                fill_phi_map(i, 0, prev_density, TAU * tl, phiMap);
             }
         }
+        for (int i = 1; i < OX_LEN; ++i) {
+            if (G1[i] == 1) {
+                fill_coef(i, 0, prev_density, phiMap, *coef, dot_bott);
+            }
+        }
+        for (int i = 1; i < OX_LEN; ++i) {
+            if (G1[i] == 1) {
+                phi[OY_LEN_1 * i] = get_phi_integ_midpoint(i, 0, prev_density, TAU * tl, *coef);
+            }
+        }
+        // end G1
 
         // G2 -- (OX_LEN=B, y_j) -- right boundary
         for (int j = 1; j < OY_LEN; ++j) {
             if (G2[j] == 1) {
-                phi[OY_LEN_1 * OX_LEN + j] = get_phi_integ_midpoint(OX_LEN, j, prev_density, TAU * tl);
+                fill_phi_map(OX_LEN, j, prev_density, TAU * tl, phiMap);
             }
         }
+        for (int j = 1; j < OY_LEN; ++j) {
+            if (G2[j] == 1) {
+                fill_coef(OX_LEN, j, prev_density, phiMap, *coef, dot_right);
+            }
+        }
+        for (int j = 1; j < OY_LEN; ++j) {
+            if (G2[j] == 1) {
+                phi[OY_LEN_1 * OX_LEN + j] = get_phi_integ_midpoint(OX_LEN, j, prev_density, TAU * tl, *coef);
+            }
+        }
+        // end G2
 
-        // G3 -- (x_i, OY_LEN=D) -- top boundary
+        // G3 -- (x_i, OY_LEN=D) -- upper boundary
         for (int i = 1; i < OX_LEN; ++i) {
             if (G3[i] == 1) {
-                phi[OY_LEN_1 * i + OY_LEN] = get_phi_integ_midpoint(i, OY_LEN, prev_density, TAU * tl);
+                fill_phi_map(i, OY_LEN, prev_density, TAU * tl, phiMap);
             }
         }
+        for (int i = 1; i < OX_LEN; ++i) {
+            if (G3[i] == 1) {
+                fill_coef(i, OY_LEN, prev_density, phiMap, *coef, dot_upper);
+            }
+        }
+        for (int i = 1; i < OX_LEN; ++i) {
+            if (G3[i] == 1) {
+                phi[OY_LEN_1 * i + OY_LEN] = get_phi_integ_midpoint(i, OY_LEN, prev_density, TAU * tl, *coef);
+            }
+        }
+        // end G3
 
         // G4 -- (0=A, y_j) -- left boundary
         for (int j = 1; j < OY_LEN; ++j) {
             if (G4[j] == 1) {
-                phi[j] = get_phi_integ_midpoint(0, j, prev_density, TAU * tl);
+                fill_phi_map(0, j, prev_density, TAU * tl, phiMap);
             }
         }
+        for (int j = 1; j < OY_LEN; ++j) {
+            if (G4[j] == 1) {
+                fill_coef(0, j, prev_density, phiMap, *coef, dot_bott);
+            }
+        }
+        for (int j = 1; j < OY_LEN; ++j) {
+            if (G4[j] == 1) {
+                phi[j] = get_phi_integ_midpoint(0, j, prev_density, TAU * tl, *coef);
+            }
+        }
+        // G4
 
         // point (0.0)
         if (CP00 == 1) {
-            phi[0] = get_phi_integ_midpoint(0, 0, prev_density, TAU * tl);
+            fill_phi_map(0, 0, prev_density, TAU * tl, phiMap);
+            fill_coef(0, 0, prev_density, phiMap, *coef, dot_c00);
+            phi[0] = get_phi_integ_midpoint(0, 0, prev_density, TAU * tl, *coef);
         }
 
         // point (1.0)
         if (CP10 == 1) {
-            phi[OY_LEN_1 * OX_LEN] = get_phi_integ_midpoint(OX_LEN, 0, prev_density, TAU * tl);
+            fill_phi_map(OX_LEN, 0, prev_density, TAU * tl, phiMap);
+            fill_coef(OX_LEN, 0, prev_density, phiMap, *coef, dot_c10);
+            phi[OY_LEN_1 * OX_LEN] = get_phi_integ_midpoint(OX_LEN, 0, prev_density, TAU * tl, *coef);
         }
 
         // point (0.1)
         if (CP01 == 1) {
-            phi[OY_LEN] = get_phi_integ_midpoint(0, OY_LEN, prev_density, TAU * tl);
+            fill_phi_map(0, OY_LEN, prev_density, TAU * tl, phiMap);
+            fill_coef(0, OY_LEN, prev_density, phiMap, *coef, dot_c01);
+            phi[OY_LEN] = get_phi_integ_midpoint(0, OY_LEN, prev_density, TAU * tl, *coef);
         }
 
         // point (1,1)
         if (CP11 == 1) {
-            phi[OY_LEN_1 * OX_LEN + OY_LEN] = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl);
+            fill_phi_map(OX_LEN, OY_LEN, prev_density, TAU * tl, phiMap);
+            fill_coef(OX_LEN, OY_LEN, prev_density, phiMap, *coef, dot_c11);
+            phi[OY_LEN_1 * OX_LEN + OY_LEN] = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl, *coef);
         }
 
         // inner points
