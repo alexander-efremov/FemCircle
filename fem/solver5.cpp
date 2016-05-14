@@ -40,39 +40,28 @@ inline static double analytical_solution_circle(double t, double x, double y) {
 static void fill_coef(int ii, int jj, double *density, double time_value, std::map<int, double> *phiMap,
                       std::map<int, double> &coef) {
     // find out in which square real point was placed
-    int sq_i = (int) ((ii*HX - A) / HX);
-    int sq_j = (int) ((jj*HY - C) / HY);
+    int sq_i = (int) ((ii * HX - A) / HX);
+    int sq_j = (int) ((jj * HY - C) / HY);
     int key = OY_LEN_1 * sq_i + sq_j;
 
     double sum = 0.;
     for (int i = 0; i < XY_LEN; ++i) {
-        if(phiMap[i].count(key)>0)
-        {
+        if (phiMap[i].count(key) > 0) {
             sum += phiMap[i][key];
         }
     }
 
-    double real_integral_value = 0.;
+    double real_integral_value = HX * HY * 0.25 * (density[sq_i * OY_LEN_1 + sq_j]
+                                                   + density[(sq_i + 1) * OY_LEN_1 + sq_j]
+                                                   + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1]
+                                                   + density[sq_i * OY_LEN_1 + sq_j + 1]);
 
-    real_integral_value = 0.25 * (density[sq_i * OY_LEN_1 + sq_j]
-                  + density[(sq_i + 1) * OY_LEN_1 + sq_j]
-                  + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1]
-                  + density[sq_i * OY_LEN_1 + sq_j + 1]);
-    real_integral_value = real_integral_value * HX*HY;
+    double k = sum != 0 ? real_integral_value / sum : 0.;
 
-    if(coef.count(key)>0)
-    {
-        printf("\nAlarm! Key %d exists in coef map!\n", key);
-    }
-    if (sum != 0)
-    {
-        coef[key] = real_integral_value / sum;
-    }
-    else
-    {
-        coef[key] = 0;
-    }
+    if (coef.count(key) > 0 && coef[key] != k)
+        printf("\nAlarm! Key %d exists in coef map!\nValue in map -> %f new value -> %f\n", key, coef[key], k);
 
+    coef[key] = k;
 }
 
 static void fill_phi_map(int ii, int jj, double *density, double time_value, std::map<int, double> *phiMap) {
@@ -496,7 +485,7 @@ double *solve_5(double &tme) {
         }
 
         print_surface("phi1", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-                  U_VELOCITY, V_VELOCITY, phi);
+                      U_VELOCITY, V_VELOCITY, phi);
 
         //</editor-fold>
 
