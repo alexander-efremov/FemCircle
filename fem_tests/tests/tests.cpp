@@ -1369,7 +1369,7 @@ TEST_F(FemFixture, test5_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 3; i < 4; ++i) {
+        for (int i = 2; i < 3; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -1454,19 +1454,19 @@ TEST_F(FemFixture, test5_1) {
             printf("rel = %le\n", HX / (-HY + 1.));
             printf("midIndexX = %d\n", midIndexX);
             printf("midIndexY = %d\n", midIndexY);
-            printf("G1\n");
-            print_vector(G1, OX_LEN_1);
-            printf("G2\n");
-            print_vector(G2, OY_LEN_1);
-            printf("G3\n");
-            print_vector(G3, OX_LEN_1);
-            printf("G4\n");
-            print_vector(G4, OY_LEN_1);
+//            printf("G1\n");
+//            print_vector(G1, OX_LEN_1);
+//            printf("G2\n");
+//            print_vector(G2, OY_LEN_1);
+//            printf("G3\n");
+//            print_vector(G3, OX_LEN_1);
+//            printf("G4\n");
+//            print_vector(G4, OY_LEN_1);
 
-            double *density = solve_3(tme);
-            double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
-            double *exact0 = get_exact_solution_3(HX, HY, 0);
-            double *exactT = get_exact_solution_3(HX, HY, TAU * TIME_STEP_CNT);
+            double *density = solve_5(tme);
+            double *err = calc_error_5(HX, HY, TAU * TIME_STEP_CNT, density);
+            double *exact0 = get_exact_solution_5(HX, HY, 0);
+            double *exactT = get_exact_solution_5(HX, HY, TAU * TIME_STEP_CNT);
 
             double x0 = get_center_x();
             double y0 = get_center_y();

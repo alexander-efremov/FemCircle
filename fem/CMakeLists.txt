@@ -12,6 +12,6 @@ set(HEADER_FILES
     )
 
 set(SOURCE_FILES
-       solver1.cpp solver2.cpp solver3.cpp solver4.cpp consts.cpp)
+       solver1.cpp solver2.cpp solver3.cpp solver4.cpp solver5.cpp consts.cpp)
 
 add_library(fem STATIC ${SOURCE_FILES} ${HEADER_FILES})

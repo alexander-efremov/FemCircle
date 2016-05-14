@@ -6,6 +6,9 @@
 #include "timer.h"
 #include "utils.h"
 #include "common.h"
+#include <map>
+
+using namespace std;
 
 inline void print_data_to_files(double *phi, double *density, double *residual, int tl) {
 //    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
@@ -30,6 +33,120 @@ inline static double analytical_solution_circle(double t, double x, double y) {
     double value = (x - x0) * (x - x0) + (y - y0) * (y - y0);
     if (value <= R_SQ) return INN_DENSITY;
     return OUT_DENSITY;
+}
+
+// fill for inner pt
+static void fill_coef_inn(int ii, int jj, double *density, double time_value, std::map<int, double> *phiMap,
+                          std::map<int, double>& coef) {
+    // find out in which square real point was placed
+    int sq_i = (int) ((ii*HX - A) / HX);
+    int sq_j = (int) ((jj*HY - C) / HY);
+    int key = OY_LEN_1 * sq_i + sq_j;
+
+    double sum = 0.;
+    for (int i = 0; i < XY_LEN; ++i) {
+        if(phiMap[i].count(key)>0)
+        {
+            sum += phiMap[i][key];
+        }
+    }
+
+    double real_integral_value = 0.;
+
+    real_integral_value = 0.25 * (density[sq_i * OY_LEN_1 + sq_j]
+                  + density[(sq_i + 1) * OY_LEN_1 + sq_j]
+                  + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1]
+                  + density[sq_i * OY_LEN_1 + sq_j + 1]);
+    real_integral_value = real_integral_value * HX*HY;
+
+    if(coef.count(key)>0)
+    {
+        printf("Alarm! Key %d exists in coef map!", key);
+    }
+    coef[key] = real_integral_value / sum;
+}
+
+static void fill_phi_map(int ii, int jj, double *density, double time_value, std::map<int, double> *phiMap) {
+    double x1 = 0.;
+    double y1 = 0.;
+    double x2 = 0.;
+    double y2 = 0.;
+    double x3 = 0.;
+    double y3 = 0.;
+    double x4 = 0.;
+    double y4 = 0.;
+
+    get_coordinates_on_curr(ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+
+//    printf("POINT: %d   %d :  x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le **
+//                   x4=%.8le * y4=%.8le\n", ii,jj, x1,y1, x2,y2, x3,y3, x4,y4);
+
+    double u = func_u(time_value, x1, y1);
+    double v = func_v(time_value, x1, y1);
+    x1 = x1 - TAU * u;
+    y1 = y1 - TAU * v;
+    u = func_u(time_value, x2, y2);
+    v = func_v(time_value, x2, y2);
+    x2 = x2 - TAU * u;
+    y2 = y2 - TAU * v;
+    u = func_u(time_value, x3, y3);
+    v = func_v(time_value, x3, y3);
+    x3 = x3 - TAU * u;
+    y3 = y3 - TAU * v;
+    u = func_u(time_value, x4, y4);
+    v = func_v(time_value, x4, y4);
+    x4 = x4 - TAU * u;
+    y4 = y4 - TAU * v;
+    /*
+     if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
+        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        printf("PREV Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                       "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+*/
+    int nx = IDEAL_SQ_SIZE_X;
+    int ny = IDEAL_SQ_SIZE_Y;
+
+    double x_step = 1. / nx;
+    double y_step = 1. / ny;
+
+    // get right part for jakoby
+    double phi = 0.;
+    double mes = x_step * y_step;
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+
+            double ideal_x = i * x_step + x_step / 2.;
+            double ideal_y = j * y_step + y_step / 2.;
+
+            double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
+                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
+            double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
+                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+
+            // find out in which square real point was placed
+            int sq_i = (int) ((real_x - A) / HX);
+            int sq_j = (int) ((real_y - C) / HY);
+
+            int mapIndex = OY_LEN_1 * sq_i + sq_j;
+
+            double x = A + sq_i * HX;
+            double y = C + sq_j * HY;
+
+            double a11 = (x2 - x1) + (x1 + x3 - x2 - x4) * ideal_y;
+            double a12 = (x4 - x1) + (x1 + x3 - x2 - x4) * ideal_x;
+            double a21 = (y2 - y1) + (y1 + y3 - y2 - y4) * ideal_y;
+            double a22 = (y4 - y1) + (y1 + y3 - y2 - y4) * ideal_x;
+            double jakob = a11 * a22 - a21 * a12;
+
+            // formula 4
+            double dens = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
+                          + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
+
+            phiMap[OY_LEN_1 * i + j][mapIndex] = mes * dens * jakob;
+        }
+    }
 }
 
 static double get_phi_integ_midpoint(int ii, int jj, double *density, double time_value) {
@@ -115,6 +232,92 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
     return phi;
 }
 
+static double get_phi_integ_midpoint(int ii, int jj, double *density, double time_value, std::map<int, double> coef) {
+    double x1 = 0.;
+    double y1 = 0.;
+    double x2 = 0.;
+    double y2 = 0.;
+    double x3 = 0.;
+    double y3 = 0.;
+    double x4 = 0.;
+    double y4 = 0.;
+
+    get_coordinates_on_curr(ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+
+//    printf("POINT: %d   %d :  x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le **
+//                   x4=%.8le * y4=%.8le\n", ii,jj, x1,y1, x2,y2, x3,y3, x4,y4);
+
+    double u = func_u(time_value, x1, y1);
+    double v = func_v(time_value, x1, y1);
+    x1 = x1 - TAU * u;
+    y1 = y1 - TAU * v;
+    u = func_u(time_value, x2, y2);
+    v = func_v(time_value, x2, y2);
+    x2 = x2 - TAU * u;
+    y2 = y2 - TAU * v;
+    u = func_u(time_value, x3, y3);
+    v = func_v(time_value, x3, y3);
+    x3 = x3 - TAU * u;
+    y3 = y3 - TAU * v;
+    u = func_u(time_value, x4, y4);
+    v = func_v(time_value, x4, y4);
+    x4 = x4 - TAU * u;
+    y4 = y4 - TAU * v;
+    /*
+     if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
+        || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        printf("PREV Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                       "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
+*/
+    int nx = IDEAL_SQ_SIZE_X;
+    int ny = IDEAL_SQ_SIZE_Y;
+
+    double x_step = 1. / nx;
+    double y_step = 1. / ny;
+
+    // get right part for jakoby
+    double phi = 0.;
+    double mes = x_step * y_step;
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+
+            double ideal_x = i * x_step + x_step / 2.;
+            double ideal_y = j * y_step + y_step / 2.;
+
+            double real_x = x1 + (x2 - x1) * ideal_x + (x4 - x1) * ideal_y
+                            + (x1 + x3 - x2 - x4) * ideal_x * ideal_y;
+            double real_y = y1 + (y2 - y1) * ideal_x + (y4 - y1) * ideal_y
+                            + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
+
+            // find out in which square real point was placed
+            int sq_i = (int) ((real_x - A) / HX);
+            int sq_j = (int) ((real_y - C) / HY);
+            double x = A + sq_i * HX;
+            double y = C + sq_j * HY;
+
+            double a11 = (x2 - x1) + (x1 + x3 - x2 - x4) * ideal_y;
+            double a12 = (x4 - x1) + (x1 + x3 - x2 - x4) * ideal_x;
+            double a21 = (y2 - y1) + (y1 + y3 - y2 - y4) * ideal_y;
+            double a22 = (y4 - y1) + (y1 + y3 - y2 - y4) * ideal_x;
+            double jakob = a11 * a22 - a21 * a12;
+
+            // formula 4
+            double dens = density[sq_i * OY_LEN_1 + sq_j] * (1 - (real_x - x) / HX) * (1 - (real_y - y) / HY)
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j] * ((real_x - x) / HX) * (1 - (real_y - y) / HY)
+                          + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
+                          + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
+
+            int key = OY_LEN_1 * sq_i + sq_j;
+            double k = coef[key];
+
+            phi += mes * dens * jakob * k;
+        }
+    }
+
+    if (fabs(phi) < fabs(DBL_MIN_TRIM)) phi = 0;
+    return phi;
+}
+
 double *solve_5(double &tme) {
     StartTimer();
 
@@ -122,9 +325,15 @@ double *solve_5(double &tme) {
 
     int ic = 0;
     double *phi = new double[XY_LEN];
+
     double *prev_density = new double[XY_LEN];
     double *density = new double[XY_LEN];
     double *residual = new double[XY_LEN];
+
+    std::map<int, double> *phiMap = new std::map<int, double>[XY_LEN];
+    for (int k = 0; k < XY_LEN; ++k) phiMap[k] = std::map<int, double>();
+
+    std::map<int, double> *coef = new std::map<int, double>();
 
     //<editor-fold desc="Fill initial data">
 
@@ -234,13 +443,28 @@ double *solve_5(double &tme) {
 
         // point (1,1)
         if (CP11 == 1) {
-            phi[OY_LEN_1 * OX_LEN + OY_LEN] = value = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl);;
+            phi[OY_LEN_1 * OX_LEN + OY_LEN] = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl);;
         }
 
         // inner points
-        for (int i = 1; i < OX_LEN; ++i)
-            for (int j = 1; j < OY_LEN; ++j)
-                phi[OY_LEN_1 * i + j] = get_phi_integ_midpoint(i, j, prev_density, TAU * tl);
+
+        for (int i = 1; i < OX_LEN; ++i) {
+            for (int j = 1; j < OY_LEN; ++j) {
+                fill_phi_map(i, j, prev_density, TAU * tl, phiMap);
+            }
+        }
+
+        for (int i = 1; i < OX_LEN; ++i) {
+            for (int j = 1; j < OY_LEN; ++j) {
+                fill_coef_inn(i, j, prev_density, TAU * tl, phiMap, *coef);
+            }
+        }
+
+        for (int i = 1; i < OX_LEN; ++i) {
+            for (int j = 1; j < OY_LEN; ++j) {
+                phi[OY_LEN_1 * i + j] = get_phi_integ_midpoint(i, j, prev_density, TAU * tl, *coef);
+            }
+        }
 
         //</editor-fold>
 
@@ -554,6 +778,8 @@ double *solve_5(double &tme) {
     delete[] err;
     delete[] residual;
     delete[] extrems;
+    delete[] phiMap;
+    delete coef;
     tme = GetTimer() / 1000;
     return density;
 }
