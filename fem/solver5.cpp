@@ -61,7 +61,7 @@ static void fill_coef_inn(int ii, int jj, double *density, double time_value, st
 
     if(coef.count(key)>0)
     {
-        printf("Alarm! Key %d exists in coef map!", key);
+        printf("\nAlarm! Key %d exists in coef map!\n", key);
     }
     coef[key] = real_integral_value / sum;
 }
@@ -325,7 +325,6 @@ double *solve_5(double &tme) {
 
     int ic = 0;
     double *phi = new double[XY_LEN];
-
     double *prev_density = new double[XY_LEN];
     double *density = new double[XY_LEN];
     double *residual = new double[XY_LEN];
@@ -390,9 +389,14 @@ double *solve_5(double &tme) {
     fflush(stdout);
 
     double maxRes = FLT_MAX;
-    double *extrems = new double[2];
+    double *extrems;
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
+
+        for (int k = 0; k < XY_LEN; ++k) {
+            phiMap[k].clear();
+        }
+        coef->clear();
 
         //<editor-fold desc="Calculate phi">
 
