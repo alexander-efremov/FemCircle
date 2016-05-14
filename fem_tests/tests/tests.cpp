@@ -1362,14 +1362,13 @@ TEST_F(FemFixture, test4_1) {
     }
 }
 
-
 // тестируем третий случай - движение по кругу
 TEST_F(FemFixture, test5_1) {
     double tme = 0.;
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 2; i < 3; ++i) {
+        for (int i = 1; i < 2; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -1410,8 +1409,8 @@ TEST_F(FemFixture, test5_1) {
             IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
 
-            CENTER_OFFSET_X = 0.5;
-            CENTER_OFFSET_Y = 0.5;
+            CENTER_OFFSET_X = 0.3;
+            CENTER_OFFSET_Y = 0.3;
 
             INTEGR_TYPE = 1;
 

@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "common.h"
 #include <map>
+#include <iostream>
 
 using namespace std;
 
@@ -36,8 +37,8 @@ inline static double analytical_solution_circle(double t, double x, double y) {
 }
 
 // fill for inner pt
-static void fill_coef_inn(int ii, int jj, double *density, double time_value, std::map<int, double> *phiMap,
-                          std::map<int, double>& coef) {
+static void fill_coef(int ii, int jj, double *density, double time_value, std::map<int, double> *phiMap,
+                      std::map<int, double> &coef) {
     // find out in which square real point was placed
     int sq_i = (int) ((ii*HX - A) / HX);
     int sq_j = (int) ((jj*HY - C) / HY);
@@ -63,7 +64,15 @@ static void fill_coef_inn(int ii, int jj, double *density, double time_value, st
     {
         printf("\nAlarm! Key %d exists in coef map!\n", key);
     }
-    coef[key] = real_integral_value / sum;
+    if (sum != 0)
+    {
+        coef[key] = real_integral_value / sum;
+    }
+    else
+    {
+        coef[key] = 0;
+    }
+
 }
 
 static void fill_phi_map(int ii, int jj, double *density, double time_value, std::map<int, double> *phiMap) {
@@ -144,7 +153,7 @@ static void fill_phi_map(int ii, int jj, double *density, double time_value, std
                           + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
                           + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
 
-            phiMap[OY_LEN_1 * i + j][mapIndex] = mes * dens * jakob;
+            phiMap[OY_LEN_1 * ii + jj][mapIndex] = mes * dens * jakob;
         }
     }
 }
@@ -457,11 +466,25 @@ double *solve_5(double &tme) {
                 fill_phi_map(i, j, prev_density, TAU * tl, phiMap);
             }
         }
-
         for (int i = 1; i < OX_LEN; ++i) {
             for (int j = 1; j < OY_LEN; ++j) {
-                fill_coef_inn(i, j, prev_density, TAU * tl, phiMap, *coef);
+                for (map<int, double>::const_iterator it = phiMap[OY_LEN_1 * i + j].begin();
+                        it != phiMap[OY_LEN_1 * i + j].end(); ++it) {
+                    std::cout << " key -> " << it->first << " value -> " << it->second << std::endl;
+                }
             }
+        }
+        for (int i = 1; i < OX_LEN; ++i) {
+            for (int j = 1; j < OY_LEN; ++j) {
+                fill_coef(i, j, prev_density, TAU * tl, phiMap, *coef);
+            }
+        }
+
+        std::cout << " COEF " << std::endl;
+
+        for (map<int, double>::const_iterator it = coef->begin();
+             it != coef->end(); ++it) {
+            std::cout << " COEF key -> " << it->first << " value -> " << it->second << std::endl;
         }
 
         for (int i = 1; i < OX_LEN; ++i) {
@@ -469,6 +492,9 @@ double *solve_5(double &tme) {
                 phi[OY_LEN_1 * i + j] = get_phi_integ_midpoint(i, j, prev_density, TAU * tl, *coef);
             }
         }
+
+        print_surface("phi1", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                  U_VELOCITY, V_VELOCITY, phi);
 
         //</editor-fold>
 
