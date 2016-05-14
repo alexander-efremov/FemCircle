@@ -466,26 +466,28 @@ double *solve_5(double &tme) {
                 fill_phi_map(i, j, prev_density, TAU * tl, phiMap);
             }
         }
-        for (int i = 1; i < OX_LEN; ++i) {
-            for (int j = 1; j < OY_LEN; ++j) {
-                for (map<int, double>::const_iterator it = phiMap[OY_LEN_1 * i + j].begin();
-                        it != phiMap[OY_LEN_1 * i + j].end(); ++it) {
-                    std::cout << " key -> " << it->first << " value -> " << it->second << std::endl;
-                }
-            }
-        }
+
+//        for (int i = 1; i < OX_LEN; ++i) {
+//            for (int j = 1; j < OY_LEN; ++j) {
+//                for (map<int, double>::const_iterator it = phiMap[OY_LEN_1 * i + j].begin();
+//                        it != phiMap[OY_LEN_1 * i + j].end(); ++it) {
+//                    std::cout << " key -> " << it->first << " value -> " << it->second << std::endl;
+//                }
+//            }
+//        }
+
         for (int i = 1; i < OX_LEN; ++i) {
             for (int j = 1; j < OY_LEN; ++j) {
                 fill_coef(i, j, prev_density, TAU * tl, phiMap, *coef);
             }
         }
 
-        std::cout << " COEF " << std::endl;
-
-        for (map<int, double>::const_iterator it = coef->begin();
-             it != coef->end(); ++it) {
-            std::cout << " COEF key -> " << it->first << " value -> " << it->second << std::endl;
-        }
+//        std::cout << " COEF " << std::endl;
+//
+//        for (map<int, double>::const_iterator it = coef->begin();
+//             it != coef->end(); ++it) {
+//            std::cout << " COEF key -> " << it->first << " value -> " << it->second << std::endl;
+//        }
 
         for (int i = 1; i < OX_LEN; ++i) {
             for (int j = 1; j < OY_LEN; ++j) {
