@@ -1406,8 +1406,8 @@ TEST_F(FemFixture, test5_1) {
             OY_LEN_1 = OY_LEN + 1;
             HX = (B - A) / OX_LEN;
             HY = (D - C) / OY_LEN;
-            IDEAL_SQ_SIZE_X = 32 * (iter + 1);
-            IDEAL_SQ_SIZE_Y = 32 * (iter + 1);
+            IDEAL_SQ_SIZE_X = 64 * (iter + 1);
+            IDEAL_SQ_SIZE_Y = 64 * (iter + 1);
 
             CENTER_OFFSET_X = 0.3;
             CENTER_OFFSET_Y = 0.3;
@@ -1419,7 +1419,7 @@ TEST_F(FemFixture, test5_1) {
             OMEGA = 1.;
             TAU = 2.5e-3;
 
-            TIME_STEP_CNT = 1;
+            TIME_STEP_CNT = 10;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
