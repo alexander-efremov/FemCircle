@@ -44,29 +44,8 @@ static const int dot_right = 7;
 static const int dot_bott = 8;
 static const int dot_inner = 9;
 
-static int c = 0;
-
-static inline int get_sq_i(int i) {
-    double x1 = A + i * HX;
-    int r1 = (int) (x1 / HX);
-    int r2 = (int) ((x1 + FLT_MIN) / HX);
-    int r3 = (int) ((x1 - FLT_MIN) / HX);
-    if (r1 != r2) return r2;
-    return r1;
-}
-
-static inline int get_sq_j(int j) {
-    double y1 = A + j * HY;
-    int r1 = (int) (y1 / HY);
-    int r2 = (int) ((y1 + FLT_MIN) / HY);
-    int r3 = (int) ((y1 - FLT_MIN) / HY);
-    if (r1 != r2) return r2;
-    return r1;
-}
-
 static void fill_coef(int ii, int jj, double *density,
                       double *coef, int type) {
-
     int sq_i = ii;
     int sq_j = jj;
 
@@ -114,16 +93,8 @@ static void fill_coef(int ii, int jj, double *density,
     double e = C + HY * jj;
     bool a = d > 0.19 && d < 0.41;
     bool b = e > 0.19 && e < 0.41;
-////    if (a && b) {
-//    if (ii == 29 && jj == 29) {
-//        printf("\nii = %d jj = %d key = %d k = %f real = %f value = %f\n",
-//               ii, jj, key, k, real_integral_value, coef[key]);
-//    }
-
 
     coef[key] = k;
-
-    //if (ii == 29 && jj == 29) printf("\nvalue 2856 = %f\n", coef[2856]);
 }
 
 static void fill_phi_map(int ii, int jj, double *density, double time_value,
@@ -205,15 +176,6 @@ static void fill_phi_map(int ii, int jj, double *density, double time_value,
 
 
             int mapIndex = OY_LEN_1 * sq_i + sq_j;
-
-//            if (i == 1 && j == 1 && ii == 29 && jj == 28) {
-//                printf("\nGood ii=%d jj=%d mapIndex=%d, mes=%f dens=%f jakobian=%f\n", ii, jj, mapIndex, mes, dens,
-//                       jakob);
-//            }
-//            else if (i == 1 && j == 1 && ii == 29 && jj == 29) {
-//                printf("\nBad ii=%d jj=%d mapIndex=%d, mes=%f dens=%f jakobian=%f\n", ii, jj, mapIndex, mes, dens,
-//                       jakob);
-//            }
             coef[mapIndex] += mes * dens * jakob;
         }
     }
@@ -468,7 +430,6 @@ double *solve_5(double &tme) {
             coef[k] = 0.;
         }
 
-
         //<editor-fold desc="Calculate phi">
 
         // with usage of prev_density we calculate phi function values
@@ -580,29 +541,12 @@ double *solve_5(double &tme) {
                 fill_phi_map(i, j, prev_density, TAU * tl, coef);
             }
         }
-        // printf("\nvalue 2856 = %f\n", coef[2856]);
-
-//        for (int i = 1; i < OX_LEN; ++i) {
-//            for (int j = 1; j < OY_LEN; ++j) {
-//                for (map<int, double>::const_iterator it = phiMap[OY_LEN_1 * i + j].begin();
-//                        it != phiMap[OY_LEN_1 * i + j].end(); ++it) {
-//                    std::cout << " key -> " << it->first << " value -> " << it->second << std::endl;
-//                }
-//            }
-//        }
 
         for (int i = 1; i < OX_LEN; ++i) {
             for (int j = 1; j < OY_LEN; ++j) {
                 fill_coef(i, j, prev_density, coef, dot_inner);
             }
         }
-
-//        std::cout << " COEF " << std::endl;
-//
-//        for (map<int, double>::const_iterator it = coef->begin();
-//             it != coef->end(); ++it) {
-//            std::cout << " COEF key -> " << it->first << " value -> " << it->second << std::endl;
-//        }
 
         for (int i = 1; i < OX_LEN; ++i) {
             for (int j = 1; j < OY_LEN; ++j) {
