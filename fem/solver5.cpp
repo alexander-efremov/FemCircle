@@ -46,10 +46,7 @@ static const int dot_inner = 9;
 
 static void fill_coef(int ii, int jj, double *density,
                       double *coef, int type) {
-    int sq_i = ii;
-    int sq_j = jj;
-
-    int key = OY_LEN_1 * sq_i + sq_j;
+    int key = OY_LEN_1 * ii + jj;
 
     double real_integral_value = 0;
     double part = 0.25;
@@ -72,10 +69,10 @@ static void fill_coef(int ii, int jj, double *density,
         case dot_bott: // bott
 //            break;
         case dot_inner: // inner
-            integ = (density[sq_i * OY_LEN_1 + sq_j]
-                     + density[(sq_i + 1) * OY_LEN_1 + sq_j]
-                     + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1]
-                     + density[sq_i * OY_LEN_1 + sq_j + 1]);
+            integ = (density[ii * OY_LEN_1 + jj]
+                     + density[(ii + 1) * OY_LEN_1 + jj]
+                     + density[(ii + 1) * OY_LEN_1 + jj + 1]
+                     + density[ii * OY_LEN_1 + jj + 1]);
             break;
     }
 
