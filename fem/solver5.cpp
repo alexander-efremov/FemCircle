@@ -6,8 +6,6 @@
 #include "timer.h"
 #include "utils.h"
 #include "common.h"
-#include <map>
-#include <iostream>
 
 using namespace std;
 
@@ -24,9 +22,9 @@ inline void print_data_to_files(double *phi, double *density, double *residual, 
     delete[] err_lock;
 }
 
-inline static double func_u(double t, double x, double y) { return (-y + CENTER_OFFSET_Y) * U_VELOCITY; }
+inline static double func_u(double t, double x, double y) { return U_VELOCITY; }
 
-inline static double func_v(double t, double x, double y) { return (x - CENTER_OFFSET_X) * V_VELOCITY; }
+inline static double func_v(double t, double x, double y) { return V_VELOCITY; }
 
 inline static double analytical_solution_circle(double t, double x, double y) {
     double x0 = get_center_x() + t * func_u(t, x, y);
@@ -46,17 +44,33 @@ static const int dot_right = 7;
 static const int dot_bott = 8;
 static const int dot_inner = 9;
 
-// fill for inner pt
-static void fill_coef(int ii, int jj, double *density, std::map<int, double> *phiMap,
-                      std::map<int, double> &coef, int type) {
+static int c = 0;
 
-    int sq_i = (int) ((ii * HX - A) / HX);
-    int sq_j = (int) ((jj * HY - C) / HY);
+static inline int get_sq_i(int i) {
+    double x1 = A + i * HX;
+    int r1 = (int) (x1 / HX);
+    int r2 = (int) ((x1 + FLT_MIN) / HX);
+    int r3 = (int) ((x1 - FLT_MIN) / HX);
+    if (r1 != r2) return r2;
+    return r1;
+}
+
+static inline int get_sq_j(int j) {
+    double y1 = A + j * HY;
+    int r1 = (int) (y1 / HY);
+    int r2 = (int) ((y1 + FLT_MIN) / HY);
+    int r3 = (int) ((y1 - FLT_MIN) / HY);
+    if (r1 != r2) return r2;
+    return r1;
+}
+
+static void fill_coef(int ii, int jj, double *density,
+                      double *coef, int type) {
+
+    int sq_i = ii;
+    int sq_j = jj;
+
     int key = OY_LEN_1 * sq_i + sq_j;
-
-    double sum = 0.;
-    for (int i = 0; i < XY_LEN; ++i)
-        if (phiMap[i].count(key) > 0) sum += phiMap[i][key];
 
     double real_integral_value = 0;
     double part = 0.25;
@@ -78,7 +92,7 @@ static void fill_coef(int ii, int jj, double *density, std::map<int, double> *ph
 //            break;
         case dot_bott: // bott
 //            break;
-        case 9: // inner
+        case dot_inner: // inner
             integ = (density[sq_i * OY_LEN_1 + sq_j]
                      + density[(sq_i + 1) * OY_LEN_1 + sq_j]
                      + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1]
@@ -88,15 +102,32 @@ static void fill_coef(int ii, int jj, double *density, std::map<int, double> *ph
 
     real_integral_value = HX * HY * part * integ;
 
-    double k = sum != 0 ? real_integral_value / sum : 0.;
+    double k;
+    if (coef[key] != 0) {
+        k = real_integral_value / coef[key];
+    }
+    else {
+        k = 0.;
+    }
 
-    if (coef.count(key) > 0 && coef[key] != k)
-        printf("\nAlarm! Key %d exists in coef map!\nValue in map -> %f new value -> %f\n", key, coef[key], k);
+    double d = A + HX * ii;
+    double e = C + HY * jj;
+    bool a = d > 0.19 && d < 0.41;
+    bool b = e > 0.19 && e < 0.41;
+////    if (a && b) {
+//    if (ii == 29 && jj == 29) {
+//        printf("\nii = %d jj = %d key = %d k = %f real = %f value = %f\n",
+//               ii, jj, key, k, real_integral_value, coef[key]);
+//    }
+
 
     coef[key] = k;
+
+    //if (ii == 29 && jj == 29) printf("\nvalue 2856 = %f\n", coef[2856]);
 }
 
-static void fill_phi_map(int ii, int jj, double *density, double time_value, std::map<int, double> *phiMap) {
+static void fill_phi_map(int ii, int jj, double *density, double time_value,
+                         double *coef) {
     double x1 = 0.;
     double y1 = 0.;
     double x2 = 0.;
@@ -140,7 +171,6 @@ static void fill_phi_map(int ii, int jj, double *density, double time_value, std
     double y_step = 1. / ny;
 
     // get right part for jakoby
-    double phi = 0.;
     double mes = x_step * y_step;
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
@@ -160,10 +190,9 @@ static void fill_phi_map(int ii, int jj, double *density, double time_value, std
                             + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
 
             // find out in which square real point was placed
-            int sq_i = (int) ((real_x - A) / HX);
-            int sq_j = (int) ((real_y - C) / HY);
+            int sq_i = (int) (((real_x - A) + FLT_MIN) / HX);
 
-            int mapIndex = OY_LEN_1 * sq_i + sq_j;
+            int sq_j = (int) (((real_y - C) + FLT_MIN) / HY);
 
             double x = A + sq_i * HX;
             double y = C + sq_j * HY;
@@ -174,7 +203,18 @@ static void fill_phi_map(int ii, int jj, double *density, double time_value, std
                           + density[(sq_i + 1) * OY_LEN_1 + sq_j + 1] * ((real_x - x) / HX) * ((real_y - y) / HY)
                           + density[sq_i * OY_LEN_1 + sq_j + 1] * (1 - (real_x - x) / HX) * ((real_y - y) / HY);
 
-            phiMap[OY_LEN_1 * ii + jj][mapIndex] = mes * dens * jakob;
+
+            int mapIndex = OY_LEN_1 * sq_i + sq_j;
+
+//            if (i == 1 && j == 1 && ii == 29 && jj == 28) {
+//                printf("\nGood ii=%d jj=%d mapIndex=%d, mes=%f dens=%f jakobian=%f\n", ii, jj, mapIndex, mes, dens,
+//                       jakob);
+//            }
+//            else if (i == 1 && j == 1 && ii == 29 && jj == 29) {
+//                printf("\nBad ii=%d jj=%d mapIndex=%d, mes=%f dens=%f jakobian=%f\n", ii, jj, mapIndex, mes, dens,
+//                       jakob);
+//            }
+            coef[mapIndex] += mes * dens * jakob;
         }
     }
 }
@@ -237,8 +277,9 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
                             + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
 
             // find out in which square real point was placed
-            int sq_i = (int) ((real_x - A) / HX);
-            int sq_j = (int) ((real_y - C) / HY);
+            int sq_i = (int) (((real_x - A) + FLT_MIN) / HX);
+            int sq_j = (int) (((real_y - C) + FLT_MIN) / HY);
+
             double x = A + sq_i * HX;
             double y = C + sq_j * HY;
 
@@ -262,7 +303,8 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
     return phi;
 }
 
-static double get_phi_integ_midpoint(int ii, int jj, double *density, double time_value, std::map<int, double> coef) {
+static double get_phi_integ_midpoint(int ii, int jj, double *density, double time_value,
+                                     double *coef) {
     double x1 = 0.;
     double y1 = 0.;
     double x2 = 0.;
@@ -293,12 +335,14 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
     v = func_v(time_value, x4, y4);
     x4 = x4 - TAU * u;
     y4 = y4 - TAU * v;
+
     /*
      if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
         || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
         printf("PREV Time level %.8le! ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                        "x4=%.8le * y4=%.8le\n ", time_value, ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
-*/
+    */
+
     int nx = IDEAL_SQ_SIZE_X;
     int ny = IDEAL_SQ_SIZE_Y;
 
@@ -320,8 +364,9 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
                             + (y1 + y3 - y2 - y4) * ideal_x * ideal_y;
 
             // find out in which square real point was placed
-            int sq_i = (int) ((real_x - A) / HX);
-            int sq_j = (int) ((real_y - C) / HY);
+            int sq_i = (int) (((real_x - A) + FLT_MIN) / HX);
+            int sq_j = (int) (((real_y - C) + FLT_MIN) / HY);
+
             double x = A + sq_i * HX;
             double y = C + sq_j * HY;
 
@@ -358,11 +403,7 @@ double *solve_5(double &tme) {
     double *prev_density = new double[XY_LEN];
     double *density = new double[XY_LEN];
     double *residual = new double[XY_LEN];
-
-    std::map<int, double> *phiMap = new std::map<int, double>[XY_LEN];
-    for (int k = 0; k < XY_LEN; ++k) phiMap[k] = std::map<int, double>();
-
-    std::map<int, double> *coef = new std::map<int, double>();
+    double *coef = new double[XY_LEN];
 
     //<editor-fold desc="Fill initial data">
 
@@ -424,9 +465,9 @@ double *solve_5(double &tme) {
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
 
         for (int k = 0; k < XY_LEN; ++k) {
-            phiMap[k].clear();
+            coef[k] = 0.;
         }
-        coef->clear();
+
 
         //<editor-fold desc="Calculate phi">
 
@@ -435,17 +476,17 @@ double *solve_5(double &tme) {
         // G1 -- (x_i, 0=C) -- bottom boundary
         for (int i = 1; i < OX_LEN; ++i) {
             if (G1[i] == 1) {
-                fill_phi_map(i, 0, prev_density, TAU * tl, phiMap);
+                fill_phi_map(i, 0, prev_density, TAU * tl, coef);
             }
         }
         for (int i = 1; i < OX_LEN; ++i) {
             if (G1[i] == 1) {
-                fill_coef(i, 0, prev_density, phiMap, *coef, dot_bott);
+                fill_coef(i, 0, prev_density, coef, dot_bott);
             }
         }
         for (int i = 1; i < OX_LEN; ++i) {
             if (G1[i] == 1) {
-                phi[OY_LEN_1 * i] = get_phi_integ_midpoint(i, 0, prev_density, TAU * tl, *coef);
+                phi[OY_LEN_1 * i] = get_phi_integ_midpoint(i, 0, prev_density, TAU * tl, coef);
             }
         }
         // end G1
@@ -453,17 +494,17 @@ double *solve_5(double &tme) {
         // G2 -- (OX_LEN=B, y_j) -- right boundary
         for (int j = 1; j < OY_LEN; ++j) {
             if (G2[j] == 1) {
-                fill_phi_map(OX_LEN, j, prev_density, TAU * tl, phiMap);
+                fill_phi_map(OX_LEN, j, prev_density, TAU * tl, coef);
             }
         }
         for (int j = 1; j < OY_LEN; ++j) {
             if (G2[j] == 1) {
-                fill_coef(OX_LEN, j, prev_density, phiMap, *coef, dot_right);
+                fill_coef(OX_LEN, j, prev_density, coef, dot_right);
             }
         }
         for (int j = 1; j < OY_LEN; ++j) {
             if (G2[j] == 1) {
-                phi[OY_LEN_1 * OX_LEN + j] = get_phi_integ_midpoint(OX_LEN, j, prev_density, TAU * tl, *coef);
+                phi[OY_LEN_1 * OX_LEN + j] = get_phi_integ_midpoint(OX_LEN, j, prev_density, TAU * tl, coef);
             }
         }
         // end G2
@@ -471,17 +512,17 @@ double *solve_5(double &tme) {
         // G3 -- (x_i, OY_LEN=D) -- upper boundary
         for (int i = 1; i < OX_LEN; ++i) {
             if (G3[i] == 1) {
-                fill_phi_map(i, OY_LEN, prev_density, TAU * tl, phiMap);
+                fill_phi_map(i, OY_LEN, prev_density, TAU * tl, coef);
             }
         }
         for (int i = 1; i < OX_LEN; ++i) {
             if (G3[i] == 1) {
-                fill_coef(i, OY_LEN, prev_density, phiMap, *coef, dot_upper);
+                fill_coef(i, OY_LEN, prev_density, coef, dot_upper);
             }
         }
         for (int i = 1; i < OX_LEN; ++i) {
             if (G3[i] == 1) {
-                phi[OY_LEN_1 * i + OY_LEN] = get_phi_integ_midpoint(i, OY_LEN, prev_density, TAU * tl, *coef);
+                phi[OY_LEN_1 * i + OY_LEN] = get_phi_integ_midpoint(i, OY_LEN, prev_density, TAU * tl, coef);
             }
         }
         // end G3
@@ -489,56 +530,57 @@ double *solve_5(double &tme) {
         // G4 -- (0=A, y_j) -- left boundary
         for (int j = 1; j < OY_LEN; ++j) {
             if (G4[j] == 1) {
-                fill_phi_map(0, j, prev_density, TAU * tl, phiMap);
+                fill_phi_map(0, j, prev_density, TAU * tl, coef);
             }
         }
         for (int j = 1; j < OY_LEN; ++j) {
             if (G4[j] == 1) {
-                fill_coef(0, j, prev_density, phiMap, *coef, dot_bott);
+                fill_coef(0, j, prev_density, coef, dot_bott);
             }
         }
         for (int j = 1; j < OY_LEN; ++j) {
             if (G4[j] == 1) {
-                phi[j] = get_phi_integ_midpoint(0, j, prev_density, TAU * tl, *coef);
+                phi[j] = get_phi_integ_midpoint(0, j, prev_density, TAU * tl, coef);
             }
         }
         // G4
 
         // point (0.0)
         if (CP00 == 1) {
-            fill_phi_map(0, 0, prev_density, TAU * tl, phiMap);
-            fill_coef(0, 0, prev_density, phiMap, *coef, dot_c00);
-            phi[0] = get_phi_integ_midpoint(0, 0, prev_density, TAU * tl, *coef);
+            fill_phi_map(0, 0, prev_density, TAU * tl, coef);
+            fill_coef(0, 0, prev_density, coef, dot_c00);
+            phi[0] = get_phi_integ_midpoint(0, 0, prev_density, TAU * tl, coef);
         }
 
         // point (1.0)
         if (CP10 == 1) {
-            fill_phi_map(OX_LEN, 0, prev_density, TAU * tl, phiMap);
-            fill_coef(OX_LEN, 0, prev_density, phiMap, *coef, dot_c10);
-            phi[OY_LEN_1 * OX_LEN] = get_phi_integ_midpoint(OX_LEN, 0, prev_density, TAU * tl, *coef);
+            fill_phi_map(OX_LEN, 0, prev_density, TAU * tl, coef);
+            fill_coef(OX_LEN, 0, prev_density, coef, dot_c10);
+            phi[OY_LEN_1 * OX_LEN] = get_phi_integ_midpoint(OX_LEN, 0, prev_density, TAU * tl, coef);
         }
 
         // point (0.1)
         if (CP01 == 1) {
-            fill_phi_map(0, OY_LEN, prev_density, TAU * tl, phiMap);
-            fill_coef(0, OY_LEN, prev_density, phiMap, *coef, dot_c01);
-            phi[OY_LEN] = get_phi_integ_midpoint(0, OY_LEN, prev_density, TAU * tl, *coef);
+            fill_phi_map(0, OY_LEN, prev_density, TAU * tl, coef);
+            fill_coef(0, OY_LEN, prev_density, coef, dot_c01);
+            phi[OY_LEN] = get_phi_integ_midpoint(0, OY_LEN, prev_density, TAU * tl, coef);
         }
 
         // point (1,1)
         if (CP11 == 1) {
-            fill_phi_map(OX_LEN, OY_LEN, prev_density, TAU * tl, phiMap);
-            fill_coef(OX_LEN, OY_LEN, prev_density, phiMap, *coef, dot_c11);
-            phi[OY_LEN_1 * OX_LEN + OY_LEN] = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl, *coef);
+            fill_phi_map(OX_LEN, OY_LEN, prev_density, TAU * tl, coef);
+            fill_coef(OX_LEN, OY_LEN, prev_density, coef, dot_c11);
+            phi[OY_LEN_1 * OX_LEN + OY_LEN] = get_phi_integ_midpoint(OX_LEN, OY_LEN, prev_density, TAU * tl, coef);
         }
 
         // inner points
 
         for (int i = 1; i < OX_LEN; ++i) {
             for (int j = 1; j < OY_LEN; ++j) {
-                fill_phi_map(i, j, prev_density, TAU * tl, phiMap);
+                fill_phi_map(i, j, prev_density, TAU * tl, coef);
             }
         }
+        // printf("\nvalue 2856 = %f\n", coef[2856]);
 
 //        for (int i = 1; i < OX_LEN; ++i) {
 //            for (int j = 1; j < OY_LEN; ++j) {
@@ -551,7 +593,7 @@ double *solve_5(double &tme) {
 
         for (int i = 1; i < OX_LEN; ++i) {
             for (int j = 1; j < OY_LEN; ++j) {
-                fill_coef(i, j, prev_density, phiMap, *coef, dot_inner);
+                fill_coef(i, j, prev_density, coef, dot_inner);
             }
         }
 
@@ -564,7 +606,7 @@ double *solve_5(double &tme) {
 
         for (int i = 1; i < OX_LEN; ++i) {
             for (int j = 1; j < OY_LEN; ++j) {
-                phi[OY_LEN_1 * i + j] = get_phi_integ_midpoint(i, j, prev_density, TAU * tl, *coef);
+                phi[OY_LEN_1 * i + j] = get_phi_integ_midpoint(i, j, prev_density, TAU * tl, coef);
             }
         }
 
@@ -573,75 +615,75 @@ double *solve_5(double &tme) {
 
         //</editor-fold>
 
-            // G1 -- (x_i, 0=C) -- bottom boundary
-            double rpCoef = 2. / (HX * HY);
-            for (int i = 1; i < OX_LEN; ++i) {
-                if (G1[i] == 1) {
-                    density[OY_LEN_1 * i] = rpCoef * phi[OY_LEN_1 * i];
-                    if (fabs(density[OY_LEN_1 * i]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * i] = 0;
-                }
+        // G1 -- (x_i, 0=C) -- bottom boundary
+        double rpCoef = 2. / (HX * HY);
+        for (int i = 1; i < OX_LEN; ++i) {
+            if (G1[i] == 1) {
+                density[OY_LEN_1 * i] = rpCoef * phi[OY_LEN_1 * i];
+                if (fabs(density[OY_LEN_1 * i]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * i] = 0;
             }
+        }
 
-            // G2 -- (OX_LEN=B, y_j) -- right boundary
+        // G2 -- (OX_LEN=B, y_j) -- right boundary
+        for (int j = 1; j < OY_LEN; ++j) {
+            if (G2[j] == 1) {
+                density[OY_LEN_1 * OX_LEN + j] = rpCoef * phi[OY_LEN_1 * OX_LEN + j];
+                if (fabs(density[OY_LEN_1 * OX_LEN + j]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * OX_LEN + j] = 0;
+            }
+        }
+
+        // G3 -- (x_i, OY_LEN=D) -- top boundary
+        for (int i = 1; i < OX_LEN; ++i) {
+            if (G3[i] == 1) {
+                density[OY_LEN_1 * i + OY_LEN] = rpCoef * phi[OY_LEN_1 * i + OY_LEN];
+                if (fabs(density[OY_LEN_1 * i + OY_LEN]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * i + OY_LEN] = 0;
+            }
+        }
+
+        // G4 -- (0=A, y_j) -- left boundary
+        for (int j = 1; j < OY_LEN; ++j) {
+            if (G4[j] == 1) { // проверить коэф-ты
+                density[j] = rpCoef * phi[j];
+                if (fabs(density[j]) < fabs(DBL_MIN_TRIM)) density[j] = 0;
+            }
+        }
+
+        rpCoef = 4. / (HX * HY);
+
+        // point (0,0)
+        if (CP00 == 1) {
+            density[0] = phi[0];
+            if (fabs(density[0]) < fabs(DBL_MIN_TRIM)) density[0] = 0;
+        }
+
+        // point (1,0)
+        if (CP10 == 1) {
+            density[OY_LEN_1 * OX_LEN] = rpCoef * phi[OY_LEN_1 * OX_LEN];
+            if (fabs(density[OY_LEN_1 * OX_LEN]) < fabs(DBL_MIN_TRIM))
+                density[OY_LEN_1 * OX_LEN] = 0;
+        }
+
+        // point (0,1)
+        if (CP01 == 1) {
+            density[OY_LEN] = rpCoef * phi[OY_LEN];
+            if (fabs(density[OY_LEN]) < fabs(DBL_MIN_TRIM))
+                density[OY_LEN] = 0;
+        }
+
+        // point (1,1)
+        if (CP11 == 1) {
+            density[OY_LEN_1 * OX_LEN + OY_LEN] = rpCoef * phi[OY_LEN_1 * OX_LEN + OY_LEN];
+            if (fabs(density[OY_LEN_1 * OX_LEN + OY_LEN]) < fabs(DBL_MIN_TRIM))
+                density[OY_LEN_1 * OX_LEN + OY_LEN] = 0;
+        }
+
+        rpCoef = 1. / (HX * HY);
+        for (int i = 1; i < OX_LEN; ++i) {
             for (int j = 1; j < OY_LEN; ++j) {
-                if (G2[j] == 1) {
-                    density[OY_LEN_1 * OX_LEN + j] = rpCoef * phi[OY_LEN_1 * OX_LEN + j];
-                    if (fabs(density[OY_LEN_1 * OX_LEN + j]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * OX_LEN + j] = 0;
-                }
+                density[OY_LEN_1 * i + j] = rpCoef * phi[OY_LEN_1 * i + j];
+                if (fabs(density[OY_LEN_1 * i + j]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * i + j] = 0;
             }
-
-            // G3 -- (x_i, OY_LEN=D) -- top boundary
-            for (int i = 1; i < OX_LEN; ++i) {
-                if (G3[i] == 1) {
-                    density[OY_LEN_1 * i + OY_LEN] = rpCoef * phi[OY_LEN_1 * i + OY_LEN];
-                    if (fabs(density[OY_LEN_1 * i + OY_LEN]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * i + OY_LEN] = 0;
-                }
-            }
-
-            // G4 -- (0=A, y_j) -- left boundary
-            for (int j = 1; j < OY_LEN; ++j) {
-                if (G4[j] == 1) { // проверить коэф-ты
-                    density[j] = rpCoef * phi[j];
-                    if (fabs(density[j]) < fabs(DBL_MIN_TRIM)) density[j] = 0;
-                }
-            }
-
-            rpCoef = 4. / (HX * HY);
-
-            // point (0,0)
-            if (CP00 == 1) {
-                density[0] = phi[0];
-                if (fabs(density[0]) < fabs(DBL_MIN_TRIM)) density[0] = 0;
-            }
-
-            // point (1,0)
-            if (CP10 == 1) {
-                density[OY_LEN_1 * OX_LEN] = rpCoef * phi[OY_LEN_1 * OX_LEN];
-                if (fabs(density[OY_LEN_1 * OX_LEN]) < fabs(DBL_MIN_TRIM))
-                    density[OY_LEN_1 * OX_LEN] = 0;
-            }
-
-            // point (0,1)
-            if (CP01 == 1) {
-                density[OY_LEN] = rpCoef * phi[OY_LEN];
-                if (fabs(density[OY_LEN]) < fabs(DBL_MIN_TRIM))
-                    density[OY_LEN] = 0;
-            }
-
-            // point (1,1)
-            if (CP11 == 1) {
-                density[OY_LEN_1 * OX_LEN + OY_LEN] = rpCoef * phi[OY_LEN_1 * OX_LEN + OY_LEN];
-                if (fabs(density[OY_LEN_1 * OX_LEN + OY_LEN]) < fabs(DBL_MIN_TRIM))
-                    density[OY_LEN_1 * OX_LEN + OY_LEN] = 0;
-            }
-
-            rpCoef = 1. / (HX * HY);
-            for (int i = 1; i < OX_LEN; ++i) {
-                for (int j = 1; j < OY_LEN; ++j) {
-                    density[OY_LEN_1 * i + j] = rpCoef * phi[OY_LEN_1 * i + j];
-                    if (fabs(density[OY_LEN_1 * i + j]) < fabs(DBL_MIN_TRIM)) density[OY_LEN_1 * i + j] = 0;
-                }
-            }
+        }
 
         memcpy(prev_density, density, XY_LEN * sizeof(double));
 
@@ -674,7 +716,6 @@ double *solve_5(double &tme) {
     delete[] err;
     delete[] residual;
     delete[] extrems;
-    delete[] phiMap;
     delete coef;
     tme = GetTimer() / 1000;
     return density;

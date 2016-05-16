@@ -1426,6 +1426,7 @@ TEST_F(FemFixture, test5_1) {
 
             int midIndexX = OX_LEN_1 / 2;
             int midIndexY = OY_LEN_1 / 2;
+
             for (int i = 0; i < OX_LEN_1; ++i) {
                 if (i * HX + A < .5 && i > 0)
                     G1[i] = 0;
