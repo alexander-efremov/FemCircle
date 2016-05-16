@@ -88,12 +88,6 @@ static void fill_coef(int ii, int jj, double *density,
     else {
         k = 0.;
     }
-
-    double d = A + HX * ii;
-    double e = C + HY * jj;
-    bool a = d > 0.19 && d < 0.41;
-    bool b = e > 0.19 && e < 0.41;
-
     coef[key] = k;
 }
 
