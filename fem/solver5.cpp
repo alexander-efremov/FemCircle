@@ -10,13 +10,13 @@
 using namespace std;
 
 inline void print_data_to_files(double *phi, double *density, double *residual, int tl) {
-//    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-//                  U_VELOCITY, V_VELOCITY, phi);
+    print_surface("phi", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                  U_VELOCITY, V_VELOCITY, phi);
     print_surface("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
                   U_VELOCITY, V_VELOCITY, density);
 //    print_surface("res", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
 //                  U_VELOCITY, V_VELOCITY, residual);
-    double *err_lock = calc_error_3(HX, HY, tl * TAU, density);
+    double *err_lock = calc_error_5(HX, HY, tl * TAU, density);
     print_surface("err-l", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(),
                   TAU, U_VELOCITY, V_VELOCITY, err_lock);
     delete[] err_lock;
@@ -414,6 +414,10 @@ double *solve_5(double &tme) {
 
     double maxRes = FLT_MAX;
     double *extrems;
+    double *extrems_err;
+    double *err;
+    double l1_err_vec;
+    double l1_err_tr;
 
     for (int tl = 1; tl <= TIME_STEP_CNT; tl++) {
 
@@ -595,8 +599,8 @@ double *solve_5(double &tme) {
             }
         }
 
-        print_surface("phi1", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-                      U_VELOCITY, V_VELOCITY, phi);
+//        print_surface("phi1", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+//                      U_VELOCITY, V_VELOCITY, phi);
 
         //</editor-fold>
 
@@ -672,28 +676,38 @@ double *solve_5(double &tme) {
 
         memcpy(prev_density, density, XY_LEN * sizeof(double));
 
-        printf("tl = %d Sum(Rho) = %le Sum(absRho) = %le\n",
-               tl, calc_array_sum(density, OX_LEN_1, OY_LEN_1, 0), calc_array_sum(density, OX_LEN_1, OY_LEN_1, 1));
-        fflush(stdout);
+        if (tl % 10 == 0) {
+            err = calc_error_5(HX, HY, TAU * tl, density);
+            l1_err_vec = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
+            l1_err_tr = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
+            extrems = calc_array_extrems(density, OX_LEN_1, OY_LEN_1);
+            extrems_err = calc_array_extrems(err, OX_LEN_1, OY_LEN_1);
 
-        if (tl % 5 == 0) {
+            printf("tl = %d Sum(Rho)= %le  ERR_VEC= %le  ERR_TR= %le  MAX_RHO= %le"
+                           "  MAX_ERR= %le\n", tl, calc_array_sum(density, OX_LEN_1, OY_LEN_1, 0),
+                   l1_err_vec, l1_err_tr, extrems[1], extrems_err[1]);
+            fflush(stdout);
+        }
+
+        if (tl % 10 == 0) {
             print_data_to_files(phi, density, residual, tl);
-            /*int fixed_x = (int) (get_center_x() / HX);
+            int fixed_x = (int) (get_center_x() / HX);
             int fixed_y = (int) (get_center_y() / HY);
             print_line_along_x("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
                                U_VELOCITY, V_VELOCITY, density, fixed_y);
             print_line_along_y("rho", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-                               U_VELOCITY, V_VELOCITY, density, fixed_x);*/
+                               U_VELOCITY, V_VELOCITY, density, fixed_x);
         }
     }
 
-    double *err = calc_error_5(HX, HY, TAU * TIME_STEP_CNT, density);
-    double l1_err_vec = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
-    double l1_err_tr = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
-//    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, TIME_STEP_CNT);
+    err = calc_error_5(HX, HY, TAU * TIME_STEP_CNT, density);
+    l1_err_vec = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
+    l1_err_tr = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
     extrems = calc_array_extrems(density, OX_LEN_1, OY_LEN_1);
-    append_statistics(OX_LEN_1, OY_LEN_1, TAU, ic, l1_err_vec, l1_err_tr, maxRes, extrems,
-                      extrems, TIME_STEP_CNT); // !!!!!!!! tmp stab
+    extrems_err = calc_array_extrems(err, OX_LEN_1, OY_LEN_1);
+
+    append_statistics_expl(OX_LEN_1, OY_LEN_1, TAU, l1_err_vec, l1_err_tr, extrems,
+                      extrems_err, TIME_STEP_CNT);
 
 
     delete[] prev_density;
@@ -701,6 +715,7 @@ double *solve_5(double &tme) {
     delete[] err;
     delete[] residual;
     delete[] extrems;
+    delete[] extrems_err;
     delete coef;
     tme = GetTimer() / 1000;
     return density;

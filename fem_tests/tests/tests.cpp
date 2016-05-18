@@ -1368,7 +1368,7 @@ TEST_F(FemFixture, test5_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 1; i < 2; ++i) {
+        for (int i = 3; i < 4; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -1406,8 +1406,8 @@ TEST_F(FemFixture, test5_1) {
             OY_LEN_1 = OY_LEN + 1;
             HX = (B - A) / OX_LEN;
             HY = (D - C) / OY_LEN;
-            IDEAL_SQ_SIZE_X = 64 * (iter + 1);
-            IDEAL_SQ_SIZE_Y = 64 * (iter + 1);
+            IDEAL_SQ_SIZE_X = 64;
+            IDEAL_SQ_SIZE_Y = 64;
 
             CENTER_OFFSET_X = 0.3;
             CENTER_OFFSET_Y = 0.3;
@@ -1417,9 +1417,9 @@ TEST_F(FemFixture, test5_1) {
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
             OMEGA = 1.;
-            TAU = 2.5e-3;
+            TAU = 1.2475e-3;
 
-            TIME_STEP_CNT = 10;
+            TIME_STEP_CNT = 322;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
@@ -1454,14 +1454,6 @@ TEST_F(FemFixture, test5_1) {
             printf("rel = %le\n", HX / (-HY + 1.));
             printf("midIndexX = %d\n", midIndexX);
             printf("midIndexY = %d\n", midIndexY);
-//            printf("G1\n");
-//            print_vector(G1, OX_LEN_1);
-//            printf("G2\n");
-//            print_vector(G2, OY_LEN_1);
-//            printf("G3\n");
-//            print_vector(G3, OX_LEN_1);
-//            printf("G4\n");
-//            print_vector(G4, OY_LEN_1);
 
             double *density = solve_5(tme);
             double *err = calc_error_5(HX, HY, TAU * TIME_STEP_CNT, density);

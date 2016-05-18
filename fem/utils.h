@@ -178,7 +178,7 @@ inline double get_l1_norm_int_trapezoidal(double hx, double hy, int x_len, int y
     double r = 0.;
     for (int i = 0; i < x_len; ++i)
         for (int j = 0; j < y_len; ++j)
-            r += (fabs(data[y_len * i + j]) +
+            r += 0.25*(fabs(data[y_len * i + j]) +
                   fabs(data[y_len * (i + 1) + j]) +
                   fabs(data[y_len * i + j + 1]) +
                   fabs(data[y_len * (i + 1) + j + 1])) * hx*hy;
@@ -221,6 +221,26 @@ inline void append_statistics(int ox_len, int oy_len, double tau, int iterCount,
 
     fprintf(file, "%d\t%d\t%le\t%d\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%d\n", ox_len, oy_len, tau, iterCount,
             err_l1_vec, err_l1_tr, res_inf, extrem[0], extrem[1], extrem_err[0], extrem_err[1], time_steps);
+
+    fclose(file);
+}
+
+inline void append_statistics_expl(int ox_len, int oy_len, double tau, double err_l1_vec,
+                              double err_l1_tr, double *extrem, double *extrem_err, int time_steps) {
+    FILE *file;
+    const char* filename = "/home/jane/ClionProjects/fem_circle/statistics.dat";
+    file = fopen(filename, "a");
+    if (file == NULL) {
+        perror("Error opening file.");
+        return;
+    }
+    if (is_empty_file(file)) {
+        fprintf(file, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "OX", "OY", "TAU", "L1ERR-VEC",
+                "L1ERR-TR", "MIN_RHO", "MAX_RHO", "MIN_ERR", "MAX_ERR", "TIMESTP");
+    }
+
+    fprintf(file, "%d\t%d\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%d\n", ox_len, oy_len, tau,
+            err_l1_vec, err_l1_tr, extrem[0], extrem[1], extrem_err[0], extrem_err[1], time_steps);
 
     fclose(file);
 }
