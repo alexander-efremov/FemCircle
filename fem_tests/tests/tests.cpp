@@ -1493,7 +1493,7 @@ TEST_F(FemFixture, test6_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 3; i < 4; ++i) {
+        for (int i = 2; i < 3; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -1544,7 +1544,7 @@ TEST_F(FemFixture, test6_1) {
             OMEGA = 1.;
             TAU = 1.2475e-3;
 
-            TIME_STEP_CNT = 322;
+            TIME_STEP_CNT = 1;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
