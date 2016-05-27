@@ -1493,7 +1493,7 @@ TEST_F(FemFixture, test6_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 2; i < 3; ++i) {
+        for (int i = 3; i < 4; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -1544,7 +1544,7 @@ TEST_F(FemFixture, test6_1) {
             OMEGA = 1.;
             TAU = 1.2475e-3;
 
-            TIME_STEP_CNT = 1;
+            TIME_STEP_CNT = 322;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
@@ -1558,11 +1558,11 @@ TEST_F(FemFixture, test6_1) {
             }
             for (int j = 0; j < OY_LEN_1; ++j) {
                 if (j * HY + C < .5 && j > 0)
-                    G2[j] = 0;
+                    G2[j] = 1;
             }
             for (int i = 0; i < OX_LEN_1; ++i) {
                 if (i * HX + A > .5 && i < OX_LEN_1 - 1)
-                    G3[i] = 0;
+                    G3[i] = 1;
             }
             for (int j = 0; j < OY_LEN_1; ++j) {
                 if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
@@ -1573,7 +1573,7 @@ TEST_F(FemFixture, test6_1) {
             CP00 = 0;
             CP10 = 0;
             CP01 = 0;
-            CP11 = 0;
+            CP11 = 1;
 
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));
