@@ -1742,130 +1742,131 @@ TEST_F(FemFixture, test7_1) {
 //
 TEST_F(FemFixture, test8_1) {
     double tme = 0.;
-    for (int iter = 0; iter < 1; ++iter) {
+    double d = 0.;
 
-        double d = 0;
-        for (int i = 2; i < 3; ++i) {
-            switch (i) {
-                case 0:
-                    d = 50.;
-                    break;
-                case 1:
-                    d = 100.;
-                    break;
-                case 2:
-                    d = 200.;
-                    break;
-                case 3:
-                    d = 400.;
-                    break;
-                case 4:
-                    d = 800.;
-                    break;
-                case 5:
-                    d = 1600.;
-                    break;
-                default:
-                    return;
-            }
-
-            A = 0.;
-            B = 1.;
-            C = 0.;
-            D = 1.;
-            R_SQ = 0.099 * 0.099;
-            INN_DENSITY = 1.;
-            OUT_DENSITY = 0.;
-
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
-            IDEAL_SQ_SIZE_X = 64;
-            IDEAL_SQ_SIZE_Y = 64;
-
-            CENTER_OFFSET_X = 0.5;
-            CENTER_OFFSET_Y = 0.5;
-
-            INTEGR_TYPE = 1;
-
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
-            OMEGA = 1.;
-            TAU = 2.5e-3;
-
-            TIME_STEP_CNT = 1;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
-
-            init_boundary_arrays_and_cp();
-
-            int midIndexX = OX_LEN_1 / 2;
-            int midIndexY = OY_LEN_1 / 2;
-
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A < .5 && i > 0)
-                    G1[i] = 1;
-            }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C < .5 && j > 0)
-                    G2[j] = 1;
-            }
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A > .5 && i < OX_LEN_1 - 1)
-                    G3[i] = 1;
-            }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
-                    G4[j] = 1;
-                }
-            }
-
-            CP00 = 0;
-            CP10 = 0;
-            CP01 = 0;
-            CP11 = 0;
-
-            print_params();
-            printf("rel = %le\n", HX / (-HY + 1.));
-            printf("midIndexX = %d\n", midIndexX);
-            printf("midIndexY = %d\n", midIndexY);
-            printf("G1\n");
-            print_vector(G1, OX_LEN_1);
-            printf("G2\n");
-            print_vector(G2, OY_LEN_1);
-            printf("G3\n");
-            print_vector(G3, OX_LEN_1);
-            printf("G4\n");
-            print_vector(G4, OY_LEN_1);
-
-            double *density = solve_8(tme);
-            double *err = calc_error_8(HX, HY, TAU * TIME_STEP_CNT, density);
-            double *exact0 = get_exact_solution_8(HX, HY, 0);
-            double *exactT = get_exact_solution_8(HX, HY, TAU * TIME_STEP_CNT);
-
-            double x0 = get_center_x();
-            double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
-
-            double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
-
-            printf("l1 %le \n", l1);
-            printf("l_inf %le\n", l_inf);
-
-            delete[] density;
-            delete[] exact0;
-            delete[] exactT;
-            delete[] err;
+    for (int i = 2; i < 3; ++i) {
+        switch (i) {
+            case 0:
+                d = 50.;
+                break;
+            case 1:
+                d = 100.;
+                break;
+            case 2:
+                d = 200.;
+                break;
+            case 3:
+                d = 400.;
+                break;
+            case 4:
+                d = 800.;
+                break;
+            case 5:
+                d = 1600.;
+                break;
+            default:
+                return;
         }
+
+        A = 0.;
+        B = 1.;
+        C = 0.;
+        D = 1.;
+        R_SQ = 0.099 * 0.099;
+        INN_DENSITY = 1.;
+        OUT_DENSITY = 0.;
+
+        OX_LEN = (int) d;
+        OY_LEN = (int) d;
+        OX_LEN_1 = OX_LEN + 1;
+        OY_LEN_1 = OY_LEN + 1;
+        HX = (B - A) / OX_LEN;
+        HY = (D - C) / OY_LEN;
+        IDEAL_SQ_SIZE_X = 64;
+        IDEAL_SQ_SIZE_Y = 64;
+
+        CENTER_OFFSET_X = 0.5;
+        CENTER_OFFSET_Y = 0.5;
+
+        INTEGR_TYPE = 1;
+
+        U_VELOCITY = 1.;
+        V_VELOCITY = 1.;
+        OMEGA = 1.;
+        TAU = 2.5e-3;
+
+        TIME_STEP_CNT = 10;
+        XY_LEN = OX_LEN_1 * OY_LEN_1;
+
+        init_boundary_arrays_and_cp();
+
+        int midIndexX = OX_LEN_1 / 2;
+        int midIndexY = OY_LEN_1 / 2;
+
+        for (int i = 0; i < OX_LEN_1; ++i) {
+            if (i * HX + A < .5 && i > 0)
+                G1[i] = 1;
+        }
+
+        for (int j = 0; j < OY_LEN_1; ++j) {
+            if (j * HY + C < .5 && j > 0)
+                G2[j] = 1;
+        }
+
+        for (int i = 0; i < OX_LEN_1; ++i) {
+            if (i * HX + A > .5 && i < OX_LEN_1 - 1)
+                G3[i] = 1;
+        }
+
+        for (int j = 0; j < OY_LEN_1; ++j) {
+            if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
+                G4[j] = 1;
+            }
+        }
+
+        CP00 = 0;
+        CP10 = 0;
+        CP01 = 0;
+        CP11 = 0;
+
+        print_params();
+        printf("rel = %le\n", HX / (-HY + 1.));
+        printf("midIndexX = %d\n", midIndexX);
+        printf("midIndexY = %d\n", midIndexY);
+        printf("G1\n");
+        print_vector(G1, OX_LEN_1);
+        printf("G2\n");
+        print_vector(G2, OY_LEN_1);
+        printf("G3\n");
+        print_vector(G3, OX_LEN_1);
+        printf("G4\n");
+        print_vector(G4, OY_LEN_1);
+
+        double *density = solve_8(tme);
+        double *err = calc_error_8(HX, HY, TAU * TIME_STEP_CNT, density);
+        double *exact0 = get_exact_solution_8(HX, HY, 0);
+        double *exactT = get_exact_solution_8(HX, HY, TAU * TIME_STEP_CNT);
+
+        double x0 = get_center_x();
+        double y0 = get_center_y();
+        print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                      V_VELOCITY, density);
+        print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                      V_VELOCITY, err);
+        print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
+                      V_VELOCITY, exact0);
+        print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
+                      V_VELOCITY, exactT);
+
+        double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
+        double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+
+        printf("l1 %le \n", l1);
+        printf("l_inf %le\n", l_inf);
+
+        delete[] density;
+        delete[] exact0;
+        delete[] exactT;
+        delete[] err;
     }
 }
