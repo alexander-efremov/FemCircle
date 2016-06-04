@@ -1742,7 +1742,7 @@ TEST_F(FemFixture, test7_1) {
 //
 TEST_F(FemFixture, test8_1) {
     double tme = 0.;
-    double d = 0.;
+    double d;
 
     for (int i = 2; i < 3; ++i) {
         switch (i) {
