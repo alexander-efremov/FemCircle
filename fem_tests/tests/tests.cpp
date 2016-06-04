@@ -1614,7 +1614,7 @@ TEST_F(FemFixture, test7_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 3; i < 4; ++i) {
+        for (int i = 2; i < 3; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -1655,8 +1655,8 @@ TEST_F(FemFixture, test7_1) {
             IDEAL_SQ_SIZE_X = 64;
             IDEAL_SQ_SIZE_Y = 64;
 
-            CENTER_OFFSET_X = 0.3;
-            CENTER_OFFSET_Y = 0.3;
+            CENTER_OFFSET_X = 0.5;
+            CENTER_OFFSET_Y = 0.5;
 
             INTEGR_TYPE = 1;
 
@@ -1665,7 +1665,7 @@ TEST_F(FemFixture, test7_1) {
             OMEGA = 1.;
             TAU = 1.2475e-3;
 
-            TIME_STEP_CNT = 322;
+            TIME_STEP_CNT = 1;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
@@ -1675,7 +1675,7 @@ TEST_F(FemFixture, test7_1) {
 
             for (int i = 0; i < OX_LEN_1; ++i) {
                 if (i * HX + A < .5 && i > 0)
-                    G1[i] = 0;
+                    G1[i] = 1;
             }
             for (int j = 0; j < OY_LEN_1; ++j) {
                 if (j * HY + C < .5 && j > 0)
@@ -1687,19 +1687,27 @@ TEST_F(FemFixture, test7_1) {
             }
             for (int j = 0; j < OY_LEN_1; ++j) {
                 if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
-                    G4[j] = 0;
+                    G4[j] = 1;
                 }
             }
 
             CP00 = 0;
             CP10 = 0;
             CP01 = 0;
-            CP11 = 1;
+            CP11 = 0;
 
             print_params();
             printf("rel = %le\n", HX / (-HY + 1.));
             printf("midIndexX = %d\n", midIndexX);
             printf("midIndexY = %d\n", midIndexY);
+            printf("G1\n");
+            print_vector(G1, OX_LEN_1);
+            printf("G2\n");
+            print_vector(G2, OY_LEN_1);
+            printf("G3\n");
+            print_vector(G3, OX_LEN_1);
+            printf("G4\n");
+            print_vector(G4, OY_LEN_1);
 
             double *density = solve_7(tme);
             double *err = calc_error_7(HX, HY, TAU * TIME_STEP_CNT, density);
