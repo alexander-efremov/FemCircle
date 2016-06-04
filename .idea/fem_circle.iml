@@ -18,8 +18,9 @@
       <sourceFolder url="file://$MODULE_DIR$/fem/solver2.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/timer.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/consts.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/fem/consts.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/solver7.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/solver3.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/consts.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/utils.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/solver4.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/common.h" isTestSource="false" />
