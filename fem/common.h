@@ -226,4 +226,10 @@ double *calc_error_7(double hx, double hy, double tt, double *solution);
 
 double *get_exact_solution_7(double hx, double hy, double t);
 
+double *solve_8(double &tme);
+
+double *calc_error_8(double hx, double hy, double tt, double *solution);
+
+double *get_exact_solution_8(double hx, double hy, double t);
+
 #endif //FEM_CIRCLE_COMMON_H
