@@ -1614,7 +1614,7 @@ TEST_F(FemFixture, test7_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 1; i < 2; ++i) {
+        for (int i = 2; i < 3; ++i) {
             switch (i) {
                 case 0:
                     d = 10.;
@@ -1709,10 +1709,12 @@ TEST_F(FemFixture, test7_1) {
             printf("G4\n");
             print_vector(G4, OY_LEN_1);
 
+            double *exact0 = get_exact_solution_7(HX, HY, 0);
+            //print_matrix_to_file( OX_LEN_1, OY_LEN_1, exact0, "/home/jane/tmp.txt");
+            double *exactT = get_exact_solution_7(HX, HY, TAU * TIME_STEP_CNT);
+
             double *density = solve_7(tme);
             double *err = calc_error_7(HX, HY, TAU * TIME_STEP_CNT, density);
-            double *exact0 = get_exact_solution_7(HX, HY, 0);
-            double *exactT = get_exact_solution_7(HX, HY, TAU * TIME_STEP_CNT);
 
             double x0 = get_center_x();
             double y0 = get_center_y();
