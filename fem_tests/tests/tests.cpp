@@ -887,7 +887,7 @@ TEST_F(FemFixture, test3_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 3; i < 4; ++i) {
+        for (int i = 1; i < 2; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -938,7 +938,7 @@ TEST_F(FemFixture, test3_1) {
             OMEGA = 1.;
             TAU = 2.5e-3;
 
-            TIME_STEP_CNT = 2700;
+            TIME_STEP_CNT = 1;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
@@ -1614,10 +1614,10 @@ TEST_F(FemFixture, test7_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 2; i < 3; ++i) {
+        for (int i = 1; i < 2; ++i) {
             switch (i) {
                 case 0:
-                    d = 50.;
+                    d = 10.;
                     break;
                 case 1:
                     d = 100.;
@@ -1663,9 +1663,9 @@ TEST_F(FemFixture, test7_1) {
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
             OMEGA = 1.;
-            TAU = 1.2475e-3;
+            TAU = 2.5e-3;
 
-            TIME_STEP_CNT = 1;
+            TIME_STEP_CNT = 100;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
@@ -1742,8 +1742,8 @@ TEST_F(FemFixture, test7_1) {
 //
 TEST_F(FemFixture, test8_1) {
     double tme = 0.;
-    double d;
 
+    double d = 0;
     for (int i = 2; i < 3; ++i) {
         switch (i) {
             case 0:
@@ -1807,17 +1807,14 @@ TEST_F(FemFixture, test8_1) {
             if (i * HX + A < .5 && i > 0)
                 G1[i] = 1;
         }
-
         for (int j = 0; j < OY_LEN_1; ++j) {
             if (j * HY + C < .5 && j > 0)
                 G2[j] = 1;
         }
-
         for (int i = 0; i < OX_LEN_1; ++i) {
             if (i * HX + A > .5 && i < OX_LEN_1 - 1)
                 G3[i] = 1;
         }
-
         for (int j = 0; j < OY_LEN_1; ++j) {
             if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
                 G4[j] = 1;
