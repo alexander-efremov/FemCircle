@@ -1737,6 +1737,10 @@ TEST_F(FemFixture, test7_1) {
             delete[] exact0;
             delete[] exactT;
             delete[] err;
+            delete[] G1;
+            delete[] G2;
+            delete[] G3;
+            delete[] G4;
         }
     }
 }// тестируем солвер 7 движение по кругу
@@ -1790,12 +1794,9 @@ TEST_F(FemFixture, test8_1) {
         CENTER_OFFSET_X = 0.5;
         CENTER_OFFSET_Y = 0.5;
 
-        INTEGR_TYPE = 1;
-
         U_VELOCITY = 1.;
         V_VELOCITY = 1.;
-        OMEGA = 1.;
-        TAU = 2.5e-3;
+        TAU = 7e-4;
 
         TIME_STEP_CNT = 10;
         XY_LEN = OX_LEN_1 * OY_LEN_1;
@@ -1862,5 +1863,9 @@ TEST_F(FemFixture, test8_1) {
         delete[] exact0;
         delete[] exactT;
         delete[] err;
+        delete[] G1;
+        delete[] G2;
+        delete[] G3;
+        delete[] G4;
     }
 }
