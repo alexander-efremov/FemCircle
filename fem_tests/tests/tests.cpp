@@ -1663,9 +1663,9 @@ TEST_F(FemFixture, test7_1) {
             U_VELOCITY = 1.;
             V_VELOCITY = 1.;
             OMEGA = 1.;
-            TAU = 2.5e-3;
+            TAU = 5.*HX;
 
-            TIME_STEP_CNT = 100;
+            TIME_STEP_CNT = 270;
             XY_LEN = OX_LEN_1 * OY_LEN_1;
 
             init_boundary_arrays_and_cp();
@@ -1806,21 +1806,16 @@ TEST_F(FemFixture, test8_1) {
         int midIndexY = OY_LEN_1 / 2;
 
         for (int i = 0; i < OX_LEN_1; ++i) {
-            if (i * HX + A < .5 && i > 0)
-                G1[i] = 1;
+                G1[i] = 0;
         }
         for (int j = 0; j < OY_LEN_1; ++j) {
-            if (j * HY + C < .5 && j > 0)
-                G2[j] = 1;
+                G2[j] = 0;
         }
         for (int i = 0; i < OX_LEN_1; ++i) {
-            if (i * HX + A > .5 && i < OX_LEN_1 - 1)
-                G3[i] = 1;
+                G3[i] = 0;
         }
         for (int j = 0; j < OY_LEN_1; ++j) {
-            if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
-                G4[j] = 1;
-            }
+                G4[j] = 0;
         }
 
         CP00 = 0;
