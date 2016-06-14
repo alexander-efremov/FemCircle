@@ -1737,10 +1737,6 @@ TEST_F(FemFixture, test7_1) {
             delete[] exact0;
             delete[] exactT;
             delete[] err;
-            delete[] G1;
-            delete[] G2;
-            delete[] G3;
-            delete[] G4;
         }
     }
 }// тестируем солвер 7 движение по кругу
@@ -1863,9 +1859,5 @@ TEST_F(FemFixture, test8_1) {
         delete[] exact0;
         delete[] exactT;
         delete[] err;
-        delete[] G1;
-        delete[] G2;
-        delete[] G3;
-        delete[] G4;
     }
 }
