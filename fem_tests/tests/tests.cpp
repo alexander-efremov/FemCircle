@@ -1776,56 +1776,44 @@ TEST_F(FemFixture, test8_1) {
         B = 1.;
         C = 0.;
         D = 1.;
-        R_SQ = 0.099 * 0.099;
-        INN_DENSITY = 1.;
-        OUT_DENSITY = 0.;
 
         OX_LEN = (int) d;
         OY_LEN = (int) d;
         OX_LEN_1 = OX_LEN + 1;
         OY_LEN_1 = OY_LEN + 1;
-        HX = (B - A) / OX_LEN;
-        HY = (D - C) / OY_LEN;
+        XY_LEN = OX_LEN_1 * OY_LEN_1;
+
         IDEAL_SQ_SIZE_X = 64;
         IDEAL_SQ_SIZE_Y = 64;
 
-        CENTER_OFFSET_X = 0.5;
-        CENTER_OFFSET_Y = 0.5;
-
-        U_VELOCITY = 1.;
-        V_VELOCITY = 1.;
+        HX = (B - A) / OX_LEN;
+        HY = (D - C) / OY_LEN;
         TAU = 7e-4;
-
-        TIME_STEP_CNT = 10;
-        XY_LEN = OX_LEN_1 * OY_LEN_1;
+        TIME_STEP_CNT = 1;
 
         init_boundary_arrays_and_cp();
 
-        int midIndexX = OX_LEN_1 / 2;
-        int midIndexY = OY_LEN_1 / 2;
 
         for (int i = 0; i < OX_LEN_1; ++i) {
-                G1[i] = 0;
+                G1[i] = 1;
         }
         for (int j = 0; j < OY_LEN_1; ++j) {
-                G2[j] = 0;
+                G2[j] = 1;
         }
         for (int i = 0; i < OX_LEN_1; ++i) {
-                G3[i] = 0;
+                G3[i] = 1;
         }
         for (int j = 0; j < OY_LEN_1; ++j) {
                 G4[j] = 0;
         }
 
         CP00 = 0;
-        CP10 = 0;
+        CP10 = 1;
         CP01 = 0;
-        CP11 = 0;
+        CP11 = 1;
 
         print_params();
         printf("rel = %le\n", HX / (-HY + 1.));
-        printf("midIndexX = %d\n", midIndexX);
-        printf("midIndexY = %d\n", midIndexY);
         printf("G1\n");
         print_vector(G1, OX_LEN_1);
         printf("G2\n");
