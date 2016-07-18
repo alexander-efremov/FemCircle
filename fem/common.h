@@ -232,4 +232,10 @@ double *calc_error_8(double hx, double hy, double tt, double *solution);
 
 double *get_exact_solution_8(double hx, double hy, double t);
 
+double *solve_9(double &tme);
+
+double *calc_error_9(double hx, double hy, double tt, double *solution);
+
+double *get_exact_solution_9(double hx, double hy, double t);
+
 #endif //FEM_CIRCLE_COMMON_H
