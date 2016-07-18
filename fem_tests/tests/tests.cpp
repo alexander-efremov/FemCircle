@@ -29,8 +29,8 @@ public:
 };
 
 void print_params() {
-    printf("\nOX_LENxOY_LEN = %dx%d\n", OX_LEN, OY_LEN);
-    printf("(U, V) = (%le, %le)\n", U_VELOCITY, V_VELOCITY);
+    printf("\nOX_LENxOY_LEN = %dx%d\n", NX, NY);
+    printf("(U, V) = (%le, %le)\n", U, V);
     printf("(HX, HY) = (%le, %le)\n", HX, HY);
     printf("TAU = %le\n", TAU);
     printf("TIME_STEP_CNT = %d\n", TIME_STEP_CNT);
@@ -40,15 +40,15 @@ void print_params() {
 }
 
 void init_boundary_arrays_and_cp() {
-    G1 = new int[OX_LEN_1];
-    G2 = new int[OY_LEN_1];
-    G3 = new int[OX_LEN_1];
-    G4 = new int[OY_LEN_1];
-    for (int i = 0; i < OX_LEN_1; ++i) {
+    G1 = new int[NX_1];
+    G2 = new int[NY_1];
+    G3 = new int[NX_1];
+    G4 = new int[NY_1];
+    for (int i = 0; i < NX_1; ++i) {
         G1[i] = 0;
         G3[i] = 0;
     }
-    for (int j = 0; j < OY_LEN_1; ++j) {
+    for (int j = 0; j < NY_1; ++j) {
         G2[j] = 0;
         G4[j] = 0;
     }
@@ -143,17 +143,17 @@ TEST_F(FemFixture, tecplot2dTo1d) {
     B = 1.;
     C = 0.;
     D = 1.;
-    OX_LEN = 400;
-    OY_LEN = 400;
-    OX_LEN_1 = OX_LEN + 1;
-    OY_LEN_1 = OY_LEN + 1;
-    XY_LEN = OX_LEN_1 * OY_LEN_1;
+    NX = 400;
+    NY = 400;
+    NX_1 = NX + 1;
+    NY_1 = NY + 1;
+    XY = NX_1 * NY_1;
     R_SQ = 0.099 * 0.099;
     INN_DENSITY = 1.;
     OUT_DENSITY = 0.;
 
-    HX = (B - A) / OX_LEN;
-    HY = (D - C) / OY_LEN;
+    HX = (B - A) / NX;
+    HY = (D - C) / NY;
     IDEAL_SQ_SIZE_X = 128 * (3 + 1);
     IDEAL_SQ_SIZE_Y = 128 * (3 + 1);
 
@@ -162,8 +162,8 @@ TEST_F(FemFixture, tecplot2dTo1d) {
 
     INTEGR_TYPE = 1;
 
-    U_VELOCITY = 1.;
-    V_VELOCITY = 1.;
+    U = 1.;
+    V = 1.;
     OMEGA = 1.;
     TAU = 2.5e-3;
 
@@ -194,22 +194,22 @@ TEST_F(FemFixture, tecplot2dTo1d) {
     for (unsigned int i = 0; i < rhoFiles.size(); i++) {
         std::cout << rhoFiles[i] << std::endl;
         int tl = get_tl(rhoFiles[i]);
-        double *arr = getArr(skipLines, rhoFiles[i], XY_LEN);
-        print_line_along_x("rho_x_1d", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-                           U_VELOCITY, V_VELOCITY, arr, fixed_y);
-        print_line_along_y("rho_y_1d", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-                           U_VELOCITY, V_VELOCITY, arr, fixed_x);
+        double *arr = getArr(skipLines, rhoFiles[i], XY);
+        print_line_along_x("rho_x_1d", NX, NY, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                           U, V, arr, fixed_y);
+        print_line_along_y("rho_y_1d", NX, NY, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                           U, V, arr, fixed_x);
         delete[] arr;
     }
     std::cout << "Starting err files convertsion..." << std::endl;
     for (unsigned int i = 0; i < errFiles.size(); i++) {
         std::cout << errFiles[i] << std::endl;
         int tl = get_tl(errFiles[i]);
-        double *arr = getArr(skipLines, errFiles[i], XY_LEN);
-        print_line_along_x("err_x_1d", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-                           U_VELOCITY, V_VELOCITY, arr, fixed_y);
-        print_line_along_y("err_x_1d", OX_LEN, OY_LEN, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
-                           U_VELOCITY, V_VELOCITY, arr, fixed_x);
+        double *arr = getArr(skipLines, errFiles[i], XY);
+        print_line_along_x("err_x_1d", NX, NY, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                           U, V, arr, fixed_y);
+        print_line_along_y("err_x_1d", NX, NY, HX, HY, tl, A, C, get_center_x(), get_center_y(), TAU,
+                           U, V, arr, fixed_x);
         delete[] arr;
     }
 }
@@ -253,18 +253,18 @@ TEST_F(FemFixture, test1) {
         JAK_ITER_CNT = 3000;
 
         TAU = 1. / d;
-        OX_LEN = (int) d;
-        OY_LEN = (int) d;
-        OX_LEN_1 = OX_LEN + 1;
-        OY_LEN_1 = OY_LEN + 1;
-        HX = (B - A) / OX_LEN;
-        HY = (D - C) / OY_LEN;
+        NX = (int) d;
+        NY = (int) d;
+        NX_1 = NX + 1;
+        NY_1 = NY + 1;
+        HX = (B - A) / NX;
+        HY = (D - C) / NY;
         TIME_STEP_CNT = (int) d;
-        XY_LEN = OX_LEN_1 * OY_LEN_1;
-        U_VELOCITY = 0.;
-        V_VELOCITY = 0.;
-        CENTER_OFFSET_X = OX_LEN * HX / 2.;
-        CENTER_OFFSET_Y = OY_LEN * HY / 2.;
+        XY = NX_1 * NY_1;
+        U = 0.;
+        V = 0.;
+        CENTER_OFFSET_X = NX * HX / 2.;
+        CENTER_OFFSET_Y = NY * HY / 2.;
 
         print_params();
 
@@ -272,12 +272,12 @@ TEST_F(FemFixture, test1) {
         double *err = calc_error_1(HX, HY, density);
         double x0 = get_center_x();
         double y0 = get_center_y();
-        print_surface("test1_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                      V_VELOCITY, density);
-        print_surface("test1_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                      V_VELOCITY, err);
-        double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-        double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+        print_surface("test1_rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                      V, density);
+        print_surface("test1_err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                      V, err);
+        double l1 = get_l1_norm(HX, HY, NX_1, NY_1, err);
+        double l_inf = get_l_inf_norm(NX_1, NY_1, err);
         printf("l1 %le \n", l1);
         printf("l_inf %le\n", l_inf);
         delete[] density;
@@ -322,35 +322,35 @@ TEST_F(FemFixture, test2) {
         INN_DENSITY = 1.;
         OUT_DENSITY = 0.;
 
-        OX_LEN = (int) d;
-        OY_LEN = (int) d;
-        OX_LEN_1 = OX_LEN + 1;
-        OY_LEN_1 = OY_LEN + 1;
-        HX = (B - A) / OX_LEN;
-        HY = (D - C) / OY_LEN;
+        NX = (int) d;
+        NY = (int) d;
+        NX_1 = NX + 1;
+        NY_1 = NY + 1;
+        HX = (B - A) / NX;
+        HY = (D - C) / NY;
 
         // (u, v) = (a, a)
         double a = 1;
-        U_VELOCITY = a;
-        V_VELOCITY = a;
+        U = a;
+        V = a;
         TAU = std::min(HX / (3. * a), HY / (3. * a));
 
         print_params();
 
         TIME_STEP_CNT = (int) 1;
-        XY_LEN = OX_LEN_1 * OY_LEN_1;
+        XY = NX_1 * NY_1;
 
-        printf("OX_LEN = %d OY_LEN = %d\n", OX_LEN, OY_LEN);
+        printf("NX = %d NY = %d\n", NX, NY);
         double *density = solve_2(tme);
         double *err = calc_error_2(HX, HY, TAU * TIME_STEP_CNT, density);
         double x0 = get_center_x();
         double y0 = get_center_y();
-        print_surface("test2_rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                      V_VELOCITY, density);
-        print_surface("test2_err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                      V_VELOCITY, err);
-        double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-        double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+        print_surface("test2_rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                      V, density);
+        print_surface("test2_err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                      V, err);
+        double l1 = get_l1_norm(HX, HY, NX_1, NY_1, err);
+        double l_inf = get_l_inf_norm(NX_1, NY_1, err);
         printf("l1 %le \n", l1);
         printf("l_inf %le\n", l_inf);
         delete[] density;
@@ -368,12 +368,12 @@ TEST_F(FemFixture, test2_1) {
     INN_DENSITY = 1.;
     OUT_DENSITY = 0.;
 
-    OX_LEN = (int) 400;
-    OY_LEN = (int) 400;
-    OX_LEN_1 = OX_LEN + 1;
-    OY_LEN_1 = OY_LEN + 1;
-    HX = (B - A) / OX_LEN;
-    HY = (D - C) / OY_LEN;
+    NX = (int) 400;
+    NY = (int) 400;
+    NX_1 = NX + 1;
+    NY_1 = NY + 1;
+    HX = (B - A) / NX;
+    HY = (D - C) / NY;
     IDEAL_SQ_SIZE_X = 64;
     IDEAL_SQ_SIZE_Y = 64;
     CENTER_OFFSET_X = 0.3;
@@ -381,12 +381,12 @@ TEST_F(FemFixture, test2_1) {
 
     INTEGR_TYPE = 1;
 
-    U_VELOCITY = 1.;
-    V_VELOCITY = 1.;
+    U = 1.;
+    V = 1.;
     TAU = 1.e-3;
     //TIME_STEP_CNT = (int) ((1 - get_center_x_2() - get_center_y_2()) / TAU);
     TIME_STEP_CNT = 2;
-    XY_LEN = OX_LEN_1 * OY_LEN_1;
+    XY = NX_1 * NY_1;
 
     print_params();
 
@@ -397,16 +397,16 @@ TEST_F(FemFixture, test2_1) {
 
     double y0 = get_center_y();
     double x0 = get_center_x();
-    print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                  V_VELOCITY, density);
-    print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                  V_VELOCITY, err);
-    print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                  V_VELOCITY, exact0);
-    print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                  V_VELOCITY, exactT);
-    double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-    double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+    print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                  V, density);
+    print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                  V, err);
+    print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                  V, exact0);
+    print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                  V, exactT);
+    double l1 = get_l1_norm(HX, HY, NX_1, NY_1, err);
+    double l_inf = get_l_inf_norm(NX_1, NY_1, err);
     printf("l1 %le\n", l1);
     printf("l_inf %le\n", l_inf);
     delete[] density;
@@ -452,12 +452,12 @@ TEST_F(FemFixture, test2_2) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 4;
             IDEAL_SQ_SIZE_Y = 4;
             CENTER_OFFSET_X = 0.3;
@@ -465,13 +465,13 @@ TEST_F(FemFixture, test2_2) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
             //TAU = 16. / pow(2., (i + 1));
             TAU = 1.2e-3;
             TIME_STEP_CNT = (int) pow(2., i);
             TIME_STEP_CNT = 20;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             print_params();
 
@@ -482,17 +482,17 @@ TEST_F(FemFixture, test2_2) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm(HX, HY, NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -541,12 +541,12 @@ TEST_F(FemFixture, test2_3) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
 
@@ -555,13 +555,13 @@ TEST_F(FemFixture, test2_3) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
             TAU = 16. / pow(2., (i + 1));
             TAU *= 1.e-3;
             //TIME_STEP_CNT = (int) pow(2., i);
             TIME_STEP_CNT = 1;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             print_params();
 
@@ -572,17 +572,17 @@ TEST_F(FemFixture, test2_3) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm(HX, HY, NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -634,12 +634,12 @@ TEST_F(FemFixture, test2_4) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             //IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             //IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
 
@@ -649,8 +649,8 @@ TEST_F(FemFixture, test2_4) {
 
             INTEGR_TYPE = 4;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
 //            TAU = HX;
             TAU = 0.001;
 
@@ -659,7 +659,7 @@ TEST_F(FemFixture, test2_4) {
             TIME_STEP_CNT = 1;
             //TIME_STEP_CNT = 1 + (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
 
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             print_params();
 
@@ -670,19 +670,19 @@ TEST_F(FemFixture, test2_4) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm_vec(NX_1, NY_1, err);
             printf("l1_err_vec %le \n", l1);
-            l1 = get_l1_norm_int_trapezoidal(HX, HY, OX_LEN, OY_LEN, err); // note! a loop boundary
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            l1 = get_l1_norm_int_trapezoidal(HX, HY, NX, NY, err); // note! a loop boundary
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1_err_tr %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -735,12 +735,12 @@ TEST_F(FemFixture, test2_5) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
 
@@ -749,14 +749,14 @@ TEST_F(FemFixture, test2_5) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
-            TAU = HX/2.;
+            U = 1.;
+            V = 1.;
+            TAU = HX / 2.;
             //TIME_STEP_CNT = (int) pow(2., i);
             //TIME_STEP_CNT = 1;
-            TIME_STEP_CNT = (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
+            TIME_STEP_CNT = (0.7 - CENTER_OFFSET_X) / TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
 
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             print_params();
 
@@ -767,17 +767,17 @@ TEST_F(FemFixture, test2_5) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm(HX, HY, NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -828,12 +828,12 @@ TEST_F(FemFixture, test2_6) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
 
@@ -842,14 +842,14 @@ TEST_F(FemFixture, test2_6) {
 
             INTEGR_TYPE = 3;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
-            TAU = HX/2.;
+            U = 1.;
+            V = 1.;
+            TAU = HX / 2.;
             //TIME_STEP_CNT = (int) pow(2., i);
             //TIME_STEP_CNT = 1;
-            TIME_STEP_CNT = (0.7-CENTER_OFFSET_X)/TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
+            TIME_STEP_CNT = (0.7 - CENTER_OFFSET_X) / TAU; // 4*2.5e-3 = 0.01 0.7-0.3=0.4/2.5e-3=160
 
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             print_params();
 
@@ -860,17 +860,17 @@ TEST_F(FemFixture, test2_6) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm(HX, HY, NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -919,12 +919,12 @@ TEST_F(FemFixture, test3_1) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
 
@@ -933,32 +933,32 @@ TEST_F(FemFixture, test3_1) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
             OMEGA = 1.;
             TAU = 2.5e-3;
 
             TIME_STEP_CNT = 1;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             init_boundary_arrays_and_cp();
 
-            int midIndexX = OX_LEN_1 / 2;
-            int midIndexY = OY_LEN_1 / 2;
-            for (int i = 0; i < OX_LEN_1; ++i) {
+            int midIndexX = NX_1 / 2;
+            int midIndexY = NY_1 / 2;
+            for (int i = 0; i < NX_1; ++i) {
                 if (i * HX + A < .5 && i > 0)
                     G1[i] = 1;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
+            for (int j = 0; j < NY_1; ++j) {
                 if (j * HY + C < .5 && j > 0)
                     G2[j] = 1;
             }
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A > .5 && i < OX_LEN_1 - 1)
+            for (int i = 0; i < NX_1; ++i) {
+                if (i * HX + A > .5 && i < NX_1 - 1)
                     G3[i] = 1;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
+            for (int j = 0; j < NY_1; ++j) {
+                if (j * HY + C > .5 && j > 0 && j < NX_1 - 1) {
                     G4[j] = 1;
                 }
             }
@@ -980,13 +980,13 @@ TEST_F(FemFixture, test3_1) {
             printf("midIndexX = %d\n", midIndexX);
             printf("midIndexY = %d\n", midIndexY);
             printf("G1\n");
-            print_vector(G1, OX_LEN_1);
+            print_vector(G1, NX_1);
             printf("G2\n");
-            print_vector(G2, OY_LEN_1);
+            print_vector(G2, NY_1);
             printf("G3\n");
-            print_vector(G3, OX_LEN_1);
+            print_vector(G3, NX_1);
             printf("G4\n");
-            print_vector(G4, OY_LEN_1);
+            print_vector(G4, NY_1);
 
             double *density = solve_3(tme);
             double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -995,18 +995,18 @@ TEST_F(FemFixture, test3_1) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
-            //           double l1 = get_l1_norm_int_middle(HX, HY, OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm_vec(NX_1, NY_1, err);
+            //           double l1 = get_l1_norm_int_middle(HX, HY, NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -1055,12 +1055,12 @@ TEST_F(FemFixture, test3_2) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
 
@@ -1069,13 +1069,13 @@ TEST_F(FemFixture, test3_2) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
             OMEGA = 1.;
             TAU = 2.5e-3;
 
             TIME_STEP_CNT = 50;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             double x0 = get_center_x();
             double y0 = get_center_y();
@@ -1084,14 +1084,14 @@ TEST_F(FemFixture, test3_2) {
             double *exactT = get_exact_solution_3(HX, HY, TAU * TIME_STEP_CNT);
             for (int j = 0; j < TIME_STEP_CNT; ++j) {
                 double *exact0 = get_exact_solution_3(HX, HY, j * TAU);
-                print_surface("exact", OX_LEN, OY_LEN, HX, HY, j, A, C, x0, y0, TAU, U_VELOCITY,
-                              V_VELOCITY, exact0);
+                print_surface("exact", NX, NY, HX, HY, j, A, C, x0, y0, TAU, U,
+                              V, exact0);
             }
 
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
 
             delete[] exact0;
@@ -1139,12 +1139,12 @@ TEST_F(FemFixture, test3_3) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 128 * (iter + 1);
             IDEAL_SQ_SIZE_Y = 128 * (iter + 1);
 
@@ -1153,34 +1153,34 @@ TEST_F(FemFixture, test3_3) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
             OMEGA = 1.;
 
             TAU = 16. / pow(2., (i + 1));
             TAU *= 1.e-3;
 
             TIME_STEP_CNT = (int) pow(2., i);
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             init_boundary_arrays_and_cp();
 
-            int midIndexX = OX_LEN_1 / 2;
-            int midIndexY = OY_LEN_1 / 2;
-            for (int i = 0; i < OX_LEN_1; ++i) {
+            int midIndexX = NX_1 / 2;
+            int midIndexY = NY_1 / 2;
+            for (int i = 0; i < NX_1; ++i) {
                 if (i * HX + A < .5 && i > 0)
                     G1[i] = 1;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
+            for (int j = 0; j < NY_1; ++j) {
                 if (j * HY + C < .5 && j > 0)
                     G2[j] = 1;
             }
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A > .5 && i < OX_LEN_1 - 1)
+            for (int i = 0; i < NX_1; ++i) {
+                if (i * HX + A > .5 && i < NX_1 - 1)
                     G3[i] = 1;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
+            for (int j = 0; j < NY_1; ++j) {
+                if (j * HY + C > .5 && j > 0 && j < NX_1 - 1) {
                     G4[j] = 1;
                 }
             }
@@ -1204,13 +1204,13 @@ TEST_F(FemFixture, test3_3) {
             printf("midIndexX = %d\n", midIndexX);
             printf("midIndexY = %d\n", midIndexY);
             printf("G1\n");
-            print_vector(G1, OX_LEN_1);
+            print_vector(G1, NX_1);
             printf("G2\n");
-            print_vector(G2, OY_LEN_1);
+            print_vector(G2, NY_1);
             printf("G3\n");
-            print_vector(G3, OX_LEN_1);
+            print_vector(G3, NX_1);
             printf("G4\n");
-            print_vector(G4, OY_LEN_1);
+            print_vector(G4, NY_1);
 
             double *density = solve_3(tme);
             double *err = calc_error_3(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -1219,17 +1219,17 @@ TEST_F(FemFixture, test3_3) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm(HX, HY, NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -1277,12 +1277,12 @@ TEST_F(FemFixture, test4_1) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 32 * (iter + 1);
             IDEAL_SQ_SIZE_Y = 32 * (iter + 1);
 
@@ -1291,25 +1291,25 @@ TEST_F(FemFixture, test4_1) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
 
             //TAU = 16. / pow(2., (i + 1));
             TAU = 1.e-3;
 
             //TIME_STEP_CNT = (int) pow(2., i);
             TIME_STEP_CNT = 2;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             init_boundary_arrays_and_cp();
 
-            int midIndexX = OX_LEN_1 / 2;
-            int midIndexY = OY_LEN_1 / 2;
-            for (int i = 1; i < OX_LEN; ++i) {
+            int midIndexX = NX_1 / 2;
+            int midIndexY = NY_1 / 2;
+            for (int i = 1; i < NX; ++i) {
                 G1[i] = 0;
                 G3[i] = 1;
             }
-            for (int j = 1; j < OY_LEN; ++j) {
+            for (int j = 1; j < NY; ++j) {
                 G2[j] = 1;
                 G4[j] = 0;
             }
@@ -1324,13 +1324,13 @@ TEST_F(FemFixture, test4_1) {
             printf("midIndexX = %d\n", midIndexX);
             printf("midIndexY = %d\n", midIndexY);
             printf("G1\n");
-            print_vector(G1, OX_LEN_1);
+            print_vector(G1, NX_1);
             printf("G2\n");
-            print_vector(G2, OY_LEN_1);
+            print_vector(G2, NY_1);
             printf("G3\n");
-            print_vector(G3, OX_LEN_1);
+            print_vector(G3, NX_1);
             printf("G4\n");
-            print_vector(G4, OY_LEN_1);
+            print_vector(G4, NY_1);
 
             double *density = solve_4(tme);
             double *err = calc_error_4(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -1339,17 +1339,17 @@ TEST_F(FemFixture, test4_1) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm(HX, HY, OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm(HX, HY, NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -1400,12 +1400,12 @@ TEST_F(FemFixture, test5_1) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 64;
             IDEAL_SQ_SIZE_Y = 64;
 
@@ -1414,33 +1414,33 @@ TEST_F(FemFixture, test5_1) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
             OMEGA = 1.;
             TAU = 1.2475e-3;
 
             TIME_STEP_CNT = 322;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             init_boundary_arrays_and_cp();
 
-            int midIndexX = OX_LEN_1 / 2;
-            int midIndexY = OY_LEN_1 / 2;
+            int midIndexX = NX_1 / 2;
+            int midIndexY = NY_1 / 2;
 
-            for (int i = 0; i < OX_LEN_1; ++i) {
+            for (int i = 0; i < NX_1; ++i) {
                 if (i * HX + A < .5 && i > 0)
                     G1[i] = 0;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
+            for (int j = 0; j < NY_1; ++j) {
                 if (j * HY + C < .5 && j > 0)
                     G2[j] = 0;
             }
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A > .5 && i < OX_LEN_1 - 1)
+            for (int i = 0; i < NX_1; ++i) {
+                if (i * HX + A > .5 && i < NX_1 - 1)
                     G3[i] = 0;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
+            for (int j = 0; j < NY_1; ++j) {
+                if (j * HY + C > .5 && j > 0 && j < NX_1 - 1) {
                     G4[j] = 0;
                 }
             }
@@ -1462,17 +1462,17 @@ TEST_F(FemFixture, test5_1) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm_vec(NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -1523,12 +1523,12 @@ TEST_F(FemFixture, test6_1) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 64;
             IDEAL_SQ_SIZE_Y = 64;
 
@@ -1537,33 +1537,33 @@ TEST_F(FemFixture, test6_1) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
             OMEGA = 1.;
             TAU = 1.2475e-3;
 
             TIME_STEP_CNT = 322;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             init_boundary_arrays_and_cp();
 
-            int midIndexX = OX_LEN_1 / 2;
-            int midIndexY = OY_LEN_1 / 2;
+            int midIndexX = NX_1 / 2;
+            int midIndexY = NY_1 / 2;
 
-            for (int i = 0; i < OX_LEN_1; ++i) {
+            for (int i = 0; i < NX_1; ++i) {
                 if (i * HX + A < .5 && i > 0)
                     G1[i] = 0;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
+            for (int j = 0; j < NY_1; ++j) {
                 if (j * HY + C < .5 && j > 0)
                     G2[j] = 1;
             }
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A > .5 && i < OX_LEN_1 - 1)
+            for (int i = 0; i < NX_1; ++i) {
+                if (i * HX + A > .5 && i < NX_1 - 1)
                     G3[i] = 1;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
+            for (int j = 0; j < NY_1; ++j) {
+                if (j * HY + C > .5 && j > 0 && j < NX_1 - 1) {
                     G4[j] = 0;
                 }
             }
@@ -1585,17 +1585,17 @@ TEST_F(FemFixture, test6_1) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm_vec(NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
@@ -1646,12 +1646,12 @@ TEST_F(FemFixture, test7_1) {
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 64;
             IDEAL_SQ_SIZE_Y = 64;
 
@@ -1660,33 +1660,33 @@ TEST_F(FemFixture, test7_1) {
 
             INTEGR_TYPE = 1;
 
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
             OMEGA = 1.;
-            TAU = 5.*HX;
+            TAU = 5. * HX;
 
             TIME_STEP_CNT = 270;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            XY = NX_1 * NY_1;
 
             init_boundary_arrays_and_cp();
 
-            int midIndexX = OX_LEN_1 / 2;
-            int midIndexY = OY_LEN_1 / 2;
+            int midIndexX = NX_1 / 2;
+            int midIndexY = NY_1 / 2;
 
-            for (int i = 0; i < OX_LEN_1; ++i) {
+            for (int i = 0; i < NX_1; ++i) {
                 if (i * HX + A < .5 && i > 0)
                     G1[i] = 1;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
+            for (int j = 0; j < NY_1; ++j) {
                 if (j * HY + C < .5 && j > 0)
                     G2[j] = 1;
             }
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A > .5 && i < OX_LEN_1 - 1)
+            for (int i = 0; i < NX_1; ++i) {
+                if (i * HX + A > .5 && i < NX_1 - 1)
                     G3[i] = 1;
             }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
+            for (int j = 0; j < NY_1; ++j) {
+                if (j * HY + C > .5 && j > 0 && j < NX_1 - 1) {
                     G4[j] = 1;
                 }
             }
@@ -1701,16 +1701,16 @@ TEST_F(FemFixture, test7_1) {
             printf("midIndexX = %d\n", midIndexX);
             printf("midIndexY = %d\n", midIndexY);
             printf("G1\n");
-            print_vector(G1, OX_LEN_1);
+            print_vector(G1, NX_1);
             printf("G2\n");
-            print_vector(G2, OY_LEN_1);
+            print_vector(G2, NY_1);
             printf("G3\n");
-            print_vector(G3, OX_LEN_1);
+            print_vector(G3, NX_1);
             printf("G4\n");
-            print_vector(G4, OY_LEN_1);
+            print_vector(G4, NY_1);
 
             double *exact0 = get_exact_solution_7(HX, HY, 0);
-            //print_matrix_to_file( OX_LEN_1, OY_LEN_1, exact0, "/home/jane/tmp.txt");
+            //print_matrix_to_file( NX_1, NY_1, exact0, "/home/jane/tmp.txt");
             double *exactT = get_exact_solution_7(HX, HY, TAU * TIME_STEP_CNT);
 
             double *density = solve_7(tme);
@@ -1718,17 +1718,17 @@ TEST_F(FemFixture, test7_1) {
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm_vec(NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
 
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
@@ -1777,34 +1777,34 @@ TEST_F(FemFixture, test8_1) {
         C = 0.;
         D = 1.;
 
-        OX_LEN = (int) d;
-        OY_LEN = (int) d;
-        OX_LEN_1 = OX_LEN + 1;
-        OY_LEN_1 = OY_LEN + 1;
-        XY_LEN = OX_LEN_1 * OY_LEN_1;
+        NX = (int) d;
+        NY = (int) d;
+        NX_1 = NX + 1;
+        NY_1 = NY + 1;
+        XY = NX_1 * NY_1;
 
         IDEAL_SQ_SIZE_X = 64;
         IDEAL_SQ_SIZE_Y = 64;
 
-        HX = (B - A) / OX_LEN;
-        HY = (D - C) / OY_LEN;
+        HX = (B - A) / NX;
+        HY = (D - C) / NY;
         TAU = 7e-4;
         TIME_STEP_CNT = 1;
 
         init_boundary_arrays_and_cp();
 
 
-        for (int i = 0; i < OX_LEN_1; ++i) {
-                G1[i] = 1;
+        for (int i = 0; i < NX_1; ++i) {
+            G1[i] = 1;
         }
-        for (int j = 0; j < OY_LEN_1; ++j) {
-                G2[j] = 1;
+        for (int j = 0; j < NY_1; ++j) {
+            G2[j] = 1;
         }
-        for (int i = 0; i < OX_LEN_1; ++i) {
-                G3[i] = 1;
+        for (int i = 0; i < NX_1; ++i) {
+            G3[i] = 1;
         }
-        for (int j = 0; j < OY_LEN_1; ++j) {
-                G4[j] = 0;
+        for (int j = 0; j < NY_1; ++j) {
+            G4[j] = 0;
         }
 
         CP00 = 0;
@@ -1815,13 +1815,13 @@ TEST_F(FemFixture, test8_1) {
         print_params();
         printf("rel = %le\n", HX / (-HY + 1.));
         printf("G1\n");
-        print_vector(G1, OX_LEN_1);
+        print_vector(G1, NX_1);
         printf("G2\n");
-        print_vector(G2, OY_LEN_1);
+        print_vector(G2, NY_1);
         printf("G3\n");
-        print_vector(G3, OX_LEN_1);
+        print_vector(G3, NX_1);
         printf("G4\n");
-        print_vector(G4, OY_LEN_1);
+        print_vector(G4, NY_1);
 
         double *density = solve_8(tme);
         double *err = calc_error_8(HX, HY, TAU * TIME_STEP_CNT, density);
@@ -1830,17 +1830,17 @@ TEST_F(FemFixture, test8_1) {
 
         double x0 = get_center_x();
         double y0 = get_center_y();
-        print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                      V_VELOCITY, density);
-        print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                      V_VELOCITY, err);
-        print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                      V_VELOCITY, exact0);
-        print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                      V_VELOCITY, exactT);
+        print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                      V, density);
+        print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                      V, err);
+        print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                      V, exact0);
+        print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                      V, exactT);
 
-        double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
-        double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+        double l1 = get_l1_norm_vec(NX_1, NY_1, err);
+        double l_inf = get_l_inf_norm(NX_1, NY_1, err);
 
         printf("l1 %le \n", l1);
         printf("l_inf %le\n", l_inf);
@@ -1891,86 +1891,84 @@ TEST_F(FemFixture, test9_1) {
             R_SQ = 0.099 * 0.099;
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
+            R_LVL = 2;
 
-            OX_LEN = (int) d;
-            OY_LEN = (int) d;
-            OX_LEN_1 = OX_LEN + 1;
-            OY_LEN_1 = OY_LEN + 1;
-            HX = (B - A) / OX_LEN;
-            HY = (D - C) / OY_LEN;
+            int sz = (int) d;
+            sz = sz * std::pow(3., R_LVL);
+
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 64;
             IDEAL_SQ_SIZE_Y = 64;
+
+
+            NX3 = sz;
+            NY3 = sz;
+            NX3_1 = NX3 + 1;
+            NY3_1 = NY3 + 1;
+            R = std::pow(3., R_LVL);
+
 
             CENTER_OFFSET_X = 0.3;
             CENTER_OFFSET_Y = 0.3;
 
-            INTEGR_TYPE = 1;
-
-            U_VELOCITY = 1.;
-            V_VELOCITY = 1.;
+            U = 1.;
+            V = 1.;
             OMEGA = 1.;
             TAU = 1.2475e-3;
 
-            TIME_STEP_CNT = 322;
-            XY_LEN = OX_LEN_1 * OY_LEN_1;
+            TIME_STEP_CNT = 1;
+            XY = NX_1 * NY_1;
 
             init_boundary_arrays_and_cp();
+            print_params();
 
-            int midIndexX = OX_LEN_1 / 2;
-            int midIndexY = OY_LEN_1 / 2;
-
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A < .5 && i > 0)
-                    G1[i] = 0;
-            }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C < .5 && j > 0)
-                    G2[j] = 0;
-            }
-            for (int i = 0; i < OX_LEN_1; ++i) {
-                if (i * HX + A > .5 && i < OX_LEN_1 - 1)
-                    G3[i] = 0;
-            }
-            for (int j = 0; j < OY_LEN_1; ++j) {
-                if (j * HY + C > .5 && j > 0 && j < OX_LEN_1 - 1) {
-                    G4[j] = 0;
+            int* grid = new int[XY];
+            int* gridPr = new int[XY];
+            for (int i = 0; i < NX3_1; ++i) {
+                for (int j = 0; j < NY3_1; ++j) {
+                    grid[NY_1 * i + j] = -1;
+                    gridPr[NY_1 * i + j] = -1;
                 }
             }
 
-            CP00 = 0;
-            CP10 = 0;
-            CP01 = 0;
-            CP11 = 0;
+            for (int i = 0; i < NX_1; ++i) {
+                for (int j = 0; j < NY_1; ++j) {
+                    grid[NY_1 * i * R + j * R] = 0;
+                    gridPr[NY_1 * i * R + j * R] = 0;
+                }
+            }
 
-            print_params();
-            printf("rel = %le\n", HX / (-HY + 1.));
-            printf("midIndexX = %d\n", midIndexX);
-            printf("midIndexY = %d\n", midIndexY);
-
-            double *density = solve_9(tme);
+            double *density = solve_9(tme, grid, gridPr);
             double *err = calc_error_9(HX, HY, TAU * TIME_STEP_CNT, density);
             double *exact0 = get_exact_solution_9(HX, HY, 0);
             double *exactT = get_exact_solution_9(HX, HY, TAU * TIME_STEP_CNT);
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, density);
-            print_surface("err", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, err);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, 0, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exact0);
-            print_surface("exact", OX_LEN, OY_LEN, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U_VELOCITY,
-                          V_VELOCITY, exactT);
+            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, density);
+            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
+                          V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+                          V, exactT);
 
-            double l1 = get_l1_norm_vec(OX_LEN_1, OY_LEN_1, err);
-            double l_inf = get_l_inf_norm(OX_LEN_1, OY_LEN_1, err);
+            double l1 = get_l1_norm_vec(NX_1, NY_1, err);
+            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
             printf("l1 %le \n", l1);
             printf("l_inf %le\n", l_inf);
             delete[] density;
             delete[] exact0;
             delete[] exactT;
             delete[] err;
+            delete[] grid;
+            delete[] gridPr;
         }
     }
 }

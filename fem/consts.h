@@ -6,11 +6,15 @@ extern double A;
 extern double B;
 extern double C;
 extern double D;
-extern int OX_LEN;
-extern int OY_LEN;
-extern int OX_LEN_1;
-extern int OY_LEN_1;
-extern int XY_LEN;
+extern int NX;
+extern int NY;
+extern int NX_1;
+extern int NY_1;
+extern int NX3;
+extern int NY3;
+extern int NX3_1;
+extern int NY3_1;
+extern int XY;
 extern double TAU;
 extern int TIME_STEP_CNT;
 extern int JAK_ITER_CNT;
@@ -19,8 +23,8 @@ extern double HY;
 extern double R_SQ; // radius of circle in second power
 extern double INN_DENSITY; // density inside circle
 extern double OUT_DENSITY; // density out of circle boundary
-extern double U_VELOCITY; // u velocity
-extern double V_VELOCITY; // v velocity
+extern double U; // u velocity
+extern double V; // v velocity
 extern double DBL_MIN_TRIM; // trim number to zero if it less than DBL_MIN_TRIM
 extern double RES_EPS; // EPS value for residual
 extern double EPS; // EPS value
@@ -38,5 +42,7 @@ extern int CP00; // corner point (0,0) - bottom left
 extern int CP10; // corner point (1,0) - bottom right
 extern int CP11; // corner point (1,1) - top right
 extern int CP01; // corner point (0,1) - top left
+extern int R_LVL; // max number of level of grids
+extern int R; // max number of level of grids
 
 #endif //FEM_CIRCLE_CONSTS_H

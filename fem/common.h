@@ -19,7 +19,7 @@ inline void get_coordinates_on_curr(
         double &x4, double &y4
 ) {
     // проверить условия вылета
-    if (ii > 0 && ii < OX_LEN && jj > 0 && jj < OY_LEN) {
+    if (ii > 0 && ii < NX && jj > 0 && jj < NY) {
         // p1 (x_{i-1/2}, y_{j-1/2})
         x1 = A + ii * HX - HX / 2.;
         y1 = C + jj * HY - HY / 2.;
@@ -37,8 +37,8 @@ inline void get_coordinates_on_curr(
             printf("1. Inner point, ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == OX_LEN && jj == 0) { // point (1,0)  omega_{i-1,j}
-        // p1 (x_{OX_LEN-1/2}, C)
+    else if (ii == NX && jj == 0) { // point (1,0)  omega_{i-1,j}
+        // p1 (x_{NX-1/2}, C)
         x1 = B - HX / 2.;
         y1 = C;
         // p2 (B, C)
@@ -47,7 +47,7 @@ inline void get_coordinates_on_curr(
         // p3 (B, y_{1/2})
         x3 = B;
         y3 = C + HY / 2.;
-        // p4 (x_{OX_LEN-1/2}, y_{1/2})
+        // p4 (x_{NX-1/2}, y_{1/2})
         x4 = B - HX / 2.;
         y4 = C + HY / 2.;
         if (x1 <= A || x1 >= B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 >= B
@@ -55,11 +55,11 @@ inline void get_coordinates_on_curr(
             printf("2. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == 0 && jj == OY_LEN) { // point (0,1)  omega_{i,j-1}
-        // p1 (A, y_{OY_LEN-1/2})
+    else if (ii == 0 && jj == NY) { // point (0,1)  omega_{i,j-1}
+        // p1 (A, y_{NY-1/2})
         x1 = A;
         y1 = D - HY / 2.;
-        // p2 (x_{1/2}, y_{OY_LEN-1/2})
+        // p2 (x_{1/2}, y_{NY-1/2})
         x2 = A + HX / 2.;
         y2 = D - HY / 2.;
         // p3 (x_{1/2}, D)
@@ -91,17 +91,17 @@ inline void get_coordinates_on_curr(
             printf("4. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == OX_LEN && jj == OY_LEN) { // point (1,1)  omega_{i-1,j-1}
-        // p1 (x_{OX_LEN-1/2}, y_{OY_LEN-1/2})
+    else if (ii == NX && jj == NY) { // point (1,1)  omega_{i-1,j-1}
+        // p1 (x_{NX-1/2}, y_{NY-1/2})
         x1 = B - HX / 2.;
         y1 = D - HY / 2.;
-        // p2 (B, y_{OY_LEN-1/2})
+        // p2 (B, y_{NY-1/2})
         x2 = B;
         y2 = D - HY / 2.;
         // p3 (B, D)
         x3 = B;
         y3 = D;
-        // p4 (x_{OX_LEN-1/2}, D)
+        // p4 (x_{NX-1/2}, D)
         x4 = B - HX / 2.;
         y4 = D;
         if (x1 <= A || x1 >= B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 >= B
@@ -109,7 +109,7 @@ inline void get_coordinates_on_curr(
             printf("5. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii > 0 && ii < OX_LEN && jj == 0) { // G1 -- bottom boundary
+    else if (ii > 0 && ii < NX && jj == 0) { // G1 -- bottom boundary
         // p1 (x_{i-1/2}, C)
         x1 = A + ii * HX - HX / 2.;
         y1 = C;
@@ -127,8 +127,8 @@ inline void get_coordinates_on_curr(
             printf("6. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == OX_LEN && jj > 0 && jj < OY_LEN) { // G2 -- right boundary
-        // p1 (x_{OX_LEN-1/2}, y_{j-1/2})
+    else if (ii == NX && jj > 0 && jj < NY) { // G2 -- right boundary
+        // p1 (x_{NX-1/2}, y_{j-1/2})
         x1 = B - HX / 2.;
         y1 = C + jj * HY - HY / 2.;
         // p2 (B, y_{j-1/2})
@@ -137,7 +137,7 @@ inline void get_coordinates_on_curr(
         // p3 (B, y_{j+1/2})
         x3 = B;
         y3 = C + jj * HY + HY / 2.;
-        // p4 (x_{OX_LEN-1/2}, y_{j+1/2})
+        // p4 (x_{NX-1/2}, y_{j+1/2})
         x4 = B - HX / 2.;
         y4 = C + jj * HY + HY / 2.;
         if (x1 <= A || x1 >= B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 >= B
@@ -145,11 +145,11 @@ inline void get_coordinates_on_curr(
             printf("7. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (jj == OY_LEN && ii > 0 && ii < OX_LEN) { // G3 -- top boundary
-        // p1 (x_{i-1/2}, y_{OY_LEN-1/2})
+    else if (jj == NY && ii > 0 && ii < NX) { // G3 -- top boundary
+        // p1 (x_{i-1/2}, y_{NY-1/2})
         x1 = A + ii * HX - HX / 2.;
         y1 = D - HY / 2.;
-        // p2 (x_{i+1/2}, y_{OY_LEN-1/2})
+        // p2 (x_{i+1/2}, y_{NY-1/2})
         x2 = A + ii * HX + HX / 2.;
         y2 = D - HY / 2.;
         //p3 (x_{i+1/2}, D)
@@ -163,7 +163,7 @@ inline void get_coordinates_on_curr(
             printf("8. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == 0 && jj > 0 && jj < OY_LEN) { // G4 -- left boundary
+    else if (ii == 0 && jj > 0 && jj < NY) { // G4 -- left boundary
         // p1 (A, y_{j-1/2})
         x1 = A;
         y1 = C + jj * HY - HY / 2.;
@@ -232,7 +232,7 @@ double *calc_error_8(double hx, double hy, double tt, double *solution);
 
 double *get_exact_solution_8(double hx, double hy, double t);
 
-double *solve_9(double &tme);
+double *solve_9(double &tme, int* grid, int* gridPr);
 
 double *calc_error_9(double hx, double hy, double tt, double *solution);
 
