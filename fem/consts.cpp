@@ -49,3 +49,4 @@ int CP11 = 0;
 int CP01 = 0;
 int R_LVL = 0;
 int R = 0;
+double EPS_GRID = 0.;

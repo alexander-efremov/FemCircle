@@ -44,5 +44,6 @@ extern int CP11; // corner point (1,1) - top right
 extern int CP01; // corner point (0,1) - top left
 extern int R_LVL; // max number of level of grids
 extern int R; // max number of level of grids
+extern int EPS_GRID; // epsilon shows that we have to refine grid
 
 #endif //FEM_CIRCLE_CONSTS_H

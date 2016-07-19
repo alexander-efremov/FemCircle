@@ -1904,7 +1904,7 @@ TEST_F(FemFixture, test9_1) {
             HY = (D - C) / NY;
             IDEAL_SQ_SIZE_X = 64;
             IDEAL_SQ_SIZE_Y = 64;
-
+            EPS_GRID = 0.5;
 
             NX3 = sz;
             NY3 = sz;
