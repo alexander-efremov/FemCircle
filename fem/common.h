@@ -16,168 +16,198 @@ inline void get_coordinates_on_curr(
         double &x1, double &y1,
         double &x2, double &y2,
         double &x3, double &y3,
+        double &x4, double &y4, double hx, double hy, int nx, int ny, double a, double b, double c, double d
+);
+
+inline void get_coordinates_on_curr(
+        int ii, int jj,
+        double &x1, double &y1,
+        double &x2, double &y2,
+        double &x3, double &y3,
         double &x4, double &y4
+)
+{
+    get_coordinates_on_curr(ii, jj, x1, y1, x2, y2, x3, y3, x4, y4, HX, HY, NX, NY, A, B, C, D);
+}
+
+inline void get_coordinates_on_curr(
+        int ii, int jj,
+        double &x1, double &y1,
+        double &x2, double &y2,
+        double &x3, double &y3,
+        double &x4, double &y4, double hx, double hy, double nx, double ny
+)
+{
+    get_coordinates_on_curr(ii, jj, x1, y1, x2, y2, x3, y3, x4, y4, hx, hy, nx, ny, A, B, C, D);
+}
+
+inline void get_coordinates_on_curr(
+        int ii, int jj,
+        double &x1, double &y1,
+        double &x2, double &y2,
+        double &x3, double &y3,
+        double &x4, double &y4, double hx, double hy, int nx, int ny, double a, double b, double c, double d
 ) {
     // проверить условия вылета
-    if (ii > 0 && ii < NX && jj > 0 && jj < NY) {
+    if (ii > 0 && ii < nx && jj > 0 && jj < ny) {
         // p1 (x_{i-1/2}, y_{j-1/2})
-        x1 = A + ii * HX - HX / 2.;
-        y1 = C + jj * HY - HY / 2.;
+        x1 = a + ii * hx - hx / 2.;
+        y1 = c + jj * hy - hy / 2.;
         // p2 (x_{i+1/2}, y_{j-1/2})
-        x2 = A + ii * HX + HX / 2.;
-        y2 = C + jj * HY - HY / 2.;
+        x2 = a + ii * hx + hx / 2.;
+        y2 = c + jj * hy - hy / 2.;
         // p3 (x_{i+1/2}, y_{j+1/2})
-        x3 = A + ii * HX + HX / 2.;
-        y3 = C + jj * HY + HY / 2.;
+        x3 = a + ii * hx + hx / 2.;
+        y3 = c + jj * hy + hy / 2.;
         // p4 (x_{i-1/2}, y_{j+1/2})
-        x4 = A + ii * HX - HX / 2.;
-        y4 = C + jj * HY + HY / 2.;
-        if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
-            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        x4 = a + ii * hx - hx / 2.;
+        y4 = c + jj * hy + hy / 2.;
+        if (x1 <= a || x1 >= b || x2 <= a || x2 >= b || x3 <= a || x3 >= b || x4 <= a || x4 >= b
+            || y1 <= c || y1 >= d || y2 <= c || y2 >= d || y3 <= c || y3 >= d || y4 <= c || y4 >= d)
             printf("1. Inner point, ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == NX && jj == 0) { // point (1,0)  omega_{i-1,j}
+    else if (ii == nx && jj == 0) { // point (1,0)  omega_{i-1,j}
         // p1 (x_{NX-1/2}, C)
-        x1 = B - HX / 2.;
-        y1 = C;
+        x1 = b - hx / 2.;
+        y1 = c;
         // p2 (B, C)
-        x2 = B;
-        y2 = C;
+        x2 = b;
+        y2 = c;
         // p3 (B, y_{1/2})
-        x3 = B;
-        y3 = C + HY / 2.;
+        x3 = b;
+        y3 = c + hy / 2.;
         // p4 (x_{NX-1/2}, y_{1/2})
-        x4 = B - HX / 2.;
-        y4 = C + HY / 2.;
-        if (x1 <= A || x1 >= B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 >= B
-            || y1 < C || y1 >= D || y2 < C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        x4 = b - hx / 2.;
+        y4 = c + hy / 2.;
+        if (x1 <= a || x1 >= b || x2 <= a || x2 > b || x3 <= a || x3 > b || x4 <= a || x4 >= b
+            || y1 < c || y1 >= d || y2 < c || y2 >= d || y3 <= c || y3 >= d || y4 <= c || y4 >= d)
             printf("2. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == 0 && jj == NY) { // point (0,1)  omega_{i,j-1}
+    else if (ii == 0 && jj == ny) { // point (0,1)  omega_{i,j-1}
         // p1 (A, y_{NY-1/2})
-        x1 = A;
-        y1 = D - HY / 2.;
+        x1 = a;
+        y1 = d - hy / 2.;
         // p2 (x_{1/2}, y_{NY-1/2})
-        x2 = A + HX / 2.;
-        y2 = D - HY / 2.;
+        x2 = a + hx / 2.;
+        y2 = d - hy / 2.;
         // p3 (x_{1/2}, D)
-        x3 = A + HX / 2.;
-        y3 = D;
+        x3 = a + hx / 2.;
+        y3 = d;
         // p4 (A, D)
-        x4 = A;
-        y4 = D;
-        if (x1 < A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 < A || x4 >= B
-            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 > D || y4 <= C || y4 > D)
+        x4 = a;
+        y4 = d;
+        if (x1 < a || x1 >= b || x2 <= a || x2 >= b || x3 <= a || x3 >= b || x4 < a || x4 >= b
+            || y1 <= c || y1 >= d || y2 <= c || y2 >= d || y3 <= c || y3 > d || y4 <= c || y4 > d)
             printf("3. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
     else if (ii == 0 && jj == 0) { // point (0,0)  omega_{i,j}
         // p1 (A, C)
-        x1 = A;
-        y1 = C;
+        x1 = a;
+        y1 = c;
         // p2 (x_{1/2}, C)
-        x2 = A + HX / 2.;
-        y2 = C;
+        x2 = a + hx / 2.;
+        y2 = c;
         // p3 (x_{1/2}, y_{1/2})
-        x3 = A + HX / 2.;
-        y3 = C + HY / 2.;
+        x3 = a + hx / 2.;
+        y3 = c + hy / 2.;
         // p4 (A, y_{1/2})
-        x4 = A;
-        y4 = C + HY / 2.;
-        if (x1 < A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 < A || x4 >= B
-            || y1 < C || y1 >= D || y2 < C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        x4 = a;
+        y4 = c + hy / 2.;
+        if (x1 < a || x1 >= b || x2 <= a || x2 >= b || x3 <= a || x3 >= b || x4 < a || x4 >= b
+            || y1 < c || y1 >= d || y2 < c || y2 >= d || y3 <= c || y3 >= d || y4 <= c || y4 >= d)
             printf("4. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == NX && jj == NY) { // point (1,1)  omega_{i-1,j-1}
+    else if (ii == nx && jj == ny) { // point (1,1)  omega_{i-1,j-1}
         // p1 (x_{NX-1/2}, y_{NY-1/2})
-        x1 = B - HX / 2.;
-        y1 = D - HY / 2.;
+        x1 = b - hx / 2.;
+        y1 = d - hy / 2.;
         // p2 (B, y_{NY-1/2})
-        x2 = B;
-        y2 = D - HY / 2.;
+        x2 = b;
+        y2 = d - hy / 2.;
         // p3 (B, D)
-        x3 = B;
-        y3 = D;
+        x3 = b;
+        y3 = d;
         // p4 (x_{NX-1/2}, D)
-        x4 = B - HX / 2.;
-        y4 = D;
-        if (x1 <= A || x1 >= B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 >= B
-            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 > D || y4 <= C || y4 > D)
+        x4 = b - hx / 2.;
+        y4 = d;
+        if (x1 <= a || x1 >= b || x2 <= a || x2 > b || x3 <= a || x3 > b || x4 <= a || x4 >= b
+            || y1 <= c || y1 >= d || y2 <= c || y2 >= d || y3 <= c || y3 > d || y4 <= c || y4 > d)
             printf("5. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii > 0 && ii < NX && jj == 0) { // G1 -- bottom boundary
+    else if (ii > 0 && ii < nx && jj == 0) { // G1 -- bottom boundary
         // p1 (x_{i-1/2}, C)
-        x1 = A + ii * HX - HX / 2.;
-        y1 = C;
+        x1 = a + ii * hx - hx / 2.;
+        y1 = c;
         // p2 (x_{i+1/2}, C)
-        x2 = A + ii * HX + HX / 2.;
-        y2 = C;
+        x2 = a + ii * hx + hx / 2.;
+        y2 = c;
         // p3 (x_{i+1/2}, y_{1/2})
-        x3 = A + ii * HX + HX / 2.;
-        y3 = C + HY / 2.;
+        x3 = a + ii * hx + hx / 2.;
+        y3 = c + hy / 2.;
         // p4 (x_{i-1/2}, y_{1/2})
-        x4 = A + ii * HX - HX / 2.;
-        y4 = C + HY / 2.;
-        if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
-            || y1 < C || y1 >= D || y2 < C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        x4 = a + ii * hx - hx / 2.;
+        y4 = c + hy / 2.;
+        if (x1 <= a || x1 >= b || x2 <= a || x2 >= b || x3 <= a || x3 >= b || x4 <= a || x4 >= b
+            || y1 < c || y1 >= d || y2 < c || y2 >= d || y3 <= c || y3 >= d || y4 <= c || y4 >= d)
             printf("6. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == NX && jj > 0 && jj < NY) { // G2 -- right boundary
+    else if (ii == nx && jj > 0 && jj < ny) { // G2 -- right boundary
         // p1 (x_{NX-1/2}, y_{j-1/2})
-        x1 = B - HX / 2.;
-        y1 = C + jj * HY - HY / 2.;
+        x1 = b - hx / 2.;
+        y1 = c + jj * hy - hy / 2.;
         // p2 (B, y_{j-1/2})
-        x2 = B;
-        y2 = C + jj * HY - HY / 2.;
+        x2 = b;
+        y2 = c + jj * hy - hy / 2.;
         // p3 (B, y_{j+1/2})
-        x3 = B;
-        y3 = C + jj * HY + HY / 2.;
+        x3 = b;
+        y3 = c + jj * hy + hy / 2.;
         // p4 (x_{NX-1/2}, y_{j+1/2})
-        x4 = B - HX / 2.;
-        y4 = C + jj * HY + HY / 2.;
-        if (x1 <= A || x1 >= B || x2 <= A || x2 > B || x3 <= A || x3 > B || x4 <= A || x4 >= B
-            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        x4 = b - hx / 2.;
+        y4 = c + jj * hy + hy / 2.;
+        if (x1 <= a || x1 >= b || x2 <= a || x2 > b || x3 <= a || x3 > b || x4 <= a || x4 >= b
+            || y1 <= c || y1 >= d || y2 <= c || y2 >= d || y3 <= c || y3 >= d || y4 <= c || y4 >= d)
             printf("7. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (jj == NY && ii > 0 && ii < NX) { // G3 -- top boundary
+    else if (jj == ny && ii > 0 && ii < nx) { // G3 -- top boundary
         // p1 (x_{i-1/2}, y_{NY-1/2})
-        x1 = A + ii * HX - HX / 2.;
-        y1 = D - HY / 2.;
+        x1 = a + ii * hx - hx / 2.;
+        y1 = d - hy / 2.;
         // p2 (x_{i+1/2}, y_{NY-1/2})
-        x2 = A + ii * HX + HX / 2.;
-        y2 = D - HY / 2.;
+        x2 = a + ii * hx + hx / 2.;
+        y2 = d - hy / 2.;
         //p3 (x_{i+1/2}, D)
-        x3 = A + ii * HX + HX / 2.;
-        y3 = D;
+        x3 = a + ii * hx + hx / 2.;
+        y3 = d;
         //p4 (x_{i-1/2}, D)
-        x4 = A + ii * HX - HX / 2.;
-        y4 = D;
-        if (x1 <= A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 <= A || x4 >= B
-            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 > D || y4 <= C || y4 > D)
+        x4 = a + ii * hx - hx / 2.;
+        y4 = d;
+        if (x1 <= a || x1 >= b || x2 <= a || x2 >= b || x3 <= a || x3 >= b || x4 <= a || x4 >= b
+            || y1 <= c || y1 >= d || y2 <= c || y2 >= d || y3 <= c || y3 > d || y4 <= c || y4 > d)
             printf("8. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    else if (ii == 0 && jj > 0 && jj < NY) { // G4 -- left boundary
+    else if (ii == 0 && jj > 0 && jj < ny) { // G4 -- left boundary
         // p1 (A, y_{j-1/2})
-        x1 = A;
-        y1 = C + jj * HY - HY / 2.;
+        x1 = a;
+        y1 = c + jj * hy - hy / 2.;
         // p2 (x_{1/2}, y_{j-1/2})
-        x2 = A + HX / 2.;
-        y2 = C + jj * HY - HY / 2.;
+        x2 = a + hx / 2.;
+        y2 = c + jj * hy - hy / 2.;
         //p3 (x_{1/2}, y_{j+1/2})
-        x3 = A + HX / 2.;
-        y3 = C + jj * HY + HY / 2.;
+        x3 = a + hx / 2.;
+        y3 = c + jj * hy + hy / 2.;
         //p4 (A, y_{j+1/2})
-        x4 = A;
-        y4 = C + jj * HY + HY / 2.;
-        if (x1 < A || x1 >= B || x2 <= A || x2 >= B || x3 <= A || x3 >= B || x4 < A || x4 >= B
-            || y1 <= C || y1 >= D || y2 <= C || y2 >= D || y3 <= C || y3 >= D || y4 <= C || y4 >= D)
+        x4 = a;
+        y4 = c + jj * hy + hy / 2.;
+        if (x1 < a || x1 >= b || x2 <= a || x2 >= b || x3 <= a || x3 >= b || x4 < a || x4 >= b
+            || y1 <= c || y1 >= d || y2 <= c || y2 >= d || y3 <= c || y3 >= d || y4 <= c || y4 >= d)
             printf("9. ERROR INDEX i=%d j=%d : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
                            "x4=%.8le * y4%.8le\n ", ii, jj, x1, y1, x2, y2, x3, y3, x4, y4);
     }

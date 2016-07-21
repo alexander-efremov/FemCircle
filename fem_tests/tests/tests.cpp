@@ -1893,6 +1893,8 @@ TEST_F(FemFixture, test9_1) {
             OUT_DENSITY = 0.;
             R_LVL = 2;
 
+           // d=5.;
+
             int sz = (int) d;
             sz = sz * std::pow(3., R_LVL);
 
@@ -1920,7 +1922,7 @@ TEST_F(FemFixture, test9_1) {
             U = 1.;
             V = 1.;
             OMEGA = 1.;
-            TAU = 1.2475e-3;
+            TAU = 4.9e-3;
 
             TIME_STEP_CNT = 1;
             XY = NX3_1 * NY3_1;
