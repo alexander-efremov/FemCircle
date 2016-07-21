@@ -234,8 +234,8 @@ double *get_exact_solution_8(double hx, double hy, double t);
 
 double *solve_9(double &tme, int* grid, int* gridPr);
 
-double *calc_error_9(double hx, double hy, double tt, double *solution);
+double *calc_error_9(double hx, double hy, double tt, double *solution, int nx, int ny);
 
-double *get_exact_solution_9(double hx, double hy, double t);
+double *get_exact_solution_9(double hx, double hy, double t, int nx, int ny);
 
 #endif //FEM_CIRCLE_COMMON_H

@@ -29,7 +29,7 @@ public:
 };
 
 void print_params() {
-    printf("\nOX_LENxOY_LEN = %dx%d\n", NX, NY);
+    printf("\nNXxNY = %dx%d\n", NX, NY);
     printf("(U, V) = (%le, %le)\n", U, V);
     printf("(HX, HY) = (%le, %le)\n", HX, HY);
     printf("TAU = %le\n", TAU);
@@ -1860,7 +1860,7 @@ TEST_F(FemFixture, test9_1) {
     for (int iter = 0; iter < 1; ++iter) {
 
         double d = 0;
-        for (int i = 3; i < 4; ++i) {
+        for (int i = 1; i < 2; ++i) {
             switch (i) {
                 case 0:
                     d = 50.;
@@ -1905,6 +1905,7 @@ TEST_F(FemFixture, test9_1) {
             IDEAL_SQ_SIZE_X = 64;
             IDEAL_SQ_SIZE_Y = 64;
             EPS_GRID = 0.5;
+            RES_EPS = 1.e-9;
 
             NX3 = sz;
             NY3 = sz;
@@ -1922,51 +1923,45 @@ TEST_F(FemFixture, test9_1) {
             TAU = 1.2475e-3;
 
             TIME_STEP_CNT = 1;
-            XY = NX_1 * NY_1;
+            XY = NX3_1 * NY3_1;
 
             init_boundary_arrays_and_cp();
             print_params();
+            printf("NX3 = %d\n", NX3);
+            printf("NX3_1 = %d\n", NX3_1);
+            printf("NY3 = %d\n", NY3);
+            printf("NY3_1 = %d\n", NY3_1);
+            printf("XY = %d\n", XY);
+            printf("R_LVL = %d\n", R_LVL);
+            printf("R = %d\n", R);
+            printf("EPS_GRID = %e\n", EPS_GRID);
+            printf("RES_EPS = %e\n", RES_EPS);
 
             int* grid = new int[XY];
             int* gridPr = new int[XY];
-            for (int i = 0; i < NX3_1; ++i) {
-                for (int j = 0; j < NY3_1; ++j) {
-                    grid[NY_1 * i + j] = -1;
-                    gridPr[NY_1 * i + j] = -1;
-                }
-            }
-
-            for (int i = 0; i < NX_1; ++i) {
-                for (int j = 0; j < NY_1; ++j) {
-                    grid[NY_1 * i * R + j * R] = 0;
-                    gridPr[NY_1 * i * R + j * R] = 0;
-                }
-            }
 
             double *density = solve_9(tme, grid, gridPr);
-            double *err = calc_error_9(HX, HY, TAU * TIME_STEP_CNT, density);
-            double *exact0 = get_exact_solution_9(HX, HY, 0);
-            double *exactT = get_exact_solution_9(HX, HY, TAU * TIME_STEP_CNT);
+//            double *err = calc_error_9(HX, HY, TAU * TIME_STEP_CNT, density, NX3_1, NY3_1);
+            double *exact0 = get_exact_solution_9(HX, HY, 0, NX_1, NY_1);
+            double *exactT = get_exact_solution_9(HX, HY, TAU * TIME_STEP_CNT, NX_1, NY_1);
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-            print_surface("rho", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
-                          V, density);
-            print_surface("err", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
-                          V, err);
-            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U,
-                          V, exact0);
-            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
-                          V, exactT);
+//            print_surface("rho", NX3, NY3, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+//                          V, density);
+//            print_surface("err", NX3, NY3, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
+//                          V, err);
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U, V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U, V, exactT);
 
-            double l1 = get_l1_norm_vec(NX_1, NY_1, err);
-            double l_inf = get_l_inf_norm(NX_1, NY_1, err);
-            printf("l1 %le \n", l1);
-            printf("l_inf %le\n", l_inf);
-            delete[] density;
+//            double l1 = get_l1_norm_vec(NX3_1, NY3_1, err);
+//            double l_inf = get_l_inf_norm(NX3_1, NY3_1, err);
+//            printf("l1 %le \n", l1);
+//            printf("l_inf %le\n", l_inf);
+//            delete[] density;
             delete[] exact0;
             delete[] exactT;
-            delete[] err;
+//            delete[] err;
             delete[] grid;
             delete[] gridPr;
         }
