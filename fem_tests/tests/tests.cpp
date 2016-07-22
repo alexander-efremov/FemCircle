@@ -1924,7 +1924,7 @@ TEST_F(FemFixture, test9_1) {
             OMEGA = 1.;
             TAU = 4.9e-3;
 
-            TIME_STEP_CNT = 1;
+            TIME_STEP_CNT = 10;
             XY = NX3_1 * NY3_1;
 
             init_boundary_arrays_and_cp();
