@@ -1891,12 +1891,12 @@ TEST_F(FemFixture, test9_1) {
             R_SQ = 0.099 * 0.099;
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
-            R_LVL = 2;
+            R_LVL = 1;
 
            // d=5.;
 
             int sz = (int) d;
-            sz = sz * std::pow(3., R_LVL);
+            sz = sz * ((int) std::pow(3., R_LVL));
 
             NX = (int) d;
             NY = (int) d;
@@ -1913,7 +1913,7 @@ TEST_F(FemFixture, test9_1) {
             NY3 = sz;
             NX3_1 = NX3 + 1;
             NY3_1 = NY3 + 1;
-            R = std::pow(3., R_LVL);
+            R = (int) std::pow(3., R_LVL);
 
 
             CENTER_OFFSET_X = 0.3;
