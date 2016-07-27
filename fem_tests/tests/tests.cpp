@@ -1893,7 +1893,7 @@ TEST_F(FemFixture, test9_1) {
             OUT_DENSITY = 0.;
             R_LVL = 1;
 
-           // d=5.;
+            // d=5.;
 
             int sz = (int) d;
             sz = sz * ((int) std::pow(3., R_LVL));
@@ -1914,7 +1914,8 @@ TEST_F(FemFixture, test9_1) {
             NX3_1 = NX3 + 1;
             NY3_1 = NY3 + 1;
             R = (int) std::pow(3., R_LVL);
-
+            HX_SMALLEST = (B - A) / (NX * std::pow(3., R_LVL));
+            HY_SMALLEST = (D - C) / (NY * std::pow(3., R_LVL));
 
             CENTER_OFFSET_X = 0.3;
             CENTER_OFFSET_Y = 0.3;
@@ -1924,7 +1925,7 @@ TEST_F(FemFixture, test9_1) {
             OMEGA = 1.;
             TAU = 4.9e-3;
 
-            TIME_STEP_CNT = 1;
+            TIME_STEP_CNT = 10;
             XY = NX3_1 * NY3_1;
 
             init_boundary_arrays_and_cp();
@@ -1939,8 +1940,8 @@ TEST_F(FemFixture, test9_1) {
             printf("EPS_GRID = %e\n", EPS_GRID);
             printf("RES_EPS = %e\n", RES_EPS);
 
-            int* grid = new int[XY];
-            int* gridPr = new int[XY];
+            int *grid = new int[XY];
+            int *gridPr = new int[XY];
 
             double *density = solve_9(tme, grid, gridPr);
 //            double *err = calc_error_9(HX, HY, TAU * TIME_STEP_CNT, density, NX3_1, NY3_1);

@@ -208,6 +208,28 @@ inline void get_inner_area(int ii, int jj, double &x1, double &y1, double &x2, d
     }
 }
 
+inline void get_inner_area(double x, double y, double &x1, double &y1, double &x2, double &y2, double &x3, double &y3, double &x4,
+                    double &y4, double hx, double hy, double hx_add, double hy_add, double a, double b, double c,
+                    double d) {
+    // p1 (x_{i-1/2}, y_{j-1/2})
+    x1 = x - hx_add / 2.; // a + ii * hx_small - hx_lev / 2.
+    y1 = y - hy_add / 2.;
+    // p2 (x_{i+1/2}, y_{j-1/2})
+    x2 = x + hx_add / 2.;
+    y2 = y - hy_add / 2.;
+    // p3 (x_{i+1/2}, y_{j+1/2})
+    x3 = x + hx_add / 2.;
+    y3 = y + hy_add / 2.;
+    // p4 (x_{i-1/2}, y_{j+1/2})
+    x4 = x - hx_add / 2.;
+    y4 = y + hy_add / 2.;
+    if (x1 <= a || x1 >= b || x2 <= a || x2 >= b || x3 <= a || x3 >= b || x4 <= a || x4 >= b
+        || y1 <= c || y1 >= d || y2 <= c || y2 >= d || y3 <= c || y3 >= d || y4 <= c || y4 >= d) {
+        printf("1. Inner point, ERROR INDEX x=%.8le y=%.8le : x1=%.8le * y1=%.8le ** x2=%.8le * y2=%.8le ** x3=%.8le * y3=%.8le ** "
+                       "x4=%.8le * y4=%.8le\n ", x, y, x1, y1, x2, y2, x3, y3, x4, y4);
+    }
+}
+
 inline void get_coordinates_on_curr(
         int ii, int jj,
         double &x1, double &y1,
