@@ -1891,9 +1891,9 @@ TEST_F(FemFixture, test9_1) {
             R_SQ = 0.099 * 0.099;
             INN_DENSITY = 1.;
             OUT_DENSITY = 0.;
-            R_LVL = 1;
+            R_LVL = 2;
 
-            // d=5.;
+            d = 100.;
 
             int sz = (int) d;
             sz = sz * ((int) std::pow(3., R_LVL));
@@ -1925,7 +1925,7 @@ TEST_F(FemFixture, test9_1) {
             OMEGA = 1.;
             TAU = 1.e-3;
 
-            TIME_STEP_CNT = 2;
+            TIME_STEP_CNT = 20;
             XY = NX3_1 * NY3_1;
 
             init_boundary_arrays_and_cp();
