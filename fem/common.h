@@ -209,7 +209,7 @@ inline void get_inner_area(int ii, int jj, double &x1, double &y1, double &x2, d
 }
 
 inline void get_inner_area(double x, double y, double &x1, double &y1, double &x2, double &y2, double &x3, double &y3, double &x4,
-                    double &y4, double hx, double hy, double hx_add, double hy_add, double a, double b, double c,
+                    double &y4, double hx_add, double hy_add, double a, double b, double c,
                     double d) {
     // p1 (x_{i-1/2}, y_{j-1/2})
     x1 = x - hx_add / 2.; // a + ii * hx_small - hx_lev / 2.
