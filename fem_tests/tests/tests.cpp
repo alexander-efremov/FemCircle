@@ -2036,9 +2036,10 @@ TEST_F(FemFixture, test10_1) {
             U = 1.;
             V = 1.;
             OMEGA = 1.;
-            TAU = 1.e-3;
+//            TAU = 1.e-3;
+            TAU = HX;
 
-            TIME_STEP_CNT = 1;
+            TIME_STEP_CNT = 100;
             XY = NX3_1 * NY3_1;
 
             init_boundary_arrays_and_cp();
@@ -2051,33 +2052,22 @@ TEST_F(FemFixture, test10_1) {
             printf("R_LVL = %d\n", R_LVL);
             printf("R = %d\n", R);
             printf("EPS_GRID = %e\n", EPS_GRID);
-            printf("RES_EPS = %e\n", RES_EPS);
 
             int *grid = new int[XY];
             int *gridPr = new int[XY];
 
-           // double *density = solve_10(tme, grid, gridPr);
-//            double *err = calc_error_10(HX, HY, TAU * TIME_STEP_CNT, density, NX3_1, NY3_1);
+            double *density = solve_10(tme, grid, gridPr);
             double *exact0 = get_exact_solution_10(HX, HY, 0, NX_1, NY_1);
             double *exactT = get_exact_solution_10(HX, HY, TAU * TIME_STEP_CNT, NX_1, NY_1);
 
             double x0 = get_center_x();
             double y0 = get_center_y();
-//            print_surface("rho", NX3, NY3, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
-//                          V, density);
-//            print_surface("err", NX3, NY3, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U,
-//                          V, err);
             print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U, V, exact0);
             print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U, V, exactT);
 
-//            double l1 = get_l1_norm_vec(NX3_1, NY3_1, err);
-//            double l_inf = get_l_inf_norm(NX3_1, NY3_1, err);
-//            printf("l1 %le \n", l1);
-//            printf("l_inf %le\n", l_inf);
-//            delete[] density;
+            delete[] density;
             delete[] exact0;
             delete[] exactT;
-//            delete[] err;
             delete[] grid;
             delete[] gridPr;
         }
