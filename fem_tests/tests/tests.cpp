@@ -1710,7 +1710,6 @@ TEST_F(FemFixture, test7_1) {
             print_vector(G4, NY_1);
 
             double *exact0 = get_exact_solution_7(HX, HY, 0);
-            //print_matrix_to_file( NX_1, NY_1, exact0, "/home/jane/tmp.txt");
             double *exactT = get_exact_solution_7(HX, HY, TAU * TIME_STEP_CNT);
 
             double *density = solve_7(tme);
@@ -1958,7 +1957,7 @@ TEST_F(FemFixture, test9_1) {
 //            double l_inf = get_l_inf_norm(NX3_1, NY3_1, err);
 //            printf("l1 %le \n", l1);
 //            printf("l_inf %le\n", l_inf);
-//            delete[] density;
+            delete[] density;
             delete[] exact0;
             delete[] exactT;
 //            delete[] err;
@@ -2031,15 +2030,15 @@ TEST_F(FemFixture, test10_1) {
             HX_SMALLEST = (B - A) / (NX * std::pow(3., R_LVL));
             HY_SMALLEST = (D - C) / (NY * std::pow(3., R_LVL));
 
-            CENTER_OFFSET_X = 0.3;
-            CENTER_OFFSET_Y = 0.3;
+            CENTER_OFFSET_X = 0.5;
+            CENTER_OFFSET_Y = 0.5;
 
             U = 1.;
             V = 1.;
             OMEGA = 1.;
             TAU = 1.e-3;
 
-            TIME_STEP_CNT = 20;
+            TIME_STEP_CNT = 1;
             XY = NX3_1 * NY3_1;
 
             init_boundary_arrays_and_cp();
@@ -2057,7 +2056,7 @@ TEST_F(FemFixture, test10_1) {
             int *grid = new int[XY];
             int *gridPr = new int[XY];
 
-            double *density = solve_10(tme, grid, gridPr);
+           // double *density = solve_10(tme, grid, gridPr);
 //            double *err = calc_error_10(HX, HY, TAU * TIME_STEP_CNT, density, NX3_1, NY3_1);
             double *exact0 = get_exact_solution_10(HX, HY, 0, NX_1, NY_1);
             double *exactT = get_exact_solution_10(HX, HY, TAU * TIME_STEP_CNT, NX_1, NY_1);
