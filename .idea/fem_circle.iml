@@ -11,11 +11,12 @@
       <sourceFolder url="file://$MODULE_DIR$/fem_tests/tests/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem_tests/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/solver8.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/common.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/solver7.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/consts.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/consts.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/fem/solver8.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fem/solver10.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/utils.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/solver9.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/fem/timer.h" isTestSource="false" />

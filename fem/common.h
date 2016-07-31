@@ -341,4 +341,10 @@ double *calc_error_9(double hx, double hy, double tt, double *solution, int nx, 
 
 double *get_exact_solution_9(double hx, double hy, double t, int nx, int ny);
 
+double *solve_10(double &tme, int *grid, int *gridPr);
+
+double *calc_error_10(double hx, double hy, double tt, double *solution, int nx, int ny);
+
+double *get_exact_solution_10(double hx, double hy, double t, int nx, int ny);
+
 #endif //FEM_CIRCLE_COMMON_H
