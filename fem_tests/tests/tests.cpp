@@ -1941,8 +1941,10 @@ TEST_F(FemFixture, test9_1) {
 
             double *density = solve_9(tme, grid, gridPr);
 //            double *err = calc_error_9(HX, HY, TAU * TIME_STEP_CNT, density, NX3_1, NY3_1);
-            double *exact0 = get_exact_solution_9(HX, HY, 0, NX_1, NY_1);
-            double *exactT = get_exact_solution_9(HX, HY, TAU * TIME_STEP_CNT, NX_1, NY_1);
+
+            double *exact0 = get_exact_solution_9(grid, 0, NX3_1, NY3_1, HX_SMALLEST, HY_SMALLEST, R_LVL);
+            double *exactT = get_exact_solution_9(grid, TAU * TIME_STEP_CNT, NX3_1, NY3_1, HX_SMALLEST, HY_SMALLEST,
+                                                  R_LVL);
 
             double x0 = get_center_x();
             double y0 = get_center_y();
@@ -2037,7 +2039,7 @@ TEST_F(FemFixture, test10_1) {
             V = 1.;
             OMEGA = 1.;
 //            TAU = 1.e-3;
-            TAU = HX;
+            TAU = HX_SMALLEST / 2.01;
 
             TIME_STEP_CNT = 100;
             XY = NX3_1 * NY3_1;

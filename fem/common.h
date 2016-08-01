@@ -337,9 +337,9 @@ double *get_exact_solution_8(double hx, double hy, double t);
 
 double *solve_9(double &tme, int *grid, int *gridPr);
 
-double *calc_error_9(double hx, double hy, double tt, double *solution, int nx, int ny);
+double *calc_error_9(int *grid, double *solution, double tt, int nx3_1, int ny3_1, double hx_smallest, double hy_smallest, int max_lvl);
 
-double *get_exact_solution_9(double hx, double hy, double t, int nx, int ny);
+double *get_exact_solution_9(int *grid, double t, int nx3_1, int ny3_1, double hx_smallest, double hy_smallest, int max_lvl);
 
 double *solve_10(double &tme, int *grid, int *gridPr);
 
