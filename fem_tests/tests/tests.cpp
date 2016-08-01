@@ -2075,3 +2075,112 @@ TEST_F(FemFixture, test10_1) {
         }
     }
 }
+
+// тестируем солвер 11 движение из угла в угол
+// подход с выбором четверти и адаптивной сеткой и прижиманием окресностей
+//
+TEST_F(FemFixture, test11_1) {
+    double tme = 0.;
+    for (int iter = 0; iter < 1; ++iter) {
+
+        double d = 0;
+        for (int i = 1; i < 2; ++i) {
+            switch (i) {
+                case 0:
+                    d = 50.;
+                    break;
+                case 1:
+                    d = 100.;
+                    break;
+                case 2:
+                    d = 200.;
+                    break;
+                case 3:
+                    d = 400.;
+                    break;
+                case 4:
+                    d = 800.;
+                    break;
+                case 5:
+                    d = 1600.;
+                    break;
+                default:
+                    return;
+            }
+
+            A = 0.;
+            B = 1.;
+            C = 0.;
+            D = 1.;
+            R_SQ = 0.099 * 0.099;
+            INN_DENSITY = 1.;
+            OUT_DENSITY = 0.;
+            R_LVL = 2;
+
+            int sz = (int) d;
+            sz = sz * ((int) std::pow(3., R_LVL));
+
+            NX = (int) d;
+            NY = (int) d;
+            NX_1 = NX + 1;
+            NY_1 = NY + 1;
+            HX = (B - A) / NX;
+            HY = (D - C) / NY;
+            IDEAL_SQ_SIZE_X = 64;
+            IDEAL_SQ_SIZE_Y = 64;
+            EPS_GRID = 0.5;
+            RES_EPS = 1.e-9;
+
+            NX3 = sz;
+            NY3 = sz;
+            NX3_1 = NX3 + 1;
+            NY3_1 = NY3 + 1;
+            R = (int) std::pow(3., R_LVL);
+            HX_SMALLEST = (B - A) / (NX * std::pow(3., R_LVL));
+            HY_SMALLEST = (D - C) / (NY * std::pow(3., R_LVL));
+
+            CENTER_OFFSET_X = 0.3;
+            CENTER_OFFSET_Y = 0.3;
+
+            U = 1.;
+            V = 1.;
+            TAU = 1.e-3;
+
+            TIME_STEP_CNT = 20;
+            XY = NX3_1 * NY3_1;
+
+            init_boundary_arrays_and_cp();
+            print_params();
+            printf("NX3 = %d\n", NX3);
+            printf("NX3_1 = %d\n", NX3_1);
+            printf("NY3 = %d\n", NY3);
+            printf("NY3_1 = %d\n", NY3_1);
+            printf("XY = %d\n", XY);
+            printf("R_LVL = %d\n", R_LVL);
+            printf("R = %d\n", R);
+            printf("EPS_GRID = %e\n", EPS_GRID);
+            printf("RES_EPS = %e\n", RES_EPS);
+
+            int *grid = new int[XY];
+            int *gridPr = new int[XY];
+
+            double *density = solve_11(tme, grid, gridPr);
+//            double *err = calc_error_9(HX, HY, TAU * TIME_STEP_CNT, density, NX3_1, NY3_1);
+
+            double *exact0 = get_exact_solution_11(grid, 0, NX3_1, NY3_1, HX_SMALLEST, HY_SMALLEST, R_LVL);
+            double *exactT = get_exact_solution_11(grid, TAU * TIME_STEP_CNT, NX3_1, NY3_1, HX_SMALLEST, HY_SMALLEST,
+                                                  R_LVL);
+
+            double x0 = get_center_x();
+            double y0 = get_center_y();
+            print_surface("exact", NX, NY, HX, HY, 0, A, C, x0, y0, TAU, U, V, exact0);
+            print_surface("exact", NX, NY, HX, HY, TIME_STEP_CNT, A, C, x0, y0, TAU, U, V, exactT);
+
+            delete[] density;
+            delete[] exact0;
+            delete[] exactT;
+            delete[] grid;
+            delete[] gridPr;
+        }
+    }
+}

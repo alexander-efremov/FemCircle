@@ -347,4 +347,10 @@ double *calc_error_10(double hx, double hy, double tt, double *solution, int nx,
 
 double *get_exact_solution_10(double hx, double hy, double t, int nx, int ny);
 
+double *solve_11(double &tme, int *grid, int *gridPr);
+
+double *calc_error_11(int *grid, double *solution, double tt, int nx3_1, int ny3_1, double hx_smallest, double hy_smallest, int max_lvl);
+
+double *get_exact_solution_11(int *grid, double t, int nx3_1, int ny3_1, double hx_smallest, double hy_smallest, int max_lvl);
+
 #endif //FEM_CIRCLE_COMMON_H
