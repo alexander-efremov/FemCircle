@@ -47,5 +47,6 @@ extern int R; // max number of level of grids
 extern double EPS_GRID; // epsilon shows that we have to refine grid
 extern double HX_SMALLEST; //
 extern double HY_SMALLEST; //
+extern int APPROX_TYPE; // 1 - берем окрестность, 2 - прижимаем точки к прямым (для solver11)
 
 #endif //FEM_CIRCLE_CONSTS_H

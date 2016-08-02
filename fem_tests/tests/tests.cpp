@@ -2149,6 +2149,8 @@ TEST_F(FemFixture, test11_1) {
             TIME_STEP_CNT = 5;
             XY = NX3_1 * NY3_1;
 
+            APPROX_TYPE = 2;
+
             init_boundary_arrays_and_cp();
             print_params();
             printf("NX3 = %d\n", NX3);

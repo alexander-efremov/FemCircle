@@ -52,3 +52,4 @@ int R = 0;
 double EPS_GRID = 0.;
 double HX_SMALLEST = 0.;
 double HY_SMALLEST = 0.;
+int APPROX_TYPE  = 1;
