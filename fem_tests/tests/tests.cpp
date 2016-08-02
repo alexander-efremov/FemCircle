@@ -2162,6 +2162,7 @@ TEST_F(FemFixture, test11_1) {
             printf("R = %d\n", R);
             printf("EPS_GRID = %e\n", EPS_GRID);
             printf("RES_EPS = %e\n", RES_EPS);
+            printf("APPROX_TYPE = %d\n", APPROX_TYPE);
 
             int *grid = new int[XY];
             int *gridPr = new int[XY];
