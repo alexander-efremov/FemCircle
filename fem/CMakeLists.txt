@@ -6,8 +6,7 @@ add_definitions(-std=c++0x)
 
 set(HEADER_FILES
     utils.h
-    timer.h
-    common.h
+        common.h
     consts.h
     )
 

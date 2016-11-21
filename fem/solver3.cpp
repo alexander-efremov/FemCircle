@@ -3,7 +3,6 @@
 #include <string.h>
 #include <float.h>
 #include "consts.h"
-#include "timer.h"
 #include "utils.h"
 #include "common.h"
 
@@ -307,8 +306,6 @@ static double get_phi_integ_midpoint(int ii, int jj, double *density, double tim
 }
 
 double *solve_3(double &tme) {
-    StartTimer();
-
     fflush(stdout);
 
     int ic = 0;
@@ -809,7 +806,6 @@ double *solve_3(double &tme) {
     delete[] err;
     delete[] residual;
     delete[] extrems;
-    tme = GetTimer() / 1000;
     return density;
 }
 

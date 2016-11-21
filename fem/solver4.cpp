@@ -3,7 +3,6 @@
 #include <string.h>
 #include <float.h>
 #include "consts.h"
-#include "timer.h"
 #include "utils.h"
 #include "common.h"
 
@@ -706,7 +705,6 @@ double Residual(double *density, double *phi, double *residual) {
 }
 
 double *solve_4(double &tme) {
-    StartTimer();
 
     fflush(stdout);
 
@@ -871,7 +869,6 @@ double *solve_4(double &tme) {
     delete[] err;
     delete[] residual;
     delete[] extrems;
-    tme = GetTimer() / 1000;
     return density;
 }
 

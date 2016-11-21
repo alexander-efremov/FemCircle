@@ -3,11 +3,8 @@
 #include <string.h>
 #include <float.h>
 #include "consts.h"
-#include "timer.h"
 #include "utils.h"
 #include "common.h"
-
-
 
 inline static double func_u(double t, double x, double y) { return U; }
 
@@ -743,7 +740,6 @@ static double get_phi_integ_exact(int ii, int jj, double *density, double time_v
 }
 
 double *solve_2(double &tme) {
-    StartTimer();
 
     fflush(stdout);
 
@@ -1078,7 +1074,6 @@ double *solve_2(double &tme) {
     delete[] residual;
     delete[] extrems;
     delete[] extrems_err;
-    tme = GetTimer() / 1000;
     return density;
 }
 

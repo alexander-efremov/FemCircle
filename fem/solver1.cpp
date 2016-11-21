@@ -3,7 +3,6 @@
 #include <string.h>
 #include <float.h>
 #include "consts.h"
-#include "timer.h"
 #include "common.h"
 
 inline static double analytical_solution_circle(double x, double y) {
@@ -210,8 +209,6 @@ static double get_phi(int ii, int jj, double *density, double time_value) {
 
 // ОБХОД ГРАНИЦЫ НЕВЕРНЫЙ! ДЕЛАТЬ КАК В SOLVER2
 double *solve_1(double &tme) {
-    StartTimer();
-
     fflush(stdout);
 
     double *phi = new double[XY];
@@ -336,7 +333,6 @@ double *solve_1(double &tme) {
 
     delete[] prev_density;
     delete[] phi;
-    tme = GetTimer() / 1000;
     return density;
 }
 
